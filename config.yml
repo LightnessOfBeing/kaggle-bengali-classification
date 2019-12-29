@@ -1,0 +1,60 @@
+model_params:
+  model: MultiHeadNet
+  model_name: resnet18
+  pretrained: True
+  num_classes:
+    - 168
+    - 11
+    - 7
+
+args:
+  expdir: "src"
+  logdir: "./logs/bengali_logs"
+  seed: 42
+  check: False
+
+stages:
+  data_params:
+    batch_size: 16
+    num_workers: 1
+
+    train_csv: "./csv/train_0.csv"
+    root: "/data/"
+
+  state_params:
+    num_epochs: 3
+    main_metric: loss
+    minimize_metric: True
+
+  criterion_params:
+    criterion: CrossEntropyLoss
+
+  optimizer_params:  # REQUIRED KEYWORD, параметры для оптимизатора
+    optimizer: Adam  # REQUIRED KEYWORD, имя оптимизатора
+    lr: 0.003
+    weight_decay: 0.0001
+
+  scheduler_params:  # REQUIRED KEYWORD, параметры для lr-scheduler
+    scheduler: StepLR  # REQUIRED KEYWORD, имя lr-scheduler
+    # на этом уровне могут лежать параметры для __init__ данного lr-scheduler, например
+    step_size: 10
+    gamma: 0.3
+
+  stage1:  # Все, что не ключевое слово, расценивается, как имя стейджа. Для тренировки в Catalyst требуется хотябы один стейдж. Имя может быть произвольным
+    state_params:  # Вы можете переопределить любые параметры, для конкретного стейджа, например
+      num_epochs: 3
+
+    callbacks_params:  # REQUIRED KEYWORD, самая важная часть, тут записываются все коллбеки для данного стейджа
+      # коллбеки записываются через key-value
+      loss:
+        callback: CriterionCallback  # KEYWORD имя коллбека
+      optimizer:
+        callback: OptimizerCallback
+      scheduler:
+        callback: SchedulerCallback
+        # для любого коллбека на этом уровне лежат его параметры
+        reduce_metric: loss
+      saver:
+        callback: CheckpointCallback
+        save_n_best: 3
+
