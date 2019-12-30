@@ -8,7 +8,7 @@ model_params:
     - 7
 
 args:
-  expdir: "src"
+  expdir: "kaggle-bengali-classification/src"
   logdir: "./logs/bengali_logs"
   seed: 42
   check: False
