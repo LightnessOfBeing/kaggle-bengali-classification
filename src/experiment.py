@@ -11,7 +11,7 @@ import pandas as pd
 class Experiment(ConfigExperiment):
     def get_datasets(self, stage: str, **kwargs):
         train_csv_name = kwargs.get('train_csv', None)
-        df = pd.read_csv("./csv/" + train_csv_name)
+        df = pd.read_csv("../input/bengaliai-cv19/" + train_csv_name)
         data_folder = kwargs.get('data_folder', None)
         #transform = get_transforms(kwargs.get('transform', None))
         datasets = OrderedDict()
