@@ -13,8 +13,8 @@ class MultiHeadNet(nn.Module):
         )
         in_features = self.model._classifier.in_features
         self.head_grapheme_root = nn.Linear(in_features, num_classes[0])
-        self.head_grapheme_root = nn.Linear(in_features, num_classes[1])
-        self.head_grapheme_root = nn.Linear(in_features, num_classes[2])
+        self.head_vowel_diacritic = nn.Linear(in_features, num_classes[1])
+        self.head_consonant_diacritic = nn.Linear(in_features, num_classes[2])
 
     def freeze(self):
         for param in self.model._features.parameters():
@@ -31,6 +31,6 @@ class MultiHeadNet(nn.Module):
 
         logit_grapheme_root = self.head_grapheme_root(features)
         logit_vowel_diacritic = self.head_vowel_diacritic(features)
-        logit_consonant_diacritic = self.head_consonatn_diacritic(features)
+        logit_consonant_diacritic = self.head_consonant_diacritic(features)
 
         return logit_grapheme_root, logit_vowel_diacritic, logit_consonant_diacritic

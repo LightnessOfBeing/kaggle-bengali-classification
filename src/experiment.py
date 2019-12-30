@@ -12,23 +12,26 @@ class Experiment(ConfigExperiment):
     def get_datasets(self, stage: str, **kwargs):
         train_csv_name = kwargs.get('train_csv', None)
         df = pd.read_csv("./csv/" + train_csv_name)
-        root = kwargs.get('root', None)
+        data_folder = kwargs.get('data_folder', None)
         #transform = get_transforms(kwargs.get('transform', None))
         datasets = OrderedDict()
         if train_csv_name:
+            image_size = [224, 224]
+            train_transform = train_aug(image_size)
+            valid_transform = valid_aug(image_size)
             train_df, valid_df = train_test_split(df, test_size=0.2, shuffle=True, random_state=65)
             train_set = BengaliDataset(
                 df=train_df,
-                transform=train_aug,
-                root=root
+                transform=train_transform,
+                data_folder=data_folder
             )
             valid_set = BengaliDataset(
                 df=valid_df,
-                transform=valid_aug,
-                root=root
+                transform=valid_transform,
+                data_folder=data_folder
             )
             datasets["train"] = train_set
-            datasets["train"] = valid_set
+            datasets["valid"] = valid_set
         return datasets
 
     @staticmethod

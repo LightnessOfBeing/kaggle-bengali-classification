@@ -12,14 +12,27 @@ args:
   logdir: "./logs/bengali_logs"
   seed: 42
   check: False
+  verbose: True
+
+runner_params:  # OPTIONAL KEYWORD, параметры для инициализации Runner
+  # Например для SupervisedRunner
+  input_key: "images"  # Пример
+  output_key:
+    - "logit_grapheme_root"
+    - "logit_vowel_diacritic"
+    - "logit_consonant_diacritic"
+  input_target_key:
+    - "grapheme_roots"
+    - "vowel_diacritics"
+    - "consonant_diacritics"
 
 stages:
   data_params:
     batch_size: 16
     num_workers: 1
 
-    train_csv: "./csv/train_0.csv"
-    root: "/data/"
+    train_csv: "train.csv"
+    data_folder: "../../data/"
 
   state_params:
     num_epochs: 3
@@ -27,7 +40,9 @@ stages:
     minimize_metric: True
 
   criterion_params:
-    criterion: CrossEntropyLoss
+    _key_value: True
+    ce:
+      criterion: CrossEntropyLoss
 
   optimizer_params:  # REQUIRED KEYWORD, параметры для оптимизатора
     optimizer: Adam  # REQUIRED KEYWORD, имя оптимизатора
@@ -46,8 +61,36 @@ stages:
 
     callbacks_params:  # REQUIRED KEYWORD, самая важная часть, тут записываются все коллбеки для данного стейджа
       # коллбеки записываются через key-value
-      loss:
+      loss_grapheme_roots:
         callback: CriterionCallback  # KEYWORD имя коллбека
+        input_key: "grapheme_roots"
+        output_key: "logit_grapheme_root"
+        criterion_key: "ce"
+        prefix: "loss_gr"
+
+      loss_vowel_diacritics:
+        callback: CriterionCallback  # KEYWORD имя коллбека
+        input_key: "vowel_diacritics"
+        output_key: "logit_vowel_diacritic"
+        criterion_key: "ce"
+        prefix: "loss_vd"
+
+      loss_consonant_diacritics:
+        callback: CriterionCallback  # KEYWORD имя коллбека
+        input_key: "consonant_diacritics"
+        output_key: "logit_consonant_diacritic"
+        criterion_key: "ce"
+        prefix: "loss_cd"
+
+      loss_aggregator:
+        callback: CriterionAggregatorCallback
+        prefix: "loss"
+        loss_aggregate_fn: "sum"
+        loss_keys:
+          - "loss_gr"
+          - "loss_vd"
+          - "loss_cd"
+
       optimizer:
         callback: OptimizerCallback
       scheduler:
@@ -57,4 +100,6 @@ stages:
       saver:
         callback: CheckpointCallback
         save_n_best: 3
+      metrics:
+        callback: HMacroAveragedRecall
 

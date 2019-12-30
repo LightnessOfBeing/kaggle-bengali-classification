@@ -7,12 +7,12 @@ from src.utils import load_image
 
 class BengaliDataset(Dataset):
 
-    def __init__(self, df, root, transform):
+    def __init__(self, df, data_folder, transform):
         self.image_ids = df['image_id'].values
         self.grapheme_roots = df['grapheme_root'].values
         self.vowel_diacritics = df['vowel_diacritic'].values
         self.consonant_diacritics = df['consonant_diacritic'].values
-        self.root = root
+        self.data_folder = data_folder
         self.transform = transform
 
     def __len__(self):
@@ -24,7 +24,7 @@ class BengaliDataset(Dataset):
         vowel_diacritic = self.vowel_diacritics[idx]
         consonant_diacritic = self.consonant_diacritics[idx]
 
-        image_id = os.path.join(self.root, image_id + '.png')
+        image_id = os.path.join(self.data_folder, image_id + '.png')
         image = load_image(image_id)
         if self.transform:
             image = self.transform(image=image)['image']
