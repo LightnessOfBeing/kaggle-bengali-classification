@@ -27,14 +27,13 @@ runner_params:  # OPTIONAL KEYWORD, параметры для инициализ
 
 stages:
   data_params:
-    batch_size: 16
+    batch_size: 64
     num_workers: 1
 
     train_csv: "train.csv"
     data_folder: "../input/grapheme-imgs-128x128/"
 
   state_params:
-    num_epochs: 3
     main_metric: loss
     minimize_metric: True
 
@@ -56,7 +55,7 @@ stages:
 
   stage1:  # Все, что не ключевое слово, расценивается, как имя стейджа. Для тренировки в Catalyst требуется хотябы один стейдж. Имя может быть произвольным
     state_params:  # Вы можете переопределить любые параметры, для конкретного стейджа, например
-      num_epochs: 3
+      num_epochs: 10
 
     callbacks_params:  # REQUIRED KEYWORD, самая важная часть, тут записываются все коллбеки для данного стейджа
       # коллбеки записываются через key-value
