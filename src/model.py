@@ -3,11 +3,11 @@ from cnn_finetune import make_model
 from torch import nn
 
 class MultiHeadNet(nn.Module):
-    def __init__(self, model_name, pretrained, num_classes):
+    def __init__(self, arch, pretrained, num_classes):
         super().__init__()
         #if self.source == "cnn_finetune":
         self.model = make_model(
-            model_name=model_name,
+            model_name=arch,
             pretrained=pretrained,
             num_classes=1000
         )
