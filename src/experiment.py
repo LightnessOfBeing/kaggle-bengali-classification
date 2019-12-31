@@ -13,6 +13,9 @@ class Experiment(ConfigExperiment):
         train_csv_name = kwargs.get('train_csv', None)
         df = pd.read_csv("../input/bengaliai-cv19/" + train_csv_name)
         data_folder = kwargs.get('data_folder', None)
+        test_run = kwargs.get('test_run', None)
+        if test_run:
+            df = df[:2048]
         #transform = get_transforms(kwargs.get('transform', None))
         datasets = OrderedDict()
         if train_csv_name:
