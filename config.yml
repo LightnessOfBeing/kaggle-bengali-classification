@@ -1,6 +1,6 @@
 model_params:
   model: MultiHeadNet
-  model_name: resnet18
+  arch: resnet18
   pretrained: True
   num_classes:
     - 168
