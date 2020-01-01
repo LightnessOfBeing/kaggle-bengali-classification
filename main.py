@@ -58,7 +58,7 @@ def predict(data_folder, weights_name, arch, sub_name, bs, num_workers):
         with torch.no_grad():
             for x, y in tqdm(dl):
                 #print(x.size())
-                p1, p2, p3 = model(x)
+                p1, p2, p3 = model(x.cuda())
                 #print(p1.size(), p2.size(), p3.size())
                 p1 = p1.argmax(-1).view(-1).cpu()
                 p2 = p2.argmax(-1).view(-1).cpu()
