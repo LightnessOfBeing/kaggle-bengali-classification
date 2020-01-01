@@ -14,12 +14,12 @@ class Experiment(ConfigExperiment):
         df = pd.read_csv("../input/bengaliai-cv19/" + train_csv_name)
         data_folder = kwargs.get('data_folder', None)
         test_run = kwargs.get('test_run', None)
+        image_size = kwargs.get('image_size', None)
         if test_run:
             df = df[:2048]
         #transform = get_transforms(kwargs.get('transform', None))
         datasets = OrderedDict()
         if train_csv_name:
-            image_size = [224, 224]
             train_transform = train_aug(image_size)
             valid_transform = valid_aug(image_size)
             train_df, valid_df = train_test_split(df, test_size=0.2, shuffle=True, random_state=65)
