@@ -38,7 +38,7 @@ device = torch.device('cuda')
 
 @click.command()
 @click.option("--data_folder", type=str, default="../input/bengaliai-cv19/")
-@click.option("--weights_folder", type=str, default="../input/bengaliweights")
+@click.option("--weights_name", type=str, default="best.pth")
 @click.option("--model_name", type=str, default="resnet34")
 @click.option("--sub_name", type=str, default="submission.csv")
 @click.option("--bs", type=int, default=128)
