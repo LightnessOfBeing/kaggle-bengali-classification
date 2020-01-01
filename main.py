@@ -56,7 +56,7 @@ def predict(data_folder, weights_name, arch, sub_name, bs, num_workers):
         dl = DataLoader(ds, batch_size=bs, num_workers=num_workers, shuffle=False)
         with torch.no_grad():
             for x, y in tqdm(dl):
-                x = x.unsqueeze(1).cuda()
+                x = x.cuda()
                 p1, p2, p3 = model(x)
                 p1 = p1.argmax(-1).view(-1).cpu()
                 p2 = p2.argmax(-1).view(-1).cpu()
