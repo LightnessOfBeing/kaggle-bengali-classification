@@ -30,6 +30,9 @@ class BengaliDataset(Dataset):
             image = self.transform(image=image)['image']
             image = np.transpose(image, (2, 0, 1)).astype(np.float32)
 
+        #print(f"IMAGE SHAPE: = {image.shape}")
+        #print(image[0].sum(), image[1].sum(), image[2].sum())
+
         return {
             'images': image,
             'grapheme_roots': grapheme_root,

@@ -3,7 +3,6 @@ import click
 import numpy as np
 import pandas as pd
 import torch
-from scipy.stats import stats
 from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
 
@@ -19,11 +18,13 @@ class GraphemeDatasetTest(Dataset):
         return len(self.data)
 
     def __getitem__(self, idx):
-        name = self.df.iloc[idx,0]
+        name = self.df.iloc[idx, 0]
         #normalize each image by its max val
         img = (self.data[idx]*(255.0/self.data[idx].max())).astype(np.uint8)
         img = crop_resize(img)
         img = (img.astype(np.float32)/255.0 - stats[0])/stats[1]
+        img = np.stack((img, img, img), axis=-1)
+        img = np.transpose(img, (2, 0, 1)).astype(np.float32)
         return img, name
 
 
@@ -39,7 +40,7 @@ device = torch.device('cuda')
 @click.command()
 @click.option("--data_folder", type=str, default="../input/bengaliai-cv19/")
 @click.option("--weights_name", type=str, default="best.pth")
-@click.option("--arch", type=str, default="resnet34")
+@click.option("--arch", type=str, default="resnet18")
 @click.option("--sub_name", type=str, default="submission.csv")
 @click.option("--bs", type=int, default=128)
 @click.option("--num_workers", type=int, default=2)
@@ -56,8 +57,9 @@ def predict(data_folder, weights_name, arch, sub_name, bs, num_workers):
         dl = DataLoader(ds, batch_size=bs, num_workers=num_workers, shuffle=False)
         with torch.no_grad():
             for x, y in tqdm(dl):
-                x = x.cuda()
+                #print(x.size())
                 p1, p2, p3 = model(x)
+                #print(p1.size(), p2.size(), p3.size())
                 p1 = p1.argmax(-1).view(-1).cpu()
                 p2 = p2.argmax(-1).view(-1).cpu()
                 p3 = p3.argmax(-1).view(-1).cpu()
@@ -65,10 +67,11 @@ def predict(data_folder, weights_name, arch, sub_name, bs, num_workers):
                     row_id += [f'{name}_grapheme_root', f'{name}_vowel_diacritic',
                                f'{name}_consonant_diacritic']
                     target += [p1[idx].item(), p2[idx].item(), p3[idx].item()]
-
+        
     sub_df = pd.DataFrame({'row_id': row_id, 'target': target})
     sub_df.to_csv(sub_name, index=False)
     sub_df.head()
+
     return
 
 if __name__ == "__main__":
