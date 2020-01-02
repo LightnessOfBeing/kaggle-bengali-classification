@@ -93,7 +93,8 @@ stages:
       num_epochs: 5
 
     callbacks_params:
-      callback: FreezeCallback
+      freeze:
+        callback: FreezeCallback
 
     optimizer_params:  # Пример, переопределенного оптимизатора
       optimizer: AdamW
@@ -110,7 +111,8 @@ stages:
       num_epochs: 10
 
     callbacks_params:
-      callback: UnFreezeCallback
+      unfreeze:
+        callback: UnFreezeCallback
 
     optimizer_params:  # Пример, переопределенного оптимизатора
       optimizer: AdamW
