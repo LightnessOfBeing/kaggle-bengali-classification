@@ -48,14 +48,14 @@ stages:
     weight_decay: 0.0001
 
   scheduler_params:  # REQUIRED KEYWORD, параметры для lr-scheduler
-    scheduler: StepLR  # REQUIRED KEYWORD, имя lr-scheduler
+    scheduler: ReduceLROnPlateau   # REQUIRED KEYWORD, имя lr-scheduler
     # на этом уровне могут лежать параметры для __init__ данного lr-scheduler, например
-    step_size: 10
-    gamma: 0.3
+    factor: 0.2
+    patience: 2
 
   stage1:  # Все, что не ключевое слово, расценивается, как имя стейджа. Для тренировки в Catalyst требуется хотябы один стейдж. Имя может быть произвольным
     state_params:  # Вы можете переопределить любые параметры, для конкретного стейджа, например
-      num_epochs: 3
+      num_epochs: 8
 
     callbacks_params:  # REQUIRED KEYWORD, самая важная часть, тут записываются все коллбеки для данного стейджа
       # коллбеки записываются через key-value
