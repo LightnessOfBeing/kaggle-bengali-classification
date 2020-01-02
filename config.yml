@@ -107,7 +107,7 @@ stages:
 
   stage2:
     state_params:
-      num_epochs: 15
+      num_epochs: 10
 
     callbacks_params:
       callback: UnFreezeCallback
