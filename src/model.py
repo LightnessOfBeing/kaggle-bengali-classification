@@ -19,10 +19,12 @@ class MultiHeadNet(nn.Module):
     def freeze(self):
         for param in self.model._features.parameters():
             param.requires_grad = False
+        print("Model freezed!")
 
     def unfreeze(self):
         for param in self.model._features.parameters():
             param.requires_grad = True
+        print("Model unfreezed!")
 
     def forward(self, x):
         features = self.model._features(x)

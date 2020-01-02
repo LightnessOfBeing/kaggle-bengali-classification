@@ -56,3 +56,13 @@ class HMacroAveragedRecall(Callback):
 
         final_score = np.average(scores, weights=[2, 1, 1])
         state.metrics.add_batch_value(name=self.prefix, value=final_score)
+
+class FreezeCallback(Callback):
+
+    def on_stage_start(self, state: RunnerState):
+        state.model.freeze()
+
+class UnFreezeCallback(Callback):
+
+    def on_stage_start(self, state: RunnerState):
+        state.model.unfreeze()

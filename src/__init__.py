@@ -10,5 +10,10 @@ from .optimizers import *
 
 # Register models
 registry.Model(MultiHeadNet)
+
+# Register callbacks
 registry.Callback(HMacroAveragedRecall)
+registry.Callback(UnFreezeCallback)
+registry.Callback(FreezeCallback)
+
 

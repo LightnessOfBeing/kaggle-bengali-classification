@@ -34,69 +34,92 @@ stages:
     data_folder: "../input/grapheme-imgs-128x128/"
 
   state_params:
-    main_metric: loss
-    minimize_metric: True
+    main_metric: hmar
+    minimize_metric: False
 
   criterion_params:
     _key_value: True
     ce:
       criterion: CrossEntropyLoss
 
-  optimizer_params:  # REQUIRED KEYWORD, параметры для оптимизатора
-    optimizer: Adam  # REQUIRED KEYWORD, имя оптимизатора
-    lr: 0.003
-    weight_decay: 0.0001
+  callbacks_params:  # REQUIRED KEYWORD, самая важная часть, тут записываются все коллбеки для данного стейджа
+    # коллбеки записываются через key-value
+    loss_grapheme_roots:
+      callback: CriterionCallback  # KEYWORD имя коллбека
+      input_key: "grapheme_roots"
+      output_key: "logit_grapheme_root"
+      criterion_key: "ce"
+      prefix: "loss_gr"
 
-  scheduler_params:  # REQUIRED KEYWORD, параметры для lr-scheduler
-    scheduler: ReduceLROnPlateau   # REQUIRED KEYWORD, имя lr-scheduler
-    # на этом уровне могут лежать параметры для __init__ данного lr-scheduler, например
-    factor: 0.2
-    patience: 2
+    loss_vowel_diacritics:
+      callback: CriterionCallback  # KEYWORD имя коллбека
+      input_key: "vowel_diacritics"
+      output_key: "logit_vowel_diacritic"
+      criterion_key: "ce"
+      prefix: "loss_vd"
+
+    loss_consonant_diacritics:
+      callback: CriterionCallback  # KEYWORD имя коллбека
+      input_key: "consonant_diacritics"
+      output_key: "logit_consonant_diacritic"
+      criterion_key: "ce"
+      prefix: "loss_cd"
+
+    loss_aggregator:
+      callback: CriterionAggregatorCallback
+      prefix: "loss"
+      loss_aggregate_fn: "sum"
+      loss_keys:
+      - "loss_gr"
+      - "loss_vd"
+      - "loss_cd"
+
+    saver:
+      callback: CheckpointCallback
+      save_n_best: 3
+
+    metrics:
+      callback: HMacroAveragedRecall
+
+    optimizer:
+      callback: OptimizerCallback
+
+    scheduler:
+      callback: SchedulerCallback
+      reduce_metric: loss
 
   stage1:  # Все, что не ключевое слово, расценивается, как имя стейджа. Для тренировки в Catalyst требуется хотябы один стейдж. Имя может быть произвольным
     state_params:  # Вы можете переопределить любые параметры, для конкретного стейджа, например
-      num_epochs: 18
+      num_epochs: 5
 
-    callbacks_params:  # REQUIRED KEYWORD, самая важная часть, тут записываются все коллбеки для данного стейджа
-      # коллбеки записываются через key-value
-      loss_grapheme_roots:
-        callback: CriterionCallback  # KEYWORD имя коллбека
-        input_key: "grapheme_roots"
-        output_key: "logit_grapheme_root"
-        criterion_key: "ce"
-        prefix: "loss_gr"
+    callbacks_params:
+      callback: FreezeCallback
 
-      loss_vowel_diacritics:
-        callback: CriterionCallback  # KEYWORD имя коллбека
-        input_key: "vowel_diacritics"
-        output_key: "logit_vowel_diacritic"
-        criterion_key: "ce"
-        prefix: "loss_vd"
+    optimizer_params:  # Пример, переопределенного оптимизатора
+      optimizer: AdamW
+      lr: 0.0005
 
-      loss_consonant_diacritics:
-        callback: CriterionCallback  # KEYWORD имя коллбека
-        input_key: "consonant_diacritics"
-        output_key: "logit_consonant_diacritic"
-        criterion_key: "ce"
-        prefix: "loss_cd"
+    scheduler_params:
+      scheduler: MultiStepLR
+      milestones:
+      - 3
+      gamma: 0.1
 
-      loss_aggregator:
-        callback: CriterionAggregatorCallback
-        prefix: "loss"
-        loss_aggregate_fn: "sum"
-        loss_keys:
-          - "loss_gr"
-          - "loss_vd"
-          - "loss_cd"
+  stage2:
+    state_params:
+      num_epochs: 15
 
-      optimizer:
-        callback: OptimizerCallback
-      scheduler:
-        callback: SchedulerCallback
-        reduce_metric: loss
-      saver:
-        callback: CheckpointCallback
-        save_n_best: 3
-      metrics:
-        callback: HMacroAveragedRecall
+    callbacks_params:
+      callback: UnFreezeCallback
+
+    optimizer_params:  # Пример, переопределенного оптимизатора
+      optimizer: AdamW
+      lr: 0.0001
+
+    scheduler_params:
+      scheduler: MultiStepLR
+      milestones:
+      - 3
+      gamma: 0.1
+
 
