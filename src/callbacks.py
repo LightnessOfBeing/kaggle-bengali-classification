@@ -59,10 +59,16 @@ class HMacroAveragedRecall(Callback):
 
 class FreezeCallback(Callback):
 
+    def __init__(self, order: int):
+        super().__init__(order)
+
     def on_stage_start(self, state: RunnerState):
         state.model.freeze()
 
 class UnFreezeCallback(Callback):
+
+    def __init__(self, order: int):
+        super().__init__(order)
 
     def on_stage_start(self, state: RunnerState):
         state.model.unfreeze()
