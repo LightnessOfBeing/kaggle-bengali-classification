@@ -1,3 +1,4 @@
+import cv2
 import os
 import numpy as np
 from torch.utils.data import Dataset
@@ -23,9 +24,9 @@ class BengaliDataset(Dataset):
         grapheme_root = self.grapheme_roots[idx]
         vowel_diacritic = self.vowel_diacritics[idx]
         consonant_diacritic = self.consonant_diacritics[idx]
-
-        image_id = os.path.join(self.data_folder, image_id + '.png')
-        image = load_image(image_id)
+        image_path = os.path.join(self.data_folder, image_id + '.png')
+        image = cv2.imread(image_path, 0)
+        image = np.stack((image, image, image), axis=-1)
         if self.transform:
             image = self.transform(image=image)['image']
             image = np.transpose(image, (2, 0, 1)).astype(np.float32)

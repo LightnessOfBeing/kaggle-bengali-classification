@@ -1,16 +1,21 @@
 #!/usr/bin/env python3
+import os
+
 import click
 import numpy as np
 import pandas as pd
 import torch
+from cnn_finetune import make_model
 from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
 
-from src.utils import HEIGHT, WIDTH, crop_resize, stats
+from src.augmentations import valid_aug
+from src.utils import HEIGHT, WIDTH, crop_resize, stats, load_image
 from src.model import MultiHeadNet
 
 class GraphemeDatasetTest(Dataset):
-    def __init__(self, fname):
+    def __init__(self, fname, transform):
+        self.transform = transform
         self.df = pd.read_parquet(fname)
         self.data = 255 - self.df.iloc[:, 1:].values.reshape(-1, HEIGHT, WIDTH).astype(np.uint8)
 
@@ -19,12 +24,13 @@ class GraphemeDatasetTest(Dataset):
 
     def __getitem__(self, idx):
         name = self.df.iloc[idx, 0]
-        #normalize each image by its max val
-        img = (self.data[idx]*(255.0/self.data[idx].max())).astype(np.uint8)
+        img = self.data[idx]
+        img = (img * (255.0 / img.max())).astype(np.uint8)
         img = crop_resize(img)
-        img = (img.astype(np.float32)/255.0 - stats[0])/stats[1]
         img = np.stack((img, img, img), axis=-1)
-        img = np.transpose(img, (2, 0, 1)).astype(np.float32)
+        if self.transform:
+            img = self.transform(image=img)['image'].astype(np.uint8)
+            img = np.transpose(img, (2, 0, 1)).astype(np.float32)
         return img, name
 
 
@@ -33,7 +39,7 @@ TEST = ['test_image_data_0.parquet',
         'test_image_data_2.parquet',
         'test_image_data_3.parquet']
 
-log_dir = "./logs/bengali_logs"
+log_dir = "logs/bengali_logs"
 
 device = torch.device('cuda')
 
@@ -53,13 +59,12 @@ def predict(data_folder, weights_name, arch, sub_name, bs, num_workers):
     model = model.to(device)
     model.eval()
     for fname in TEST:
-        ds = GraphemeDatasetTest(data_folder + fname)
+        ds = GraphemeDatasetTest(data_folder + fname, valid_aug())
+        ds.__getitem__(0)
         dl = DataLoader(ds, batch_size=bs, num_workers=num_workers, shuffle=False)
         with torch.no_grad():
             for x, y in tqdm(dl):
-                #print(x.size())
                 p1, p2, p3 = model(x.cuda())
-                #print(p1.size(), p2.size(), p3.size())
                 p1 = p1.argmax(-1).view(-1).cpu()
                 p2 = p2.argmax(-1).view(-1).cpu()
                 p3 = p3.argmax(-1).view(-1).cpu()
@@ -74,5 +79,20 @@ def predict(data_folder, weights_name, arch, sub_name, bs, num_workers):
 
     return
 
+import matplotlib.pyplot as plt
+
 if __name__ == "__main__":
+    '''
+    image_id = os.path.join("../input/grapheme-imgs-128x128", "Train_0.png")
+    model = make_model(
+        model_name='resnet18',
+        pretrained=False,
+        num_classes=1000
+    )
+    print(dir(model._classifier.modules))
+    img = load_image(imge_id)
+    image = valid_aug()(image=image)
+    plt.imshow(image)
+    image = np.transpose(image, (2, 0, 1)).astype(np.float32)
+    '''
     predict()
