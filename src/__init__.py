@@ -15,5 +15,6 @@ registry.Model(MultiHeadNet)
 registry.Callback(HMacroAveragedRecall)
 registry.Callback(UnFreezeCallback)
 registry.Callback(FreezeCallback)
+registry.Callback(ImageViewCallback)
 
 

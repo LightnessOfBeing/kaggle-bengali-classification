@@ -29,7 +29,7 @@ class BengaliDataset(Dataset):
         image = np.stack((image, image, image), axis=-1)
         if self.transform:
             image = self.transform(image=image)['image']
-            image = np.transpose(image, (2, 0, 1)).astype(np.float32)
+        image = np.transpose(image, (2, 0, 1)).astype(np.float32)
 
         return {
             'images': image,

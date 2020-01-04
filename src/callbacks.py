@@ -72,3 +72,11 @@ class UnFreezeCallback(Callback):
 
     def on_stage_start(self, state: RunnerState):
         state.model.unfreeze()
+
+class ImageViewCallback(Callback):
+
+    def __init__(self):
+        super().__init__(CallbackOrder.Other)
+
+   # def on_stage_start(self, state: RunnerState):
+   #     state.input[]
