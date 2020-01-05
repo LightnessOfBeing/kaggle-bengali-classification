@@ -92,12 +92,17 @@ stages:
 
       optimizer:
         callback: OptimizerCallback
+
       scheduler:
         callback: SchedulerCallback
         reduce_metric: loss
+
       saver:
         callback: CheckpointCallback
         save_n_best: 2
+
       metrics:
         callback: HMacroAveragedRecall
 
+      viewer:
+        callback: ImageViewerCallback

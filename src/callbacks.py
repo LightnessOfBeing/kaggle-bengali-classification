@@ -3,6 +3,7 @@ import torch
 import torch.nn.functional as F
 from catalyst.dl.core import Callback, CallbackOrder, RunnerState
 from sklearn.metrics import recall_score
+import matplotlib.pyplot as plt
 
 
 class HMacroAveragedRecall(Callback):
@@ -73,10 +74,11 @@ class UnFreezeCallback(Callback):
     def on_stage_start(self, state: RunnerState):
         state.model.unfreeze()
 
-class ImageViewCallback(Callback):
+class ImageViewerCallback(Callback):
 
     def __init__(self):
         super().__init__(CallbackOrder.Other)
 
-   # def on_stage_start(self, state: RunnerState):
-   #     state.input[]
+    def on_stage_start(self, state: RunnerState):
+        plt.imshow(state.input[0][0])
+        plt.show()
