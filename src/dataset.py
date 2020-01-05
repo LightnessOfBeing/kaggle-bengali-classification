@@ -26,7 +26,7 @@ class BengaliDataset(Dataset):
         consonant_diacritic = self.consonant_diacritics[idx]
         image_path = os.path.join(self.data_folder, image_id + '.png')
         image = cv2.imread(image_path, 0)
-        image = np.stack((image, image, image), axis=-1)
+        image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
         if self.transform:
             image = self.transform(image=image)['image']
         image = np.transpose(image, (2, 0, 1)).astype(np.float32)

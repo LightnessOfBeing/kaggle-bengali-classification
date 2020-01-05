@@ -5,41 +5,51 @@ import pandas as pd
 import numpy as np
 from albumentations import Normalize
 
-from src.augmentations import train_aug
+from src.augmentations import train_aug, valid_aug
 from src.utils import HEIGHT, WIDTH, crop_resize, load_image
 
 
 def visualize_image(img):
     return
 
-def load_parquet(fname):
+def load_parquet(fname, aug):
     df = pd.read_csv(fname)
    # df.to_csv(f"{fname.split('.')[0]}.csv", index=False)
     data = 255 - df.iloc[:, 1:].values.reshape(-1, HEIGHT, WIDTH).astype(np.uint8)
-    img = data[1]
-    img = (img * (255.0 / img.max())).astype(np.uint8)
-    img = crop_resize(img)
-    img = np.stack((img, img, img), axis=-1)
- #   img = train_aug()(image=img)['image'].astype(np.uint8)
-    print(img.shape)
-    plt.imshow(img)
+    image = data[1]
+    image = crop_resize(image)
+    image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+    image1 = valid_aug()(image=image, mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051))['image']
+    image2 = Normalize()(image=image)['image']
+    plt.imshow(image1)
     plt.show()
-    return
+    plt.imshow(image)
+    plt.show()
+    return image1
 
 stats = (0.0692, 0.2051)
 
-def load_png(fname):
-    img = cv2.imread(fname, 0)
-    img = (img * (255.0 / img.max())).astype(np.uint8)
-    img = crop_resize(img)
-    img = np.stack((img, img, img), axis=-1)
-   # img = train_aug()(image=img)['image'].astype(np.uint8)
-    img = (img.astype(np.float32)/255.0 - stats[0]) / stats[1]
-    print(img.shape)
-    plt.imshow(img)
+def load_png(fname, aug):
+    image = cv2.imread(fname, 0)
+    image = cv2.cvtColor(image,cv2.COLOR_GRAY2BGR)
+    image1 = valid_aug()(image=image, mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051))['image']
+    image2 = Normalize()(image=image)['image']
+    plt.imshow(image1)
     plt.show()
-    return
+    plt.imshow(image)
+    plt.show()
+
+    #image = image.astype(np.float32)/255.0
+  #  image = aug(image=image)['image']
+   # img = (img.astype(np.float32)/255.0 - stats[0]) / stats[1]
+   # print(image.shape)
+   # plt.imshow(image)
+   # plt.show()
+    return image1
 
 if __name__ == "__main__":
-    load_parquet("test1.csv")
-    load_png("../input/grapheme-imgs-128x128/Train_0.png")
+    im1 = load_png("../input/grapheme-imgs-128x128/Train_0.png", valid_aug())
+    im2 = load_parquet("test1.csv", valid_aug())
+  #  im3 = im2.astype(np.float32)
+    print("kek")
+    #load_png("../input/grapheme-imgs-128x128/Train_0.png", train_aug())

@@ -1,40 +1,39 @@
 #!/usr/bin/env python3
+import cv2
+import os
 
 import click
 import numpy as np
 import pandas as pd
 import torch
+from cnn_finetune import make_model
 from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
 
 from src.augmentations import valid_aug
+from src.utils import HEIGHT, WIDTH, crop_resize, stats, load_image
 from src.model import MultiHeadNet
-from src.utils import HEIGHT, WIDTH, make_square, TARGET_SIZE
 
-
-class BengaliParquetDataset(Dataset):
-
-    def __init__(self, parquet_file, transform=None):
-        self.data = pd.read_parquet(parquet_file)
+class GraphemeDatasetTest(Dataset):
+    def __init__(self, fname, transform):
         self.transform = transform
+        self.df = pd.read_parquet(fname)
+        self.data = self.df.iloc[:, 1:].values.reshape(-1, HEIGHT, WIDTH).astype(np.uint8)
 
     def __len__(self):
         return len(self.data)
 
     def __getitem__(self, idx):
-        tmp = self.data.iloc[idx, 1:].values.reshape(HEIGHT, WIDTH)
-        img = np.zeros((TARGET_SIZE, TARGET_SIZE, 3))
-        img[..., 0] = make_square(tmp, target_size=TARGET_SIZE)
-        img[..., 1] = img[..., 0]
-        img[..., 2] = img[..., 0]
-
-        image_id = self.data.iloc[idx, 0]
-
+        name = self.df.iloc[idx, 0]
+        image = self.data[idx]
+        image = (image * (255.0 / image.max())).astype(np.uint8)
+        image = crop_resize(image)
+        image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
         if self.transform:
-            img = self.transform(image=img)['image']
-        img = np.transpose(img, (2, 0, 1)).astype(np.float32)
+            image = self.transform(image=image)['image'].astype(np.uint8)
+        image = np.transpose(image, (2, 0, 1)).astype(np.float32)
+        return image, name
 
-        return img, image_id
 
 TEST = ['test_image_data_0.parquet',
         'test_image_data_1.parquet',
@@ -61,7 +60,7 @@ def predict(data_folder, weights_name, arch, sub_name, bs, num_workers):
     model = model.to(device)
     model.eval()
     for fname in TEST:
-        ds = BengaliParquetDataset(data_folder + fname, valid_aug())
+        ds = GraphemeDatasetTest(data_folder + fname, valid_aug())
         ds.__getitem__(0)
         dl = DataLoader(ds, batch_size=bs, num_workers=num_workers, shuffle=False)
         with torch.no_grad():
@@ -81,6 +80,7 @@ def predict(data_folder, weights_name, arch, sub_name, bs, num_workers):
 
     return
 
+import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
     '''
