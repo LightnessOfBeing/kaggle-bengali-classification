@@ -90,7 +90,7 @@ stages:
 
   stage1:  # Все, что не ключевое слово, расценивается, как имя стейджа. Для тренировки в Catalyst требуется хотябы один стейдж. Имя может быть произвольным
     state_params:  # Вы можете переопределить любые параметры, для конкретного стейджа, например
-      num_epochs: 1
+      num_epochs: 3
 
     callbacks_params:
       freeze:
@@ -108,7 +108,7 @@ stages:
 
   stage2:
     state_params:
-      num_epochs: 3
+      num_epochs: 10
 
     callbacks_params:
       unfreeze:
