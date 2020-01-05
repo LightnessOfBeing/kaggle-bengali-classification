@@ -25,7 +25,7 @@ class Experiment(ConfigExperiment):
             train_df, valid_df = train_test_split(df, test_size=0.2, shuffle=True, random_state=65)
             train_set = BengaliDataset(
                 df=train_df,
-                transform=train_transform,
+                transform=valid_transform,
                 data_folder=data_folder
             )
             valid_set = BengaliDataset(
