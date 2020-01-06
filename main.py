@@ -18,7 +18,7 @@ from src.model import MultiHeadNet
 class GraphemeDatasetTest(Dataset):
     def __init__(self, fname, transform):
         self.transform = transform
-        self.df = pd.read_parquet(fname)[:20]
+        self.df = pd.read_parquet(fname)[:1000]
         self.data = 255 - self.df.iloc[:, 1:].values.reshape(-1, HEIGHT, WIDTH).astype(np.uint8)
 
     def __len__(self):
@@ -61,7 +61,7 @@ def predict(data_folder, weights_path, arch, sub_name, bs, num_workers):
     model = model.to(device)
     model.eval()
 
-    df = pd.read_csv(data_folder + "train.csv")[:20]
+    df = pd.read_csv(data_folder + "train.csv")[:1000]
     ds = BengaliDataset(df, "../input/grapheme-imgs-128x128/", valid_aug())
     dl = DataLoader(ds, batch_size=bs, num_workers=num_workers, shuffle=False)
     with torch.no_grad():
@@ -79,7 +79,7 @@ def predict(data_folder, weights_path, arch, sub_name, bs, num_workers):
         sub_df.to_csv("submission_png.csv", index=False)
         sub_df.head()
     print("png done")
-    
+
     row_id, target = [], []
     for fname in ['train_image_data_0.parquet']:
         ds = GraphemeDatasetTest(data_folder + fname, valid_aug())
