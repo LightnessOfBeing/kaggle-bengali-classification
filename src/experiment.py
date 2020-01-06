@@ -20,12 +20,12 @@ class Experiment(ConfigExperiment):
         #transform = get_transforms(kwargs.get('transform', None))
         datasets = OrderedDict()
         if train_csv_name:
-            train_transform = valid_aug(image_size)
+            train_transform = train_aug(image_size)
             valid_transform = valid_aug(image_size)
             train_df, valid_df = train_test_split(df, test_size=0.2, shuffle=True, random_state=65)
             train_set = BengaliDataset(
                 df=train_df,
-                transform=valid_transform,
+                transform=train_transform,
                 data_folder=data_folder
             )
             valid_set = BengaliDataset(

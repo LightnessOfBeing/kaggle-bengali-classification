@@ -32,12 +32,12 @@ stats = (0.0692, 0.2051)
 def load_png(fname, aug):
     image = cv2.imread(fname, 0)
     image = cv2.cvtColor(image,cv2.COLOR_GRAY2BGR)
-    image1 = valid_aug()(image=image, mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051))['image']
-    image2 = Normalize()(image=image)['image']
+    image1 = aug(image=image)['image']
+   # image2 = Normalize()(image=image)['image']
     plt.imshow(image1)
     plt.show()
-    plt.imshow(image)
-    plt.show()
+   # plt.imshow(image)
+   # plt.show()
 
     #image = image.astype(np.float32)/255.0
   #  image = aug(image=image)['image']
@@ -48,8 +48,8 @@ def load_png(fname, aug):
     return image1
 
 if __name__ == "__main__":
-    im1 = load_png("../input/grapheme-imgs-128x128/Train_0.png", valid_aug())
-    im2 = load_parquet("test1.csv", valid_aug())
+    im1 = load_png("../input/grapheme-imgs-128x128/Train_0.png", train_aug())
+   # im2 = load_parquet("test1.csv", valid_aug())
   #  im3 = im2.astype(np.float32)
     print("kek")
     #load_png("../input/grapheme-imgs-128x128/Train_0.png", train_aug())
