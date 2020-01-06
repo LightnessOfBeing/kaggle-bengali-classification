@@ -62,7 +62,7 @@ def predict(data_folder, weights_path, arch, sub_name, bs, num_workers):
     model.eval()
 
     df = pd.read_csv(data_folder + "train.csv")[:20]
-    ds = BengaliDataset(df, valid_aug(), data_folder)
+    ds = BengaliDataset(df, data_folder, valid_aug())
     dl = DataLoader(ds, batch_size=bs, num_workers=num_workers, shuffle=False)
     with torch.no_grad():
         for x, y in tqdm(dl):
