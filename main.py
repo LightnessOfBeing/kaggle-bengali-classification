@@ -30,7 +30,7 @@ class GraphemeDatasetTest(Dataset):
         image = crop_resize(image)
         image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
         if self.transform:
-            image = self.transform(image=image)['image'].astype(np.uint8)
+            image = self.transform(image=image)['image']
         image = np.transpose(image, (2, 0, 1)).astype(np.float32)
         return image, name
 
@@ -56,6 +56,7 @@ def predict(data_folder, weights_name, arch, sub_name, bs, num_workers):
     model = MultiHeadNet(arch, True, [168, 11, 7])
     checkpoint = f"{log_dir}/checkpoints/{weights_name}"
     checkpoint = torch.load(checkpoint)
+    #checkpoint = torch.load(checkpoint, map_location=torch.device('cpu'))
     model.load_state_dict(checkpoint['model_state_dict'])
     model = model.to(device)
     model.eval()
@@ -66,6 +67,7 @@ def predict(data_folder, weights_name, arch, sub_name, bs, num_workers):
         with torch.no_grad():
             for x, y in tqdm(dl):
                 p1, p2, p3 = model(x.cuda())
+               # p1, p2, p3 = model(x)
                 p1 = p1.argmax(-1).view(-1).cpu()
                 p2 = p2.argmax(-1).view(-1).cpu()
                 p3 = p3.argmax(-1).view(-1).cpu()

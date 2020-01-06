@@ -79,6 +79,11 @@ class ImageViewerCallback(Callback):
     def __init__(self):
         super().__init__(CallbackOrder.Other)
 
-    def on_stage_start(self, state: RunnerState):
-        plt.imshow(state.input[0][0])
-        plt.show()
+    def on_batch_start(self, state: RunnerState):
+        print(type(state.input["images"].numpy()))
+        img = state.input["images"].numpy()[0]
+        np.savetxt("kek.txt", img[0])
+       # print(img.shape)
+       # print(img.shape)
+       # plt.imshow(img)
+       # plt.show()
