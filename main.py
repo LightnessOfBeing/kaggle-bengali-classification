@@ -53,7 +53,7 @@ device = torch.device('cuda')
 @click.option("--bs", type=int, default=128)
 @click.option("--num_workers", type=int, default=2)
 def predict(data_folder, weights_path, arch, sub_name, bs, num_workers):
-    row_id, target, actual = [], [], []
+    row_id, target = [], []
     model = MultiHeadNet(arch, True, [168, 11, 7])
     checkpoint = torch.load(weights_path)
     #checkpoint = torch.load(checkpoint, map_location=torch.device('cpu'))
@@ -79,7 +79,8 @@ def predict(data_folder, weights_path, arch, sub_name, bs, num_workers):
         sub_df.to_csv("submission_png.csv", index=False)
         sub_df.head()
     print("png done")
-
+    
+    row_id, target = [], []
     for fname in ['train_image_data_0.parquet']:
         ds = GraphemeDatasetTest(data_folder + fname, valid_aug())
         dl = DataLoader(ds, batch_size=bs, num_workers=num_workers, shuffle=False)
