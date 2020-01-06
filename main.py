@@ -77,7 +77,7 @@ def predict(data_folder, weights_path, arch, sub_name, bs, num_workers):
                     target += [p1[idx].item(), p2[idx].item(), p3[idx].item()]
 
     sub_df = pd.DataFrame({'row_id': row_id, 'target': target})
-    sub_df.to_csv("submission_parquet.csv", index=False)
+    sub_df.to_csv(sub_name, index=False)
     sub_df.head()
     return
 
