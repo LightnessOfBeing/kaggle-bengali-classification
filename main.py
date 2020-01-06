@@ -60,6 +60,36 @@ def predict(data_folder, weights_path, arch, sub_name, bs, num_workers):
     model.load_state_dict(checkpoint['model_state_dict'])
     model = model.to(device)
     model.eval()
+    row_id, target = [], []
+    for fname in TEST:
+        ds = GraphemeDatasetTest(data_folder + fname, valid_aug())
+        dl = DataLoader(ds, batch_size=bs, num_workers=num_workers, shuffle=False)
+        with torch.no_grad():
+            for x, y in tqdm(dl):
+                p1, p2, p3 = model(x.cuda())
+                # p1, p2, p3 = model(x)
+                p1 = p1.argmax(-1).view(-1).cpu()
+                p2 = p2.argmax(-1).view(-1).cpu()
+                p3 = p3.argmax(-1).view(-1).cpu()
+                for idx, name in enumerate(y):
+                    row_id += [f'{name}_grapheme_root', f'{name}_vowel_diacritic',
+                               f'{name}_consonant_diacritic']
+                    target += [p1[idx].item(), p2[idx].item(), p3[idx].item()]
+
+    sub_df = pd.DataFrame({'row_id': row_id, 'target': target})
+    sub_df.to_csv("submission_parquet.csv", index=False)
+    sub_df.head()
+    return
+
+'''
+def predict(data_folder, weights_path, arch, sub_name, bs, num_workers):
+    row_id, target = [], []
+    model = MultiHeadNet(arch, True, [168, 11, 7])
+    checkpoint = torch.load(weights_path)
+    #checkpoint = torch.load(checkpoint, map_location=torch.device('cpu'))
+    model.load_state_dict(checkpoint['model_state_dict'])
+    model = model.to(device)
+    model.eval()
 
     df = pd.read_csv(data_folder + "train.csv")[:1000]
     ds = BengaliDataset(df, "../input/grapheme-imgs-128x128/", valid_aug())
@@ -99,9 +129,8 @@ def predict(data_folder, weights_path, arch, sub_name, bs, num_workers):
     sub_df = pd.DataFrame({'row_id': row_id, 'target': target})
     sub_df.to_csv("submission_parquet.csv", index=False)
     sub_df.head()
-
-
     return
+'''
 
 if __name__ == "__main__":
     '''
