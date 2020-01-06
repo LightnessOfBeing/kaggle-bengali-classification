@@ -18,8 +18,8 @@ from src.model import MultiHeadNet
 class GraphemeDatasetTest(Dataset):
     def __init__(self, fname, transform):
         self.transform = transform
-        self.df = pd.read_parquet(fname)
-        self.data = self.df.iloc[:, 1:].values.reshape(-1, HEIGHT, WIDTH).astype(np.uint8)
+        self.df = pd.read_parquet(fname)[:20]
+        self.data = 255 - self.df.iloc[:, 1:].values.reshape(-1, HEIGHT, WIDTH).astype(np.uint8)
 
     def __len__(self):
         return len(self.data)
@@ -81,7 +81,7 @@ def predict(data_folder, weights_path, arch, sub_name, bs, num_workers):
     print("png done")
 
     for fname in ['train_image_data_0.parquet']:
-        ds = GraphemeDatasetTest(data_folder + fname, valid_aug())[:20]
+        ds = GraphemeDatasetTest(data_folder + fname, valid_aug())
         dl = DataLoader(ds, batch_size=bs, num_workers=num_workers, shuffle=False)
         with torch.no_grad():
             for x, y in tqdm(dl):
