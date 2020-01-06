@@ -47,16 +47,15 @@ device = torch.device('cuda')
 
 @click.command()
 @click.option("--data_folder", type=str, default="../input/bengaliai-cv19/")
-@click.option("--weights_name", type=str, default="best.pth")
+@click.option("--weights_path", type=str, default="{log_dir}/checkpoints/best.pth")
 @click.option("--arch", type=str, default="resnet18")
 @click.option("--sub_name", type=str, default="submission.csv")
 @click.option("--bs", type=int, default=128)
 @click.option("--num_workers", type=int, default=2)
-def predict(data_folder, weights_name, arch, sub_name, bs, num_workers):
+def predict(data_folder, weights_path, arch, sub_name, bs, num_workers):
     row_id, target, actual = [], [], []
     model = MultiHeadNet(arch, True, [168, 11, 7])
-    checkpoint = f"{log_dir}/checkpoints/{weights_name}"
-    checkpoint = torch.load(checkpoint)
+    checkpoint = torch.load(weights_path)
     #checkpoint = torch.load(checkpoint, map_location=torch.device('cpu'))
     model.load_state_dict(checkpoint['model_state_dict'])
     model = model.to(device)
