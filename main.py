@@ -11,6 +11,7 @@ from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
 
 from src.augmentations import valid_aug
+from src.dataset import BengaliDataset
 from src.utils import HEIGHT, WIDTH, crop_resize, stats, load_image
 from src.model import MultiHeadNet
 
@@ -52,7 +53,7 @@ device = torch.device('cuda')
 @click.option("--bs", type=int, default=128)
 @click.option("--num_workers", type=int, default=2)
 def predict(data_folder, weights_name, arch, sub_name, bs, num_workers):
-    row_id, target = [], []
+    row_id, target, actual = [], [], []
     model = MultiHeadNet(arch, True, [168, 11, 7])
     checkpoint = f"{log_dir}/checkpoints/{weights_name}"
     checkpoint = torch.load(checkpoint)
@@ -60,9 +61,28 @@ def predict(data_folder, weights_name, arch, sub_name, bs, num_workers):
     model.load_state_dict(checkpoint['model_state_dict'])
     model = model.to(device)
     model.eval()
-    for fname in TEST:
-        ds = GraphemeDatasetTest(data_folder + fname, valid_aug())
-        ds.__getitem__(0)
+
+    df = pd.read_csv(data_folder + "train.csv")[:20]
+    ds = BengaliDataset(df, valid_aug(), data_folder)
+    dl = DataLoader(ds, batch_size=bs, num_workers=num_workers, shuffle=False)
+    with torch.no_grad():
+        for x, y in tqdm.tqdm_notebook(dl):
+            p1, p2, p3 = model(x.cuda())
+            # p1, p2, p3 = model(x)
+            p1 = p1.argmax(-1).view(-1).cpu()
+            p2 = p2.argmax(-1).view(-1).cpu()
+            p3 = p3.argmax(-1).view(-1).cpu()
+            for idx, name in enumerate(y):
+                row_id += [f'{name}_grapheme_root', f'{name}_vowel_diacritic',
+                           f'{name}_consonant_diacritic']
+                target += [p1[idx].item(), p2[idx].item(), p3[idx].item()]
+        sub_df = pd.DataFrame({'row_id': row_id, 'target': target})
+        sub_df.to_csv("submission_png.csv", index=False)
+        sub_df.head()
+    print("png done")
+
+    for fname in ['train_image_data_0.parquet']:
+        ds = GraphemeDatasetTest(data_folder + fname, valid_aug())[:20]
         dl = DataLoader(ds, batch_size=bs, num_workers=num_workers, shuffle=False)
         with torch.no_grad():
             for x, y in tqdm(dl):
@@ -75,14 +95,13 @@ def predict(data_folder, weights_name, arch, sub_name, bs, num_workers):
                     row_id += [f'{name}_grapheme_root', f'{name}_vowel_diacritic',
                                f'{name}_consonant_diacritic']
                     target += [p1[idx].item(), p2[idx].item(), p3[idx].item()]
-        
+
     sub_df = pd.DataFrame({'row_id': row_id, 'target': target})
-    sub_df.to_csv(sub_name, index=False)
+    sub_df.to_csv("submission_parquet.csv", index=False)
     sub_df.head()
 
-    return
 
-import matplotlib.pyplot as plt
+    return
 
 if __name__ == "__main__":
     '''

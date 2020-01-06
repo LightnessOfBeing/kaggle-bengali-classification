@@ -32,8 +32,8 @@ class BengaliDataset(Dataset):
         image = np.transpose(image, (2, 0, 1)).astype(np.float32)
 
         return {
-            'images': image,
-            'grapheme_roots': grapheme_root,
-            'vowel_diacritics': vowel_diacritic,
-            'consonant_diacritics': consonant_diacritic
+            'image': image,
+            'grapheme_root': grapheme_root,
+            'vowel_diacritic': vowel_diacritic,
+            'consonant_diacritic': consonant_diacritic
         }

@@ -9,9 +9,9 @@ import matplotlib.pyplot as plt
 class HMacroAveragedRecall(Callback):
     def __init__(
         self,
-        input_grapheme_root_key: str = "grapheme_roots",
-        input_consonant_diacritic_key: str = "consonant_diacritics",
-        input_vowel_diacritic_key: str = "vowel_diacritics",
+        input_grapheme_root_key: str = "grapheme_root",
+        input_consonant_diacritic_key: str = "consonant_diacritic",
+        input_vowel_diacritic_key: str = "vowel_diacritic",
 
         output_grapheme_root_key: str = "logit_grapheme_root",
         output_consonant_diacritic_key: str = "logit_consonant_diacritic",

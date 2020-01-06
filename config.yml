@@ -15,15 +15,15 @@ args:
 
 runner_params:  # OPTIONAL KEYWORD, параметры для инициализации Runner
   # Например для SupervisedRunner
-  input_key: "images"  # Пример
+  input_key: "image"  # Пример
   output_key:
     - "logit_grapheme_root"
     - "logit_vowel_diacritic"
     - "logit_consonant_diacritic"
   input_target_key:
-    - "grapheme_roots"
-    - "vowel_diacritics"
-    - "consonant_diacritics"
+    - "grapheme_root"
+    - "vowel_diacritic"
+    - "consonant_diacritic"
 
 stages:
   data_params:
@@ -46,21 +46,21 @@ stages:
     # коллбеки записываются через key-value
     loss_grapheme_roots:
       callback: CriterionCallback  # KEYWORD имя коллбека
-      input_key: "grapheme_roots"
+      input_key: "grapheme_root"
       output_key: "logit_grapheme_root"
       criterion_key: "ce"
       prefix: "loss_gr"
 
     loss_vowel_diacritics:
       callback: CriterionCallback  # KEYWORD имя коллбека
-      input_key: "vowel_diacritics"
+      input_key: "vowel_diacritic"
       output_key: "logit_vowel_diacritic"
       criterion_key: "ce"
       prefix: "loss_vd"
 
     loss_consonant_diacritics:
       callback: CriterionCallback  # KEYWORD имя коллбека
-      input_key: "consonant_diacritics"
+      input_key: "consonant_diacritic"
       output_key: "logit_consonant_diacritic"
       criterion_key: "ce"
       prefix: "loss_cd"

@@ -32,7 +32,7 @@ class Experiment(ConfigExperiment):
                 df=valid_df,
                 transform=valid_transform,
                 data_folder=data_folder
-            )
+)
             datasets["train"] = train_set
             datasets["valid"] = valid_set
         return datasets
