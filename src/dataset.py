@@ -33,6 +33,7 @@ class BengaliDataset(Dataset):
 
         return {
             'image': image,
+            'name' : image_id,
             'grapheme_root': grapheme_root,
             'vowel_diacritic': vowel_diacritic,
             'consonant_diacritic': consonant_diacritic
