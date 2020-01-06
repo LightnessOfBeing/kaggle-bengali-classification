@@ -65,13 +65,13 @@ def predict(data_folder, weights_path, arch, sub_name, bs, num_workers):
     ds = BengaliDataset(df, "../input/grapheme-imgs-128x128/", valid_aug())
     dl = DataLoader(ds, batch_size=bs, num_workers=num_workers, shuffle=False)
     with torch.no_grad():
-        for x, y, _, _, _ in tqdm(dl):
-            p1, p2, p3 = model(x.cuda())
+        for item in tqdm(dl):
+            p1, p2, p3 = model(item["image"].cuda())
             # p1, p2, p3 = model(x)
             p1 = p1.argmax(-1).view(-1).cpu()
             p2 = p2.argmax(-1).view(-1).cpu()
             p3 = p3.argmax(-1).view(-1).cpu()
-            for idx, name in enumerate(y):
+            for idx, name in enumerate(item["name"]):
                 row_id += [f'{name}_grapheme_root', f'{name}_vowel_diacritic',
                            f'{name}_consonant_diacritic']
                 target += [p1[idx].item(), p2[idx].item(), p3[idx].item()]
