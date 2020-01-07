@@ -43,6 +43,7 @@ stages:
     # коллбеки записываются через key-value
     loss_grapheme_roots:
       callback: MixupCallback  # KEYWORD имя коллбека
+      fields: ["grapheme_root"]
       input_key: "grapheme_root"
       output_key: "logit_grapheme_root"
       criterion_key: "ce"
@@ -50,13 +51,15 @@ stages:
 
     loss_vowel_diacritics:
       callback: MixupCallback  # KEYWORD имя коллбека
+      fields: ["vowel_diacritic"]
       input_key: "vowel_diacritic"
       output_key: "logit_vowel_diacritic"
       criterion_key: "ce"
       prefix: "loss_vd"
 
     loss_consonant_diacritics:
-      callback: MixupCallback  # KEYWORD имя коллбека
+      callback: MixupCallback
+      fields: ["consonant_diacritic"]
       input_key: "consonant_diacritic"
       output_key: "logit_consonant_diacritic"
       criterion_key: "ce"
