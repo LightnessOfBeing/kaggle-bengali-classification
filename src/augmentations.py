@@ -4,7 +4,6 @@ from albumentations import Compose, Resize, Rotate, HorizontalFlip, Normalize, V
 
 def train_aug(image_size=None):
     augs_list = [HorizontalFlip(p=0.5),
-        VerticalFlip(p=0.5),
         Rotate(10),
       #  ShiftScaleRotate(scale_limit=0.2, rotate_limit=45, shift_limit=0.15, p=0.7, border_mode=0),
       #  RandomGridShuffle(grid=(2, 2), p=0.5),
