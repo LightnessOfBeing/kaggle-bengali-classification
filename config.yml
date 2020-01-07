@@ -41,24 +41,21 @@ stages:
 
   callbacks_params:
     loss_grapheme_roots:
-      callback: MixupCallback
-      fields: ["image"]
+      callback: CriterionCallback
       input_key: "grapheme_root"
       output_key: "logit_grapheme_root"
       criterion_key: "ce"
       prefix: "loss_gr"
 
     loss_vowel_diacritics:
-      callback: MixupCallback
-      fields: ["image"]
+      callback: CriterionCallback
       input_key: "vowel_diacritic"
       output_key: "logit_vowel_diacritic"
       criterion_key: "ce"
       prefix: "loss_vd"
 
     loss_consonant_diacritics:
-      callback: MixupCallback
-      fields: ["image"]
+      callback: CriterionCallback
       input_key: "consonant_diacritic"
       output_key: "logit_consonant_diacritic"
       criterion_key: "ce"
@@ -68,10 +65,7 @@ stages:
       callback: CriterionAggregatorCallback
       prefix: "loss"
       loss_aggregate_fn: "sum"
-      loss_keys:
-      - "loss_gr"
-      - "loss_vd"
-      - "loss_cd"
+      loss_keys: ["loss_gr", "loss_vd", "loss_cd"]
 
     saver:
       callback: CheckpointCallback
