@@ -1,6 +1,6 @@
 model_params:
   model: MultiHeadNet
-  arch: "resnext50_32x4d"
+  arch: "resnet34"
   pretrained: True
   num_classes: [168, 11, 7]
 
@@ -105,7 +105,7 @@ stages:
 
   stage2:
     state_params:
-      num_epochs: 18
+      num_epochs: 20
 
     callbacks_params:
       unfreeze:
@@ -113,11 +113,11 @@ stages:
 
     optimizer_params:  # Пример, переопределенного оптимизатора
       optimizer: AdamW
-      lr: 0.0001
+      lr: 0.0002
 
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
-      num_steps: 18
+      num_steps: 20
       lr_range: [0.0005, 0.00001]
       momentum_range: [0.85, 0.95]
 
