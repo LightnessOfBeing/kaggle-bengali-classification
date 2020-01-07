@@ -39,10 +39,9 @@ stages:
     ce:
       criterion: CrossEntropyLoss
 
-  callbacks_params:  # REQUIRED KEYWORD, самая важная часть, тут записываются все коллбеки для данного стейджа
-    # коллбеки записываются через key-value
+  callbacks_params:
     loss_grapheme_roots:
-      callback: MixupCallback  # KEYWORD имя коллбека
+      callback: MixupCallback
       fields: ["image"]
       input_key: "grapheme_root"
       output_key: "logit_grapheme_root"
@@ -50,7 +49,7 @@ stages:
       prefix: "loss_gr"
 
     loss_vowel_diacritics:
-      callback: MixupCallback  # KEYWORD имя коллбека
+      callback: MixupCallback
       fields: ["image"]
       input_key: "vowel_diacritic"
       output_key: "logit_vowel_diacritic"
