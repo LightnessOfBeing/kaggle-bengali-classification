@@ -64,12 +64,15 @@ stages:
     loss_aggregator:
       callback: CriterionAggregatorCallback
       prefix: "loss"
-      loss_aggregate_fn: "sum"
-      loss_keys: ["loss_gr", "loss_vd", "loss_cd"]
+      loss_aggregate_fn: "weighted_sum"
+      loss_keys:
+        loss_gr: 2.0
+        loss_vd: 1.0
+        loss_cd: 1.0
 
     saver:
       callback: CheckpointCallback
-      save_n_best: 2
+      save_n_best: 3
 
     metrics:
       callback: HMacroAveragedRecall
