@@ -1,6 +1,6 @@
 model_params:
   model: MultiHeadNet
-  arch: "se_resnext50_32x4d"
+  arch: "resnet34"
   pretrained: True
   num_classes: [168, 11, 7]
 
