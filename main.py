@@ -1,19 +1,16 @@
 #!/usr/bin/env python3
-import cv2
-import os
-
 import click
+import cv2
 import numpy as np
 import pandas as pd
 import torch
-from cnn_finetune import make_model
 from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
 
 from src.augmentations import valid_aug
-from src.dataset import BengaliDataset
-from src.utils import HEIGHT, WIDTH, crop_resize, stats, load_image
 from src.model import MultiHeadNet
+from src.utils import HEIGHT, WIDTH, crop_resize
+
 
 class GraphemeDatasetTest(Dataset):
     def __init__(self, fname, transform):

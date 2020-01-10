@@ -1,6 +1,6 @@
 model_params:
-  model: MultiHeadNet
-  arch: "resnet34"
+  model: Efficient
+  arch: "efficientnet-b0"
   pretrained: True
   num_classes: [168, 11, 7]
 
@@ -118,7 +118,7 @@ stages:
       init_lr: 0.0001
       num_steps: 25
       warmup_steps: 5
-      lr_range: [0.0005, 0.000005]
+      lr_range: [0.0005, 0.00001]
       momentum_range: [0.85, 0.95]
 
 
