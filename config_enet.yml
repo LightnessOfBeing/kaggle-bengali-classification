@@ -103,7 +103,7 @@ stages:
 
   stage2:
     state_params:
-      num_epochs: 30
+      num_epochs: 15
 
     callbacks_params:
       unfreeze:
@@ -114,10 +114,10 @@ stages:
 
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
-      init_lr: 0.0001
-      num_steps: 25
+      init_lr: 0.0002
+      num_steps: 10
       warmup_steps: 5
-      lr_range: [0.0005, 0.00001]
+      lr_range: [0.0005, 0.00002]
       momentum_range: [0.85, 0.95]
 
 

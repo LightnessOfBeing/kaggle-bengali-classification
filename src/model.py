@@ -47,6 +47,7 @@ class MultiHeadNet(nn.Module):
     def forward(self, x):
         features = self.model._features(x)
         #features = F.adaptive_avg_pool2d(features, 1)
+        # DROPOUT???
         features = self.pool(features)
         features = features.view(features.size(0), -1)
 
@@ -63,7 +64,8 @@ class Efficient(nn.Module):
                            'efficientnet-b3': 1536, 'efficientnet-b4': 1792, 'efficientnet-b5': 2048,
                            'efficientnet-b6': 2304, 'efficientnet-b7': 2560}
         self.net = EfficientNet.from_pretrained(encoder)
-        self.pool = GeM()
+      #  self.pool = GeM()
+        self.dropout_head = nn.Dropout(self.net._global_params.dropout_rate)
         self.head_grapheme_root = nn.Linear(n_channels_dict[encoder], num_classes[0])
         self.head_vowel_diacritic = nn.Linear(n_channels_dict[encoder], num_classes[1])
         self.head_consonant_diacritic = nn.Linear(n_channels_dict[encoder], num_classes[2])
@@ -80,7 +82,8 @@ class Efficient(nn.Module):
 
     def forward(self, x):
         x = self.net.extract_features(x)
-        x = self.pool(x)
+        x = F.adaptive_avg_pool2d(x, 1)
+        x = self.dropout_head(x)
         x = x.view(x.size(0), -1)
         logit_grapheme_root = self.head_grapheme_root(x)
         logit_vowel_diacritic = self.head_vowel_diacritic(x)
