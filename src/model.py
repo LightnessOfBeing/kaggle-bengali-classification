@@ -2,7 +2,7 @@ import torch
 
 import torch.nn.functional as F
 from cnn_finetune import make_model
-from pytorch_toolbelt.modules.backbone.efficient_net import EfficientNet
+from efficientnet_pytorch import EfficientNet
 from torch import nn
 
 from torch.nn.parameter import Parameter
