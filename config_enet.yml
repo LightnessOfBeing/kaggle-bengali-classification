@@ -1,7 +1,6 @@
 model_params:
   model: Efficient
-  arch: "efficientnet-b0"
-  pretrained: True
+  encoder: "efficientnet-b0"
   num_classes: [168, 11, 7]
 
 args:
