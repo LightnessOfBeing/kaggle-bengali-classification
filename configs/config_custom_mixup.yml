@@ -29,6 +29,7 @@ stages:
 
     train_csv: "train.csv"
     data_folder: "../input/grapheme-imgs-128x128/"
+    test_run: True
 
   state_params:
     main_metric: loss
@@ -76,13 +77,11 @@ stages:
 
     optimizer_params:  # Пример, переопределенного оптимизатора
       optimizer: AdamW
+      lr: 5e-3
 
     scheduler_params:
-      scheduler: OneCycleLRWithWarmup
-      init_lr: 0.0002
-      num_steps: 10
-      warmup_steps: 5
-      lr_range: [0.0005, 0.00002]
-      momentum_range: [0.85, 0.95]
-
+      scheduler: CosineAnnealingWarmRestarts
+      T0: 15
+      T_mult: 2
+      eta_min: 0.00005
 
