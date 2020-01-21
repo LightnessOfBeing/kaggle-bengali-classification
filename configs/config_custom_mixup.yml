@@ -1,6 +1,7 @@
 model_params:
   model: MultiHeadNet
   encoder: "resnet34"
+  pretrained: True
   num_classes: [168, 11, 7]
 
 args:
