@@ -156,8 +156,7 @@ class CustomMixupCallback(CriterionCallback):
                "consonant_diacritic" == self.input_key[2]
 
         loss_arr = [0, 0, 0]
-
-        for i, input_key, output_key in enumerate(zip(self.input_key, self.output_key)):
+        for i, (input_key, output_key) in enumerate(list(zip(self.input_key, self.output_key))):
             pred = state.output[output_key]
             y_a = state.input[input_key]
             y_b = state.input[input_key][self.index]
