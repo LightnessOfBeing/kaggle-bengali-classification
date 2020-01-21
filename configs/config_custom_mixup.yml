@@ -10,6 +10,9 @@ args:
   check: False
   verbose: True
 
+distributed_params:  # OPTIONAL KEYWORD, параметры для distributed training и NVIDIA Apex
+  opt_level: O1
+
 runner_params:  # OPTIONAL KEYWORD, параметры для инициализации Runner
   # Например для SupervisedRunner
   input_key: "image"  # Пример
@@ -24,8 +27,7 @@ runner_params:  # OPTIONAL KEYWORD, параметры для инициализ
 
 stages:
   data_params:
-    batch_size: 256
-    num_workers: 2
+    batch_size: 512
 
     train_csv: "train.csv"
     data_folder: "../input/grapheme-imgs-128x128/"
