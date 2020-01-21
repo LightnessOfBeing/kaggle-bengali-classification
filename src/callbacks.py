@@ -1,6 +1,9 @@
+from typing import List
+
 import numpy as np
 import torch
 import torch.nn.functional as F
+from catalyst.dl import CriterionCallback
 from catalyst.dl.core import Callback, CallbackOrder, RunnerState
 from sklearn.metrics import recall_score
 import matplotlib.pyplot as plt
@@ -73,6 +76,96 @@ class UnFreezeCallback(Callback):
 
     def on_stage_start(self, state: RunnerState):
         state.model.unfreeze()
+
+class CustomMixupCallback(CriterionCallback):
+    # todo передать несколько input, output keys и для каждого посчитать, потом просуммировать
+    def __init__(
+        self,
+        fields: List[str] = ("features", ),
+        alpha=1.0,
+        on_train_only=True,
+        **kwargs
+    ):
+        """
+        Args:
+            fields (List[str]): list of features which must be affected.
+            alpha (float): beta distribution a=b parameters.
+                Must be >=0. The more alpha closer to zero
+                the less effect of the mixup.
+            on_train_only (bool): Apply to train only.
+                As the mixup use the proxy inputs, the targets are also proxy.
+                We are not interested in them, are we?
+                So, if on_train_only is True, use a standard output/metric
+                for validation.
+        """
+        assert len(fields) > 0, \
+            "At least one field for MixupCallback is required"
+        assert alpha >= 0, "alpha must be>=0"
+
+        super().__init__(**kwargs)
+
+        print("Custom MixupCallback is being initialized!")
+
+        self.on_train_only = on_train_only
+        self.fields = fields
+        self.alpha = alpha
+        self.lam = 1
+        self.index = None
+        self.is_needed = True
+        self.weight_grapheme_root = kwargs.get('weight_grapheme_root')
+        self.weight_vowel_diacritic = kwargs.get('weight_vowel_diacritic')
+        self.weight_consonant_diacritic = kwargs.get('weight_consonant_diacritic')
+
+    def on_loader_start(self, state: RunnerState):
+        self.is_needed = not self.on_train_only or \
+            state.loader_name.startswith("train")
+
+    def on_batch_start(self, state: RunnerState):
+        if not self.is_needed:
+            return
+
+        if self.alpha > 0:
+            self.lam = np.random.beta(self.alpha, self.alpha)
+        else:
+            self.lam = 1
+
+        self.index = torch.randperm(state.input[self.fields[0]].shape[0])
+        self.index.to(state.device)
+
+        for f in self.fields:
+            state.input[f] = self.lam * state.input[f] + \
+                (1 - self.lam) * state.input[f][self.index]
+
+    def _compute_loss(self, state: RunnerState, criterion):
+        if not self.is_needed:
+            return super()._compute_loss(state, criterion)
+
+        assert len(self.input_key) == 3 and len(self.output_key) == 3
+
+        assert "logit_grapheme_root" == self.output_key[0] and\
+               "logit_vowel_diacritic" == self.output_key[1] and \
+               "logit_consonant_diacritic" == self.output_key[2]
+
+        assert "grapheme_root" == self.input_key[0] and \
+               "vowel_diacritic" == self.input_key[1] and \
+               "consonant_diacritic" == self.input_key[2]
+
+        loss_arr = [0, 0, 0]
+
+        for i, input_key, output_key in enumerate(zip(self.input_key, self.output_key)):
+            pred = state.output[output_key]
+            y_a = state.input[input_key]
+            y_b = state.input[input_key][self.index]
+
+            loss_arr[i] = self.lam * criterion(pred, y_a) + \
+                (1 - self.lam) * criterion(pred, y_b)
+
+        loss = loss_arr[0] * self.weight_grapheme_root +\
+               loss_arr[1] * self.weight_vowel_diacritic +\
+               loss_arr[2] * self.weight_consonant_diacritic
+
+        return loss
+
 
 class ImageViewerCallback(Callback):
 

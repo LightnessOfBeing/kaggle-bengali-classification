@@ -1,0 +1,114 @@
+model_params:
+  model: MultiHeadNet
+  encoder: "resnet34"
+  num_classes: [168, 11, 7]
+
+args:
+  logdir: "./logs/bengali_logs"
+  seed: 65
+  check: False
+  verbose: True
+
+runner_params:  # OPTIONAL KEYWORD, параметры для инициализации Runner
+  # Например для SupervisedRunner
+  input_key: "image"  # Пример
+  output_key:
+    - "logit_grapheme_root"
+    - "logit_vowel_diacritic"
+    - "logit_consonant_diacritic"
+  input_target_key:
+    - "grapheme_root"
+    - "vowel_diacritic"
+    - "consonant_diacritic"
+
+stages:
+  data_params:
+    batch_size: 256
+    num_workers: 2
+
+    train_csv: "train.csv"
+    data_folder: "../input/grapheme-imgs-128x128/"
+
+  state_params:
+    main_metric: loss
+    minimize_metric: True
+
+  criterion_params:
+    _key_value: True
+    mixup_loss:
+      criterion: CustomMixupLoss
+      criterion_name: CrossEntropyLoss
+
+  callbacks_params:
+
+    loss_grapheme_roots:
+      callback: MixupCallback
+      fields: ["image"]
+      input_key: "grapheme_root"
+      output_key: "logit_grapheme_root"
+      criterion_key: "ce"
+      prefix: "loss_gr"
+
+    loss_vowel_diacritics:
+      callback: MixupCallback
+      fields: ["image"]
+      input_key: "vowel_diacritic"
+      output_key: "logit_vowel_diacritic"
+      criterion_key: "ce"
+      prefix: "loss_vd"
+
+    loss_consonant_diacritics:
+      callback: MixupCallback
+      fields: ["image"]
+      input_key: "consonant_diacritic"
+      output_key: "logit_consonant_diacritic"
+      criterion_key: "ce"
+      prefix: "loss_cd"
+
+    loss_aggregator:
+      callback: CriterionAggregatorCallback
+      prefix: "loss"
+      loss_aggregate_fn: "weighted_sum"
+      loss_keys:
+        loss_gr: 2.0
+        loss_vd: 1.0
+        loss_cd: 1.0
+
+    saver:
+      callback: CheckpointCallback
+      save_n_best: 3
+
+    metrics:
+      callback: HMacroAveragedRecall
+
+    optimizer:
+      callback: OptimizerCallback
+
+    scheduler:
+      callback: SchedulerCallback
+      reduce_metric: loss
+
+    mixup:
+      callback: CustomMixupCallback
+      fields: ["image"]
+
+  stage1:
+    state_params:
+      num_epochs: 100
+
+    callbacks_params:
+      unfreeze:
+        callback: UnFreezeCallback
+
+    optimizer_params:  # Пример, переопределенного оптимизатора
+      optimizer: AdamW
+
+    scheduler_params:
+      scheduler: OneCycleLRWithWarmup
+      init_lr: 0.0002
+      num_steps: 10
+      warmup_steps: 5
+      lr_range: [0.0005, 0.00002]
+      momentum_range: [0.85, 0.95]
+
+

@@ -1,9 +1,8 @@
-import cv2
 import os
+
+import cv2
 import numpy as np
 from torch.utils.data import Dataset
-
-from src.utils import load_image
 
 
 class BengaliDataset(Dataset):
