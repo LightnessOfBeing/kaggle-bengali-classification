@@ -7,7 +7,6 @@ from .losses import *
 from .callbacks import *
 from .optimizers import *
 
-
 # Register models
 registry.Model(MultiHeadNet)
 registry.Model(Efficient)
@@ -17,5 +16,6 @@ registry.Callback(HMacroAveragedRecall)
 registry.Callback(UnFreezeCallback)
 registry.Callback(FreezeCallback)
 registry.Callback(ImageViewerCallback)
+registry.Callback(CustomMixupCallback)
 
 

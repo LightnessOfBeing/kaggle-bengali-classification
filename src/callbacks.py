@@ -84,6 +84,9 @@ class CustomMixupCallback(CriterionCallback):
         fields: List[str] = ("features", ),
         alpha=1.0,
         on_train_only=True,
+        weight_grapheme_root=2.0,
+        weight_vowel_diacritic=1.0,
+        weight_consonant_diacritic=1.0,
         **kwargs
     ):
         """
@@ -112,9 +115,9 @@ class CustomMixupCallback(CriterionCallback):
         self.lam = 1
         self.index = None
         self.is_needed = True
-        self.weight_grapheme_root = kwargs.get('weight_grapheme_root')
-        self.weight_vowel_diacritic = kwargs.get('weight_vowel_diacritic')
-        self.weight_consonant_diacritic = kwargs.get('weight_consonant_diacritic')
+        self.weight_grapheme_root = weight_grapheme_root
+        self.weight_vowel_diacritic = weight_vowel_diacritic
+        self.weight_consonant_diacritic = weight_consonant_diacritic
 
     def on_loader_start(self, state: RunnerState):
         self.is_needed = not self.on_train_only or \
