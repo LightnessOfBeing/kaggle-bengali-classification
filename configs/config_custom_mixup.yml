@@ -76,12 +76,14 @@ stages:
         callback: UnFreezeCallback
 
     optimizer_params:  # Пример, переопределенного оптимизатора
-      optimizer: Adam
+      optimizer: AdamW
       lr: 5e-3
 
     scheduler_params:
-      scheduler: CosineAnnealingWarmRestarts
-      T0: 15
-      T_mult: 2
-      eta_min: 0.00005
+      scheduler: OneCycleLRWithWarmup
+      init_lr: 0.001
+      num_steps: 50
+      warmup_steps: 15
+      lr_range: [0.008, 0.00008]
+      momentum_range: [0.85, 0.95]
 
