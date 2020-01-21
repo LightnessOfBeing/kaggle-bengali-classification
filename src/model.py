@@ -21,10 +21,10 @@ class GeM(nn.Module):
         return self.__class__.__name__ + '(' + 'p=' + '{:.4f}'.format(self.p.data.tolist()[0]) + ', ' + 'eps=' + str(self.eps) + ')'
 
 class MultiHeadNet(nn.Module):
-    def __init__(self, arch, pretrained, num_classes):
+    def __init__(self, encoder, pretrained, num_classes):
         super().__init__()
         self.model = make_model(
-            model_name=arch,
+            model_name=encoder,
             pretrained=pretrained,
             num_classes=1000
         )
