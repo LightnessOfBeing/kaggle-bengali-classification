@@ -141,9 +141,19 @@ class CustomMixupCallback(CriterionCallback):
             state.input[f] = self.lam * state.input[f] + \
                              (1 - self.lam) * state.input[f][self.index]
 
+
     def _compute_loss(self, state: RunnerState, criterion):
         if not self.is_needed:
-            return super()._compute_loss(state, criterion)
+            loss_arr = [0, 0, 0]
+            for i, (input_key, output_key) in enumerate(list(zip(self.input_key, self.output_key))):
+                pred = state.output[output_key]
+                y = state.input[input_key]
+                loss_arr[i] = criterion(pred, y)
+
+            loss = loss_arr[0] * self.weight_grapheme_root + \
+                   loss_arr[1] * self.weight_vowel_diacritic + \
+                   loss_arr[2] * self.weight_consonant_diacritic
+            return loss
 
         assert len(self.input_key) == 3 and len(self.output_key) == 3
 
