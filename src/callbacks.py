@@ -6,21 +6,20 @@ import torch.nn.functional as F
 from catalyst.dl import CriterionCallback
 from catalyst.dl.core import Callback, CallbackOrder, RunnerState
 from sklearn.metrics import recall_score
-import matplotlib.pyplot as plt
 
 
 class HMacroAveragedRecall(Callback):
     def __init__(
-        self,
-        input_grapheme_root_key: str = "grapheme_root",
-        input_consonant_diacritic_key: str = "consonant_diacritic",
-        input_vowel_diacritic_key: str = "vowel_diacritic",
+            self,
+            input_grapheme_root_key: str = "grapheme_root",
+            input_consonant_diacritic_key: str = "consonant_diacritic",
+            input_vowel_diacritic_key: str = "vowel_diacritic",
 
-        output_grapheme_root_key: str = "logit_grapheme_root",
-        output_consonant_diacritic_key: str = "logit_consonant_diacritic",
-        output_vowel_diacritic_key: str = "logit_vowel_diacritic",
+            output_grapheme_root_key: str = "logit_grapheme_root",
+            output_consonant_diacritic_key: str = "logit_consonant_diacritic",
+            output_vowel_diacritic_key: str = "logit_vowel_diacritic",
 
-        prefix: str = "hmar",
+            prefix: str = "hmar",
     ):
         self.input_grapheme_root_key = input_grapheme_root_key
         self.input_consonant_diacritic_key = input_consonant_diacritic_key
@@ -61,6 +60,7 @@ class HMacroAveragedRecall(Callback):
         final_score = np.average(scores, weights=[2, 1, 1])
         state.metrics.add_batch_value(name=self.prefix, value=final_score)
 
+
 class FreezeCallback(Callback):
 
     def __init__(self):
@@ -68,6 +68,7 @@ class FreezeCallback(Callback):
 
     def on_stage_start(self, state: RunnerState):
         state.model.freeze()
+
 
 class UnFreezeCallback(Callback):
 
@@ -77,17 +78,18 @@ class UnFreezeCallback(Callback):
     def on_stage_start(self, state: RunnerState):
         state.model.unfreeze()
 
+
 class CustomMixupCallback(CriterionCallback):
     # todo передать несколько input, output keys и для каждого посчитать, потом просуммировать
     def __init__(
-        self,
-        fields: List[str] = ("features", ),
-        alpha=1.0,
-        on_train_only=True,
-        weight_grapheme_root=2.0,
-        weight_vowel_diacritic=1.0,
-        weight_consonant_diacritic=1.0,
-        **kwargs
+            self,
+            fields: List[str] = ("features",),
+            alpha=1.0,
+            on_train_only=True,
+            weight_grapheme_root=2.0,
+            weight_vowel_diacritic=1.0,
+            weight_consonant_diacritic=1.0,
+            **kwargs
     ):
         """
         Args:
@@ -121,7 +123,7 @@ class CustomMixupCallback(CriterionCallback):
 
     def on_loader_start(self, state: RunnerState):
         self.is_needed = not self.on_train_only or \
-            state.loader_name.startswith("train")
+                         state.loader_name.startswith("train")
 
     def on_batch_start(self, state: RunnerState):
         if not self.is_needed:
@@ -137,7 +139,7 @@ class CustomMixupCallback(CriterionCallback):
 
         for f in self.fields:
             state.input[f] = self.lam * state.input[f] + \
-                (1 - self.lam) * state.input[f][self.index]
+                             (1 - self.lam) * state.input[f][self.index]
 
     def _compute_loss(self, state: RunnerState, criterion):
         if not self.is_needed:
@@ -145,7 +147,7 @@ class CustomMixupCallback(CriterionCallback):
 
         assert len(self.input_key) == 3 and len(self.output_key) == 3
 
-        assert "logit_grapheme_root" == self.output_key[0] and\
+        assert "logit_grapheme_root" == self.output_key[0] and \
                "logit_vowel_diacritic" == self.output_key[1] and \
                "logit_consonant_diacritic" == self.output_key[2]
 
@@ -161,10 +163,10 @@ class CustomMixupCallback(CriterionCallback):
             y_b = state.input[input_key][self.index]
 
             loss_arr[i] = self.lam * criterion(pred, y_a) + \
-                (1 - self.lam) * criterion(pred, y_b)
+                          (1 - self.lam) * criterion(pred, y_b)
 
-        loss = loss_arr[0] * self.weight_grapheme_root +\
-               loss_arr[1] * self.weight_vowel_diacritic +\
+        loss = loss_arr[0] * self.weight_grapheme_root + \
+               loss_arr[1] * self.weight_vowel_diacritic + \
                loss_arr[2] * self.weight_consonant_diacritic
 
         return loss
@@ -179,7 +181,7 @@ class ImageViewerCallback(Callback):
         print(type(state.input["images"].numpy()))
         img = state.input["images"].numpy()[0]
         np.savetxt("kek.txt", img[0])
-       # print(img.shape)
-       # print(img.shape)
-       # plt.imshow(img)
-       # plt.show()
+    # print(img.shape)
+    # print(img.shape)
+    # plt.imshow(img)
+    # plt.show()
