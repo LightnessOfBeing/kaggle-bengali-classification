@@ -32,7 +32,6 @@ stages:
 
     train_csv: "train.csv"
     data_folder: "../input/grapheme-imgs-128x128/"
-    test_run: True
 
   state_params:
     main_metric: loss
