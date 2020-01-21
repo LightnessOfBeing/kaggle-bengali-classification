@@ -10,9 +10,6 @@ args:
   check: False
   verbose: True
 
-distributed_params:  # OPTIONAL KEYWORD, параметры для distributed training и NVIDIA Apex
-  opt_level: O1
-
 runner_params:  # OPTIONAL KEYWORD, параметры для инициализации Runner
   # Например для SupervisedRunner
   input_key: "image"  # Пример
