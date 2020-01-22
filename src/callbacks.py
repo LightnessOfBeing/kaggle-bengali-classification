@@ -1,9 +1,10 @@
 from typing import List
 
+import catalyst
 import numpy as np
 import torch
 import torch.nn.functional as F
-from catalyst.dl import CriterionCallback
+from catalyst.dl import CriterionCallback, utils
 from catalyst.dl.core import Callback, CallbackOrder, RunnerState
 from sklearn.metrics import recall_score
 
@@ -181,6 +182,17 @@ class CustomMixupCallback(CriterionCallback):
         return loss
 
 
+class CheckpointLoader(Callback):
+
+    def __init__(self, checkpoint_path):
+        super().__init__(CallbackOrder.Other)
+        self.checkpoint_path = checkpoint_path
+
+    def on_stage_start(self, state: RunnerState):
+        checkpoint = utils.load_checkpoint(self.checkpoint_path)
+        utils.unpack_checkpoint(checkpoint, model=state.model)
+
+
 class ImageViewerCallback(Callback):
 
     def __init__(self):
@@ -190,7 +202,3 @@ class ImageViewerCallback(Callback):
         print(type(state.input["images"].numpy()))
         img = state.input["images"].numpy()[0]
         np.savetxt("kek.txt", img[0])
-    # print(img.shape)
-    # print(img.shape)
-    # plt.imshow(img)
-    # plt.show()

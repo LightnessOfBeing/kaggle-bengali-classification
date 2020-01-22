@@ -55,7 +55,6 @@ stages:
     saver:
       callback: CheckpointCallback
       save_n_best: 3
-      resume: "resnet34_mixup_85ep_best.pth"
 
     metrics:
       callback: HMacroAveragedRecall
@@ -74,6 +73,9 @@ stages:
     callbacks_params:
       unfreeze:
         callback: UnFreezeCallback
+      checkpoint_loader:
+        callback: CheckpointLoader
+        checkpoint_path: "resnet34_mixup_85ep_best.pth"
 
     optimizer_params:  # Пример, переопределенного оптимизатора
       optimizer: AdamW

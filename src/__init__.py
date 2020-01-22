@@ -17,5 +17,6 @@ registry.Callback(UnFreezeCallback)
 registry.Callback(FreezeCallback)
 registry.Callback(ImageViewerCallback)
 registry.Callback(CustomMixupCallback)
+registry.Callback(CheckpointLoader)
 
 
