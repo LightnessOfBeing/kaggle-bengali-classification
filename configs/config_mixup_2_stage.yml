@@ -68,7 +68,7 @@ stages:
 
   stage1:
     state_params:
-      num_epochs: 45
+      num_epochs: 50
 
     callbacks_params:
       unfreeze:
@@ -84,6 +84,6 @@ stages:
     scheduler_params:
       scheduler: ReduceLROnPlateau
       factor: 0.5
-      patience: 8
+      patience: 4
       verbose: True
-      min_lr: 0.000005
+      min_lr: 0.000001
