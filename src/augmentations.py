@@ -2,7 +2,7 @@ from albumentations import Compose, Resize, Rotate, HorizontalFlip, Normalize, V
     RandomGridShuffle, Cutout, CoarseDropout
 
 
-def train_aug(image_size=None):
+def simple_aug(image_size=None):
     augs_list = [HorizontalFlip(p=0.5),
         Rotate(10),
       #  ShiftScaleRotate(scale_limit=0.2, rotate_limit=45, shift_limit=0.15, p=0.7, border_mode=0),
@@ -13,9 +13,23 @@ def train_aug(image_size=None):
         augs_list = [Resize(*image_size)] + augs_list
     return Compose(augs_list, p=1)
 
+def mixup_aug(image_size=None):
+    augs_list = [Normalize(mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051))]
+    if image_size is not None:
+        augs_list = [Resize(*image_size)] + augs_list
+    return Compose(augs_list, p=1)
+
 
 def valid_aug(image_size=None):
     augs_list = [Normalize(mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051))]
     if image_size is not None:
         augs_list = [Resize(*image_size)] + augs_list
     return Compose(augs_list, p=1)
+
+def get_augmentation(aug_name, image_size=None):
+    aug_dict = {
+        'valid_aug': valid_aug,
+        'mixup_aug': mixup_aug,
+        'simple_aug': simple_aug
+    }
+    return aug_dict[aug_name](image_size)

@@ -55,6 +55,7 @@ stages:
     saver:
       callback: CheckpointCallback
       save_n_best: 3
+      resume: "../resnet34_mixup_85ep_best.pth"
 
     metrics:
       callback: HMacroAveragedRecall
@@ -68,21 +69,20 @@ stages:
 
   stage1:
     state_params:
-      num_epochs: 85
+      num_epochs: 45
 
     callbacks_params:
       unfreeze:
         callback: UnFreezeCallback
 
     optimizer_params:  # Пример, переопределенного оптимизатора
-      optimizer: AdamW
-      lr: 5e-3
+      optimizer: SGD
 
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
       init_lr: 0.001
       num_steps: 50
       warmup_steps: 15
-      lr_range: [0.008, 0.00008]
+      lr_range: [0.01, 0.0005]
       momentum_range: [0.85, 0.95]
 
