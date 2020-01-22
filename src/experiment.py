@@ -23,7 +23,7 @@ class Experiment(ConfigExperiment):
         if train_csv_name:
             train_transform = get_augmentation(train_aug_name, image_size)
             print(train_transform)
-            valid_transform = get_augmentation('valid', image_size)
+            valid_transform = get_augmentation('valid_aug', image_size)
             train_df, valid_df = train_test_split(df, test_size=0.1, shuffle=True, random_state=65)
             train_set = BengaliDataset(
                 df=train_df,
