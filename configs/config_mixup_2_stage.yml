@@ -76,7 +76,7 @@ stages:
         callback: UnFreezeCallback
 
     optimizer_params:  # Пример, переопределенного оптимизатора
-      optimizer: SGD
+      optimizer: AdamW
 
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
