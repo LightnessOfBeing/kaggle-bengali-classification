@@ -189,6 +189,7 @@ class CheckpointLoader(Callback):
         self.checkpoint_path = checkpoint_path
 
     def on_stage_start(self, state: RunnerState):
+        print(f'Checkpoint {self.checkpoint_path} is being loaded!')
         checkpoint = utils.load_checkpoint(self.checkpoint_path)
         utils.unpack_checkpoint(checkpoint, model=state.model)
 
