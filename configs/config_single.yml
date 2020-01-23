@@ -1,6 +1,6 @@
 model_params:
   model: MultiHeadNet
-  arch: resnet50
+  arch: resnet34
   pretrained: True
   num_classes:
     - 168
@@ -27,11 +27,11 @@ runner_params:  # OPTIONAL KEYWORD, параметры для инициализ
 
 stages:
   data_params:
-    batch_size: 128
+    batch_size: 256
     num_workers: 2
-
     train_csv: "train.csv"
     data_folder: "../input/grapheme-imgs-128x128/"
+    train_aug_name: "simple_aug"
 
   state_params:
     main_metric: hmar
