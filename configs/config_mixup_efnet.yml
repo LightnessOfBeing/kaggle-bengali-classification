@@ -1,7 +1,6 @@
 model_params:
   model: Efficient
   encoder: "efficientnet-b0"
-  pretrained: True
   num_classes: [168, 11, 7]
   dropout: 0.0
 
