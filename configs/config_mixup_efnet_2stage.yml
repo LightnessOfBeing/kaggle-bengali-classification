@@ -73,7 +73,7 @@ stages:
     callbacks_params:
       checkpoint_loader:
         callback: CheckpointLoader
-        checkpoint_path: "efnet_mixup_80ep.pth"
+        checkpoint_path: "../input/bengaliutils/efnet_mixup_80ep.pth"
 
     optimizer_params:  # Пример, переопределенного оптимизатора
       optimizer: AdamW
