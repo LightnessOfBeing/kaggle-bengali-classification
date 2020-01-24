@@ -8,6 +8,8 @@ from catalyst.dl import CriterionCallback, utils
 from catalyst.dl.core import Callback, CallbackOrder, RunnerState
 from sklearn.metrics import recall_score
 
+from src.utils import rand_bbox
+
 
 class HMacroAveragedRecall(Callback):
     def __init__(
@@ -121,10 +123,30 @@ class CustomMixupCallback(CriterionCallback):
         self.weight_grapheme_root = weight_grapheme_root
         self.weight_vowel_diacritic = weight_vowel_diacritic
         self.weight_consonant_diacritic = weight_consonant_diacritic
+        self.apply_mixup = True
 
     def on_loader_start(self, state: RunnerState):
         self.is_needed = not self.on_train_only or \
                          state.loader_name.startswith("train")
+
+    def do_mixup(self, state: RunnerState):
+
+        for f in self.fields:
+            state.input[f] = self.lam * state.input[f] + \
+                             (1 - self.lam) * state.input[f][self.index]
+
+    def do_cutmix(self, state: RunnerState):
+
+        bbx1, bby1, bbx2, bby2 =\
+            rand_bbox(state.input[self.fields[0]].shape, self.lam)
+
+        for f in self.fields:
+            state.input[f][:, :, bbx1:bbx2, bby1:bby2] =\
+                state.input[f][self.index, :, bbx1:bbx2, bby1:bby2]
+
+        self.lam = 1 - ((bbx2 - bbx1) * (bby2 - bby1)
+                        / (state.input[self.fields[0]].shape[-1]
+                           * state.input[self.fields[0]].shape[-2]))
 
     def on_batch_start(self, state: RunnerState):
         if not self.is_needed:
@@ -138,10 +160,11 @@ class CustomMixupCallback(CriterionCallback):
         self.index = torch.randperm(state.input[self.fields[0]].shape[0])
         self.index.to(state.device)
 
-        for f in self.fields:
-            state.input[f] = self.lam * state.input[f] + \
-                             (1 - self.lam) * state.input[f][self.index]
-
+        self.apply_mixup = (np.random.rand() < 0.5)
+        if self.apply_mixup:
+            self.do_mixup(state)
+        else:
+            self.do_cutmix(state)
 
     def _compute_loss(self, state: RunnerState, criterion):
         if not self.is_needed:
@@ -155,16 +178,6 @@ class CustomMixupCallback(CriterionCallback):
                    loss_arr[1] * self.weight_vowel_diacritic + \
                    loss_arr[2] * self.weight_consonant_diacritic
             return loss
-
-        assert len(self.input_key) == 3 and len(self.output_key) == 3
-
-        assert "logit_grapheme_root" == self.output_key[0] and \
-               "logit_vowel_diacritic" == self.output_key[1] and \
-               "logit_consonant_diacritic" == self.output_key[2]
-
-        assert "grapheme_root" == self.input_key[0] and \
-               "vowel_diacritic" == self.input_key[1] and \
-               "consonant_diacritic" == self.input_key[2]
 
         loss_arr = [0, 0, 0]
         for i, (input_key, output_key) in enumerate(list(zip(self.input_key, self.output_key))):
