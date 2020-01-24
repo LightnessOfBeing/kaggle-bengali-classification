@@ -82,7 +82,7 @@ class UnFreezeCallback(Callback):
         state.model.unfreeze()
 
 
-class CustomMixupCallback(CriterionCallback):
+class MixupCutmixCallback(CriterionCallback):
     # todo передать несколько input, output keys и для каждого посчитать, потом просуммировать
     def __init__(
             self,

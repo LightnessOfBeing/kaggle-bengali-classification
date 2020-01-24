@@ -16,7 +16,7 @@ registry.Callback(HMacroAveragedRecall)
 registry.Callback(UnFreezeCallback)
 registry.Callback(FreezeCallback)
 registry.Callback(ImageViewerCallback)
-registry.Callback(CustomMixupCallback)
+registry.Callback(MixupCutmixCallback)
 registry.Callback(CheckpointLoader)
 
 

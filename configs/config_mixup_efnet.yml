@@ -42,7 +42,7 @@ stages:
   callbacks_params:
 
     loss_mixup:
-      callback: CustomMixupCallback
+      callback: MixupCutmixCallback
       fields: ["image"]
       input_key: ["grapheme_root", "vowel_diacritic", "consonant_diacritic"]
       output_key: ["logit_grapheme_root", "logit_vowel_diacritic", "logit_consonant_diacritic"]
@@ -68,7 +68,7 @@ stages:
 
   stage1:
     state_params:
-      num_epochs: 80
+      num_epochs: 82
 
     optimizer_params:
       optimizer: AdamW
@@ -76,7 +76,7 @@ stages:
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
       init_lr: 0.001
-      num_steps: 70
-      warmup_steps: 8
-      lr_range: [0.005, 0.000005]
+      num_steps: 75
+      warmup_steps: 5
+      lr_range: [0.005, 0.000001]
 
