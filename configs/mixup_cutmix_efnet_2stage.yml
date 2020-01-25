@@ -77,8 +77,7 @@ stages:
 
     optimizer_params:
       optimizer: Lookahead
-        optimizer: SGD
-          lr: 0.00005
+      lr: 0.00005
 
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
