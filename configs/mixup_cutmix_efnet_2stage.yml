@@ -76,11 +76,13 @@ stages:
         checkpoint_path: "efnet_mixup_cutmix_77.pth"
 
     optimizer_params:
-      optimizer: AdamW
+      optimizer: Lookahead
+        optimizer: SGD
+          lr: 0.00005
 
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
-      init_lr: 0.0001
+      init_lr: 0.00005
       num_steps: 55
       warmup_steps: 1
-      lr_range: [0.0005, 0.0000001]
+      lr_range: [0.0001, 0.0000001]
