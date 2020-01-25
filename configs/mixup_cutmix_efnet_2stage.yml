@@ -68,7 +68,7 @@ stages:
 
   stage1:
     state_params:
-      num_epochs: 50
+      num_epochs: 60
 
     callbacks_params:
       checkpoint_loader:
@@ -77,11 +77,10 @@ stages:
 
     optimizer_params:
       optimizer: AdamW
-      lr: 0.0005
 
     scheduler_params:
-      scheduler: ReduceLROnPlateau
-      factor: 0.5
-      patience: 5
-      verbose: True
-      min_lr: 0.0000005
+      scheduler: OneCycleLRWithWarmup
+      init_lr: 0.0005
+      num_steps: 60
+      warmup_steps: 1
+      lr_range: [0.001, 0.0000001]
