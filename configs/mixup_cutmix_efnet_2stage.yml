@@ -76,7 +76,7 @@ stages:
         checkpoint_path: "efnet_mixup_cutmix_77.pth"
 
     optimizer_params:
-      optimizer: Lookahead
+      optimizer: SGD
       lr: 0.00005
 
     scheduler_params:
