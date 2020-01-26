@@ -84,4 +84,4 @@ stages:
       init_lr: 0.00005
       num_steps: 55
       warmup_steps: 2
-      lr_range: [0.0001, 0.000001]
+      lr_range: [0.0001, 0.0000005]
