@@ -34,12 +34,12 @@ class MultiHeadNet(nn.Module):
             pretrained=pretrained,
             num_classes=1000
         )
-        self.pooling = pooling
+        self.pool = None
         in_features = self.model._classifier.in_features
         self.head_grapheme_root = nn.Linear(in_features, num_classes[0])
         self.head_vowel_diacritic = nn.Linear(in_features, num_classes[1])
         self.head_consonant_diacritic = nn.Linear(in_features, num_classes[2])
-        if self.pooling == "Gem":
+        if pooling == "Gem":
             self.pool = GeM()
 
     def freeze(self):
@@ -56,7 +56,7 @@ class MultiHeadNet(nn.Module):
         features = self.model._features(x)
         # features = F.adaptive_avg_pool2d(features, 1)
         # DROPOUT???
-        if self.pooling == "Gem":
+        if self.pool is not None:
             features = self.pool(features)
         else:
             features = F.adaptive_avg_pool2d(features, 1)
@@ -70,16 +70,21 @@ class MultiHeadNet(nn.Module):
 
 
 class Efficient(nn.Module):
-    def __init__(self, num_classes, encoder='efficientnet-b0', dropout=None):
+    def __init__(self, num_classes, encoder='efficientnet-b0', dropout=None, pooling=None):
         super().__init__()
         n_channels_dict = {'efficientnet-b0': 1280, 'efficientnet-b1': 1280, 'efficientnet-b2': 1408,
                            'efficientnet-b3': 1536, 'efficientnet-b4': 1792, 'efficientnet-b5': 2048,
                            'efficientnet-b6': 2304, 'efficientnet-b7': 2560}
         self.net = EfficientNet.from_pretrained(encoder)
+        self.pool = None
         if dropout is not None:
             self.net._dropout.p = 0.0
-        #  self.pool = GeM()
+
+        if pooling == "Gem":
+            self.pool = GeM()
+
         #  self.dropout_head = nn.Dropout(self.net._global_params.dropout_rate)
+
         self.head_grapheme_root = nn.Linear(n_channels_dict[encoder], num_classes[0])
         self.head_vowel_diacritic = nn.Linear(n_channels_dict[encoder], num_classes[1])
         self.head_consonant_diacritic = nn.Linear(n_channels_dict[encoder], num_classes[2])
@@ -96,8 +101,13 @@ class Efficient(nn.Module):
 
     def forward(self, x):
         x = self.net.extract_features(x)
-        x = F.adaptive_avg_pool2d(x, 1)
+        if self.pool is not None:
+            x = self.pool(x)
+        else:
+            x = F.adaptive_avg_pool2d(x, 1)
+
         # x = self.dropout_head(x)
+
         x = x.view(x.size(0), -1)
         logit_grapheme_root = self.head_grapheme_root(x)
         logit_vowel_diacritic = self.head_vowel_diacritic(x)
