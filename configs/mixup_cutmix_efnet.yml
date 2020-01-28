@@ -71,8 +71,7 @@ stages:
       num_epochs: 82
 
     optimizer_params:
-      optimizer: SGD
-      lr: 0.001
+      optimizer: AdamW
 
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
