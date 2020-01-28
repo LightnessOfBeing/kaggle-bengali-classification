@@ -78,9 +78,11 @@ class Efficient(nn.Module):
         self.net = EfficientNet.from_pretrained(encoder)
         self.pool = None
         if dropout is not None:
+            print("Dropout is set to 0!")
             self.net._dropout.p = 0.0
 
         if pooling == "Gem":
+            print("GeM pooling layer is used!")
             self.pool = GeM()
 
         #  self.dropout_head = nn.Dropout(self.net._global_params.dropout_rate)
