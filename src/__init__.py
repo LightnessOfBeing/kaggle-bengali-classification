@@ -1,6 +1,6 @@
 from catalyst.dl import registry
 from catalyst.dl import SupervisedRunner as Runner
-from pytorch_toolbelt.losses import FocalLoss
+from pytorch_toolbelt.losses import FocalLoss, LovaszLoss
 
 from .model import MultiHeadNet, Efficient
 from .experiment import Experiment
@@ -22,5 +22,6 @@ registry.Callback(CheckpointLoader)
 
 # Register criterion
 registry.Criterion(FocalLoss)
+registry.Criterion(LovaszLoss)
 
 
