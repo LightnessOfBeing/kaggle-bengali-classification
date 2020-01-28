@@ -167,30 +167,32 @@ class MixupCutmixCallback(CriterionCallback):
             self.do_cutmix(state)
 
     def _compute_loss(self, state: RunnerState, criterion):
+        loss_arr = [0, 0, 0]
         if not self.is_needed:
-            loss_arr = [0, 0, 0]
             for i, (input_key, output_key) in enumerate(list(zip(self.input_key, self.output_key))):
                 pred = state.output[output_key]
                 y = state.input[input_key]
                 loss_arr[i] = criterion(pred, y)
 
-            loss = loss_arr[0] * self.weight_grapheme_root + \
-                   loss_arr[1] * self.weight_vowel_diacritic + \
-                   loss_arr[2] * self.weight_consonant_diacritic
-            return loss
-
-        loss_arr = [0, 0, 0]
-        for i, (input_key, output_key) in enumerate(list(zip(self.input_key, self.output_key))):
-            pred = state.output[output_key]
-            y_a = state.input[input_key]
-            y_b = state.input[input_key][self.index]
-
-            loss_arr[i] = self.lam * criterion(pred, y_a) + \
-                          (1 - self.lam) * criterion(pred, y_b)
+        else:
+            for i, (input_key, output_key) in enumerate(list(zip(self.input_key, self.output_key))):
+                pred = state.output[output_key]
+                y_a = state.input[input_key]
+                y_b = state.input[input_key][self.index]
+                loss_arr[i] = self.lam * criterion(pred, y_a) + \
+                              (1 - self.lam) * criterion(pred, y_b)
 
         loss = loss_arr[0] * self.weight_grapheme_root + \
                loss_arr[1] * self.weight_vowel_diacritic + \
                loss_arr[2] * self.weight_consonant_diacritic
+
+        state.metrics.add_batch_value(
+            metrics_dict={
+                'loss_gr': loss_arr[0],
+                'loss_vd': loss_arr[1],
+                'loss_cd': loss_arr[2],
+            }
+        )
 
         return loss
 
