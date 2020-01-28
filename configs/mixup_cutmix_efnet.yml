@@ -3,6 +3,7 @@ model_params:
   encoder: "efficientnet-b0"
   num_classes: [168, 11, 7]
   dropout: 0.0
+  pooling: "Gem"
 
 args:
   logdir: "./logs/bengali_logs"
