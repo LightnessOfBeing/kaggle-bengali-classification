@@ -1,5 +1,6 @@
 from catalyst.dl import registry
 from catalyst.dl import SupervisedRunner as Runner
+from pytorch_toolbelt.losses import FocalLoss
 
 from .model import MultiHeadNet, Efficient
 from .experiment import Experiment
@@ -18,5 +19,8 @@ registry.Callback(FreezeCallback)
 registry.Callback(ImageViewerCallback)
 registry.Callback(MixupCutmixCallback)
 registry.Callback(CheckpointLoader)
+
+# Register criterion
+registry.Criterion(FocalLoss)
 
 
