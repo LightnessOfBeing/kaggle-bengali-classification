@@ -62,6 +62,9 @@ class HMacroAveragedRecall(Callback):
 
         final_score = np.average(scores, weights=[2, 1, 1])
         state.metrics.add_batch_value(name=self.prefix, value=final_score)
+        state.metrics.add_batch_value(name="hmar_gr", value=scores[0])
+        state.metrics.add_batch_value(name="hmar_cd", value=scores[1])
+        state.metrics.add_batch_value(name="hmar_vd", value=scores[2])
 
 
 class FreezeCallback(Callback):
@@ -186,6 +189,7 @@ class MixupCutmixCallback(CriterionCallback):
                loss_arr[1] * self.weight_vowel_diacritic + \
                loss_arr[2] * self.weight_consonant_diacritic
 
+        '''
         state.metrics.add_batch_value(
             metrics_dict={
                 'loss_gr': loss_arr[0],
@@ -193,6 +197,7 @@ class MixupCutmixCallback(CriterionCallback):
                 'loss_cd': loss_arr[2],
             }
         )
+        '''
 
         return loss
 

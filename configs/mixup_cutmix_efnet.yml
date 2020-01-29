@@ -28,7 +28,7 @@ stages:
     batch_size: 256
     num_workers: 2
     train_csv: "train.csv"
-    data_folder: "../input/grapheme-imgs-128x128/"
+    data_folder: "../input/bengali224/"
     train_aug_name: "mixup_aug"
 
   state_params:
