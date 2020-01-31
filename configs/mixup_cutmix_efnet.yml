@@ -32,7 +32,7 @@ stages:
     batch_size: 256
     num_workers: 2
     train_csv: "train.csv"
-    data_folder: "../input/bengali224/"
+    data_folder: "../input/bengali224proczipid/"
     train_aug_name: "mixup_aug"
     processed: True
 
