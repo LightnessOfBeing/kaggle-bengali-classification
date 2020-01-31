@@ -4,6 +4,7 @@ model_params:
   num_classes: [168, 11, 7]
   dropout: 0.0
   pooling: "Gem"
+  activtion: "Mish"
 
 args:
   logdir: "./logs/bengali_logs"
@@ -33,6 +34,7 @@ stages:
     train_csv: "train.csv"
     data_folder: "../input/bengali224/"
     train_aug_name: "mixup_aug"
+    processed: True
 
   state_params:
     main_metric: hmar

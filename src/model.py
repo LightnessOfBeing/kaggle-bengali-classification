@@ -7,6 +7,8 @@ from torch import nn
 
 from torch.nn.parameter import Parameter
 
+from src.utils import to_Mish
+
 
 def gem(x, p=3, eps=1e-6):
     return F.avg_pool2d(x.clamp(min=eps).pow(p), (x.size(-2), x.size(-1))).pow(1. / p)
@@ -27,7 +29,7 @@ class GeM(nn.Module):
 
 
 class MultiHeadNet(nn.Module):
-    def __init__(self, encoder, pretrained, num_classes, pooling):
+    def __init__(self, encoder, pretrained, num_classes, pooling, activation):
         super().__init__()
         self.model = make_model(
             model_name=encoder,
@@ -70,12 +72,16 @@ class MultiHeadNet(nn.Module):
 
 
 class Efficient(nn.Module):
-    def __init__(self, num_classes, encoder='efficientnet-b0', dropout=None, pooling=None):
+    def __init__(self, num_classes, encoder='efficientnet-b0', dropout=None, pooling=None, activation="Mish"):
         super().__init__()
         n_channels_dict = {'efficientnet-b0': 1280, 'efficientnet-b1': 1280, 'efficientnet-b2': 1408,
                            'efficientnet-b3': 1536, 'efficientnet-b4': 1792, 'efficientnet-b5': 2048,
                            'efficientnet-b6': 2304, 'efficientnet-b7': 2560}
         self.net = EfficientNet.from_pretrained(encoder)
+        if activation == "Mish":
+            to_Mish(self.net)
+            print("Mish activation added!")
+        print(self.net)
         self.pool = None
         if dropout is not None:
             print("Dropout is set to 0!")
@@ -103,13 +109,8 @@ class Efficient(nn.Module):
 
     def forward(self, x):
         x = self.net.extract_features(x)
-        if self.pool is not None:
-            x = self.pool(x)
-        else:
-            x = F.adaptive_avg_pool2d(x, 1)
-
+        x = self.pool(x)
         # x = self.dropout_head(x)
-
         x = x.view(x.size(0), -1)
         logit_grapheme_root = self.head_grapheme_root(x)
         logit_vowel_diacritic = self.head_vowel_diacritic(x)

@@ -17,6 +17,7 @@ class Experiment(ConfigExperiment):
         test_run = kwargs.get('test_run', None)
         image_size = kwargs.get('image_size', None)
         train_aug_name = kwargs.get('train_aug_name', None)
+        processed = kwargs.get('processed')
         if test_run:
             df = df[:2048]
         datasets = OrderedDict()
@@ -24,16 +25,20 @@ class Experiment(ConfigExperiment):
             train_transform = get_augmentation(train_aug_name, image_size)
             valid_transform = get_augmentation('valid_aug', image_size)
             train_df, valid_df = train_test_split(df, test_size=0.2, shuffle=True, random_state=65)
+            if processed:
+                print("Processed images are used!")
             train_set = BengaliDataset(
                 df=train_df,
                 transform=train_transform,
-                data_folder=data_folder
+                data_folder=data_folder,
+                processed=processed
             )
             valid_set = BengaliDataset(
                 df=valid_df,
                 transform=valid_transform,
-                data_folder=data_folder
-)
+                data_folder=data_folder,
+                processed=processed
+            )
             datasets["train"] = train_set
             datasets["valid"] = valid_set
         return datasets
