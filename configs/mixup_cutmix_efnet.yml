@@ -25,14 +25,14 @@ runner_params:  # OPTIONAL KEYWORD, параметры для инициализ
     - "consonant_diacritic"
 
 distributed_params:  # OPTIONAL KEYWORD, параметры для distributed training и NVIDIA Apex
-  opt_level: O1
+  opt_level: None
 
 stages:
   data_params:
     batch_size: 256
     num_workers: 4
     train_csv: "train.csv"
-    data_folder: "../input/bengali224/"
+    data_folder: "../input/grapheme-imgs-128x128/"
     train_aug_name: "mixup_aug"
     processed: False
 
@@ -74,7 +74,7 @@ stages:
 
   stage1:
     state_params:
-      num_epochs: 38
+      num_epochs: 82
 
     optimizer_params:
       optimizer: AdamW
