@@ -4,7 +4,7 @@ model_params:
   num_classes: [168, 11, 7]
   dropout: 0.0
   pooling: "Gem"
-  activtion: "Mish"
+  activation: "Mish"
 
 args:
   logdir: "./logs/bengali_logs"
