@@ -1,13 +1,16 @@
+from typing import Optional
+
 import torch
 
 import torch.nn.functional as F
 from cnn_finetune import make_model
 from efficientnet_pytorch import EfficientNet
 from torch import nn
+from torch.nn.modules import Flatten
 
 from torch.nn.parameter import Parameter
 
-from src.utils import to_Mish
+from src.utils import to_Mish, Mish
 
 
 def gem(x, p=3, eps=1e-6):
@@ -72,7 +75,7 @@ class MultiHeadNet(nn.Module):
 
 
 class Efficient(nn.Module):
-    def __init__(self, num_classes, encoder='efficientnet-b0', dropout=None, pooling=None, activation="Mish"):
+    def __init__(self, num_classes, encoder='efficientnet-b0', dropout=None, activation="Mish"):
         super().__init__()
         n_channels_dict = {'efficientnet-b0': 1280, 'efficientnet-b1': 1280, 'efficientnet-b2': 1408,
                            'efficientnet-b3': 1536, 'efficientnet-b4': 1792, 'efficientnet-b5': 2048,
@@ -81,21 +84,24 @@ class Efficient(nn.Module):
         if activation == "Mish":
             to_Mish(self.net)
             print("Mish activation added!")
-        print(self.net)
-        self.pool = None
         if dropout is not None:
             print("Dropout is set to 0!")
             self.net._dropout.p = 0.0
+        print(self.net)
 
-        if pooling == "Gem":
-            print("GeM pooling layer is used!")
-            self.pool = GeM()
+        # self.pool = None
+        # if pooling == "Gem":
+        #     print("GeM pooling layer is used!")
+        #     self.pool = GeM()
 
-        #  self.dropout_head = nn.Dropout(self.net._global_params.dropout_rate)
+        # self.dropout_head = nn.Dropout(self.net._global_params.dropout_rate)
 
-        self.head_grapheme_root = nn.Linear(n_channels_dict[encoder], num_classes[0])
-        self.head_vowel_diacritic = nn.Linear(n_channels_dict[encoder], num_classes[1])
-        self.head_consonant_diacritic = nn.Linear(n_channels_dict[encoder], num_classes[2])
+        # self.head_grapheme_root = nn.Linear(n_channels_dict[encoder], num_classes[0])
+        # self.head_vowel_diacritic = nn.Linear(n_channels_dict[encoder], num_classes[1])
+        # self.head_consonant_diacritic = nn.Linear(n_channels_dict[encoder], num_classes[2])
+        self.head_grapheme_root = Head(n_channels_dict[encoder], num_classes[0])
+        self.head_vowel_diacritic = Head(n_channels_dict[encoder], num_classes[1])
+        self.head_consonant_diacritic = Head(n_channels_dict[encoder], num_classes[2])
 
     def freeze(self):
         for param in self.net.parameters():
@@ -109,11 +115,41 @@ class Efficient(nn.Module):
 
     def forward(self, x):
         x = self.net.extract_features(x)
-        x = self.pool(x)
+        # x = self.pool(x)
         # x = self.dropout_head(x)
-        x = x.view(x.size(0), -1)
+        # x = x.view(x.size(0), -1)
         logit_grapheme_root = self.head_grapheme_root(x)
         logit_vowel_diacritic = self.head_vowel_diacritic(x)
         logit_consonant_diacritic = self.head_consonant_diacritic(x)
 
         return logit_grapheme_root, logit_vowel_diacritic, logit_consonant_diacritic
+
+
+def bn_drop_lin(n_in: int, n_out: int, bn: bool = True, p: float = 0., actn: Optional[nn.Module] = None):
+    "Sequence of batchnorm (if `bn`), dropout (with `p`) and linear (`n_in`,`n_out`) layers followed by `actn`."
+    layers = [nn.BatchNorm1d(n_in)] if bn else []
+    if p != 0: layers.append(nn.Dropout(p))
+    layers.append(nn.Linear(n_in, n_out))
+    if actn is not None: layers.append(actn)
+    return layers
+
+
+class Head(nn.Module):
+    def __init__(self, nc, n, ps=0.0):
+        super().__init__()
+        layers = [GeM(), Mish(), Flatten()] + \
+                 bn_drop_lin(nc * 2, 512, True, ps, Mish()) + \
+                 bn_drop_lin(512, n, True, ps)
+        self.fc = nn.Sequential(*layers)
+        self._init_weight()
+
+    def _init_weight(self):
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                torch.nn.init.kaiming_normal_(m.weight)
+            elif isinstance(m, nn.BatchNorm2d):
+                m.weight.data.fill_(1.0)
+                m.bias.data.zero_()
+
+    def forward(self, x):
+        return self.fc(x)

@@ -3,7 +3,6 @@ model_params:
   encoder: "efficientnet-b0"
   num_classes: [168, 11, 7]
   dropout: 0.0
-  pooling: "Gem"
   activation: "Mish"
 
 args:
@@ -82,7 +81,7 @@ stages:
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
       init_lr: 0.001
-      num_steps: 75
+      num_steps: 80
       warmup_steps: 5
-      lr_range: [0.005, 0.000001]
+      lr_range: [0.005, 0.000005]
 
