@@ -138,7 +138,7 @@ class Head(nn.Module):
     def __init__(self, nc, n, ps=0.0):
         super().__init__()
         layers = [GeM(), Mish(), Flatten()] + \
-                 bn_drop_lin(nc * 2, 512, True, ps, Mish()) + \
+                 bn_drop_lin(nc, 512, True, ps, Mish()) + \
                  bn_drop_lin(512, n, True, ps)
         self.fc = nn.Sequential(*layers)
         self._init_weight()
