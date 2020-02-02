@@ -23,6 +23,6 @@ registry.Callback(CheckpointLoader)
 # Register criterion
 registry.Criterion(FocalLoss)
 registry.Criterion(LovaszLoss)
-registry.Criterion(OHEM_Loss)
+registry.Criterion(OHEMLoss)
 
 
