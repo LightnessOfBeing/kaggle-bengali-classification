@@ -42,7 +42,7 @@ stages:
   criterion_params:
     _key_value: True
     ce:
-      criterion: CrossEntropyLoss
+      criterion: OHEMLoss
 
   callbacks_params:
 
@@ -76,7 +76,7 @@ stages:
       num_epochs: 82
 
     optimizer_params:
-      optimizer: AdamW
+      optimizer: RAdam
 
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
