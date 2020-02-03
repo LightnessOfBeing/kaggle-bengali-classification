@@ -42,10 +42,7 @@ stages:
   criterion_params:
     _key_value: True
     ce:
-      criterion: ReducedFocalLoss
-      gamma: 2
-      th: 0.5
-
+      criterion: FocalLoss
 
   callbacks_params:
 
