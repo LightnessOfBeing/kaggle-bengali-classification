@@ -42,7 +42,11 @@ stages:
   criterion_params:
     _key_value: True
     ce:
-      criterion: OHEMLoss
+      criterion: ReducedFocalLoss
+      alpha: None
+      gamma: 2
+      th: 0.5
+
 
   callbacks_params:
 
@@ -76,12 +80,12 @@ stages:
       num_epochs: 82
 
     optimizer_params:
-      optimizer: RAdam
+      optimizer: AdamW
 
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
       init_lr: 0.001
       num_steps: 80
       warmup_steps: 5
-      lr_range: [0.005, 0.000005]
+      lr_range: [0.005, 0.000001]
 

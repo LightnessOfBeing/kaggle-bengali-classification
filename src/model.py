@@ -125,7 +125,7 @@ class Efficient(nn.Module):
         return logit_grapheme_root, logit_vowel_diacritic, logit_consonant_diacritic
 
 
-def bn_drop_lin(n_in: int, n_out: int, bn: bool = True, p: float = 0., actn: Optional[nn.Module] = None):
+def bn_drop_lin(n_in:int, n_out:int, bn:bool=True, p:float=0., actn:Optional[nn.Module]=None):
     "Sequence of batchnorm (if `bn`), dropout (with `p`) and linear (`n_in`,`n_out`) layers followed by `actn`."
     layers = [nn.BatchNorm1d(n_in)] if bn else []
     if p != 0: layers.append(nn.Dropout(p))
@@ -135,7 +135,7 @@ def bn_drop_lin(n_in: int, n_out: int, bn: bool = True, p: float = 0., actn: Opt
 
 
 class Head(nn.Module):
-    def __init__(self, nc, n, ps=0.0):
+    def __init__(self, nc, n, ps=0.5):
         super().__init__()
         layers = [GeM(), Mish(), Flatten()] + \
                  bn_drop_lin(nc, 512, True, ps, Mish()) + \
