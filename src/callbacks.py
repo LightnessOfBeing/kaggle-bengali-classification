@@ -86,7 +86,6 @@ class UnFreezeCallback(Callback):
 
 
 class MixupCutmixCallback(CriterionCallback):
-    # todo передать несколько input, output keys и для каждого посчитать, потом просуммировать
     def __init__(
             self,
             fields: List[str] = ("features",),
@@ -115,7 +114,8 @@ class MixupCutmixCallback(CriterionCallback):
 
         super().__init__(**kwargs)
 
-        print("Custom MixupCallback is being initialized!")
+        print("Custom MixupCutmixCallback is being initialized!")
+        print(f"Weights {weight_grapheme_root}, {weight_vowel_diacritic} {weight_consonant_diacritic}")
 
         self.on_train_only = on_train_only
         self.fields = fields
@@ -188,16 +188,6 @@ class MixupCutmixCallback(CriterionCallback):
         loss = loss_arr[0] * self.weight_grapheme_root + \
                loss_arr[1] * self.weight_vowel_diacritic + \
                loss_arr[2] * self.weight_consonant_diacritic
-
-        '''
-        state.metrics.add_batch_value(
-            metrics_dict={
-                'loss_gr': loss_arr[0],
-                'loss_vd': loss_arr[1],
-                'loss_cd': loss_arr[2],
-            }
-        )
-        '''
 
         return loss
 
