@@ -43,7 +43,6 @@ stages:
     _key_value: True
     ce:
       criterion: ReducedFocalLoss
-      alpha: None
       gamma: 2
       th: 0.5
 
