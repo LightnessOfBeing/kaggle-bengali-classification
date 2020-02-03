@@ -2,6 +2,7 @@ model_params:
   model: Efficient
   encoder: "efficientnet-b0"
   num_classes: [168, 11, 7]
+  activation: "Mish"
 
 args:
   logdir: "./logs/bengali_logs"
@@ -25,9 +26,10 @@ stages:
   data_params:
     batch_size: 256
     num_workers: 2
-
     train_csv: "train.csv"
     data_folder: "../input/grapheme-imgs-128x128/"
+    train_aug_name: "simple_aug"
+    processed: False
 
   state_params:
     main_metric: loss
@@ -36,7 +38,7 @@ stages:
   criterion_params:
     _key_value: True
     ce:
-      criterion: CrossEntropyLoss
+      criterion: ReducedFocalLoss
 
   callbacks_params:
     loss_grapheme_roots:
@@ -83,41 +85,19 @@ stages:
       callback: SchedulerCallback
       reduce_metric: loss
 
-  stage1:  # Все, что не ключевое слово, расценивается, как имя стейджа. Для тренировки в Catalyst требуется хотябы один стейдж. Имя может быть произвольным
-    state_params:  # Вы можете переопределить любые параметры, для конкретного стейджа, например
-      num_epochs: 3
-
-    callbacks_params:
-      freeze:
-        callback: FreezeCallback
-
-    optimizer_params:  # Пример, переопределенного оптимизатора
-      optimizer: AdamW
-      lr: 0.001
-
-    scheduler_params:
-      scheduler: MultiStepLR
-      milestones:
-      - 3
-      gamma: 0.1
-
-  stage2:
+  stage1:
     state_params:
-      num_epochs: 15
-
-    callbacks_params:
-      unfreeze:
-        callback: UnFreezeCallback
+      num_epochs: 20
 
     optimizer_params:  # Пример, переопределенного оптимизатора
       optimizer: AdamW
 
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
-      init_lr: 0.0002
-      num_steps: 10
-      warmup_steps: 5
-      lr_range: [0.0005, 0.00002]
+      init_lr: 0.0001
+      num_steps: 20
+      warmup_steps: 4
+      lr_range: [0.001, 0.00001]
       momentum_range: [0.85, 0.95]
 
 
