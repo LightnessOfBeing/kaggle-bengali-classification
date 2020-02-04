@@ -32,7 +32,7 @@ stages:
     processed: False
 
   state_params:
-    main_metric: "loss_gr"
+    main_metric: loss
     minimize_metric: True
 
   criterion_params:
@@ -47,7 +47,7 @@ stages:
       input_key: "grapheme_root"
       output_key: "logit_grapheme_root"
       criterion_key: "ce"
-      prefix: "loss_gr"
+      prefix: "loss"
 
     saver:
       callback: CheckpointCallback
@@ -61,7 +61,7 @@ stages:
 
     scheduler:
       callback: SchedulerCallback
-      reduce_metric: "loss_gr"
+      reduce_metric: loss
 
   stage1:
     state_params:
