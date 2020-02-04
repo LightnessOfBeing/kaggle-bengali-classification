@@ -32,7 +32,7 @@ stages:
     processed: False
 
   state_params:
-    main_metric: loss
+    main_metric: "loss_gr"
     minimize_metric: True
 
   criterion_params:
@@ -43,6 +43,7 @@ stages:
   callbacks_params:
     loss_grapheme_roots:
       callback: CutmixCallback
+      fields: ["image"]
       input_key: "grapheme_root"
       output_key: "logit_grapheme_root"
       criterion_key: "ce"
