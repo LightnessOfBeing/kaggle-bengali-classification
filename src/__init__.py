@@ -25,5 +25,6 @@ registry.Criterion(FocalLoss)
 registry.Criterion(LovaszLoss)
 registry.Criterion(OHEMLoss)
 registry.Criterion(ReducedFocalLoss)
+registry.Criterion(CutmixCallback)
 
 
