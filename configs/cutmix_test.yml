@@ -1,0 +1,80 @@
+model_params:
+  model: Efficient
+  encoder: "efficientnet-b0"
+  num_classes: [168, 11, 7]
+  activation: "Mish"
+
+args:
+  logdir: "./logs/bengali_logs"
+  seed: 65
+  check: False
+  verbose: True
+
+runner_params:  # OPTIONAL KEYWORD, параметры для инициализации Runner
+  # Например для SupervisedRunner
+  input_key: "image"  # Пример
+  output_key:
+    - "logit_grapheme_root"
+    - "logit_vowel_diacritic"
+    - "logit_consonant_diacritic"
+  input_target_key:
+    - "grapheme_root"
+    - "vowel_diacritic"
+    - "consonant_diacritic"
+
+stages:
+  data_params:
+    batch_size: 256
+    num_workers: 2
+    train_csv: "train.csv"
+    data_folder: "../input/grapheme-imgs-128x128/"
+    train_aug_name: "simple_aug"
+    processed: False
+
+  state_params:
+    main_metric: loss
+    minimize_metric: True
+
+  criterion_params:
+    _key_value: True
+    ce:
+      criterion: CrossEntropyLoss
+
+  callbacks_params:
+    loss_grapheme_roots:
+      callback: CutmixCallback
+      input_key: "grapheme_root"
+      output_key: "logit_grapheme_root"
+      criterion_key: "ce"
+      prefix: "loss_gr"
+
+    saver:
+      callback: CheckpointCallback
+      save_n_best: 3
+
+    metrics:
+      callback: HMacroAveragedRecall
+
+    optimizer:
+      callback: OptimizerCallback
+
+    scheduler:
+      callback: SchedulerCallback
+      reduce_metric: loss
+
+  stage1:
+    state_params:
+      num_epochs: 20
+
+    optimizer_params:  # Пример, переопределенного оптимизатора
+      optimizer: AdamW
+
+    scheduler_params:
+      scheduler: OneCycleLRWithWarmup
+      init_lr: 0.0001
+      num_steps: 20
+      warmup_steps: 4
+      lr_range: [0.001, 0.00001]
+      momentum_range: [0.85, 0.95]
+
+
