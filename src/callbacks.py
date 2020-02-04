@@ -256,11 +256,11 @@ class CutmixCallback(CriterionCallback):
 
         return bbx1, bby1, bbx2, bby2
 
-    def on_loader_start(self, state: State):
+    def on_loader_start(self, state: RunnerState):
         self.is_needed = not self.on_train_only or \
                          state.loader_name.startswith("train")
 
-    def on_batch_start(self, state: State):
+    def on_batch_start(self, state: RunnerState):
         if not self.is_needed:
             return
 
@@ -283,7 +283,7 @@ class CutmixCallback(CriterionCallback):
                         / (state.input[self.fields[0]].shape[-1]
                            * state.input[self.fields[0]].shape[-2]))
 
-    def _compute_loss(self, state: State, criterion):
+    def _compute_loss(self, state: RunnerState, criterion):
         """
         Computes loss.
         If self.is_needed is False then calls _compute_loss from CriterionCallback,
