@@ -19,12 +19,12 @@ registry.Callback(FreezeCallback)
 registry.Callback(ImageViewerCallback)
 registry.Callback(MixupCutmixCallback)
 registry.Callback(CheckpointLoader)
+registry.Callback(CutmixCallback)
 
 # Register criterion
 registry.Criterion(FocalLoss)
 registry.Criterion(LovaszLoss)
 registry.Criterion(OHEMLoss)
 registry.Criterion(ReducedFocalLoss)
-registry.Criterion(CutmixCallback)
 
 
