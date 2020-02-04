@@ -61,7 +61,7 @@ stages:
 
     scheduler:
       callback: SchedulerCallback
-      reduce_metric: loss
+      reduce_metric: "loss_gr"
 
   stage1:
     state_params:
