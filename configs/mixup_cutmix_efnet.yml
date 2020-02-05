@@ -42,7 +42,7 @@ stages:
   criterion_params:
     _key_value: True
     ce:
-      criterion: FocalLoss
+      criterion: CrossEntropyLoss
 
   callbacks_params:
 
@@ -83,5 +83,4 @@ stages:
       init_lr: 0.001
       num_steps: 80
       warmup_steps: 5
-      lr_range: [0.005, 0.000001]
-
+      lr_range: [0.005, 0.000005]

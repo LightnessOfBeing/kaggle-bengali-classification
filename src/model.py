@@ -135,7 +135,7 @@ def bn_drop_lin(n_in:int, n_out:int, bn:bool=True, p:float=0., actn:Optional[nn.
 
 
 class Head(nn.Module):
-    def __init__(self, nc, n, ps=0.2):
+    def __init__(self, nc, n, ps=0.0):
         super().__init__()
         layers = [GeM(), Mish(), Flatten()] + \
                  bn_drop_lin(nc, 512, True, ps, Mish()) + \
