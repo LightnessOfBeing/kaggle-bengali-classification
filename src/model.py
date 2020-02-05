@@ -6,7 +6,7 @@ import torch.nn.functional as F
 from cnn_finetune import make_model
 from efficientnet_pytorch import EfficientNet
 from torch import nn
-from torch.nn.modules import Flatten
+from torch.nn.modules.flatten import Flatten
 
 from torch.nn.parameter import Parameter
 
@@ -32,20 +32,22 @@ class GeM(nn.Module):
 
 
 class MultiHeadNet(nn.Module):
-    def __init__(self, encoder, pretrained, num_classes, pooling, activation):
+    def __init__(self, encoder, pretrained, num_classes, activation):
         super().__init__()
-        self.model = make_model(
+        self.net = make_model(
             model_name=encoder,
             pretrained=pretrained,
             num_classes=1000
         )
-        self.pool = None
-        in_features = self.model._classifier.in_features
-        self.head_grapheme_root = nn.Linear(in_features, num_classes[0])
-        self.head_vowel_diacritic = nn.Linear(in_features, num_classes[1])
-        self.head_consonant_diacritic = nn.Linear(in_features, num_classes[2])
-        if pooling == "Gem":
-            self.pool = GeM()
+        in_features = self.net._classifier.in_features
+        if activation == "Mish":
+            to_Mish(self.net)
+            print("Mish activation added!")
+        self.head_grapheme_root = Head(in_features, num_classes[0])
+        self.head_vowel_diacritic = Head(in_features, num_classes[1])
+        self.head_consonant_diacritic = Head(in_features, num_classes[2])
+        print(self.net)
+
 
     def freeze(self):
         for param in self.model._features.parameters():
@@ -58,18 +60,10 @@ class MultiHeadNet(nn.Module):
         print("Model unfreezed!")
 
     def forward(self, x):
-        features = self.model._features(x)
-        # features = F.adaptive_avg_pool2d(features, 1)
-        # DROPOUT???
-        if self.pool is not None:
-            features = self.pool(features)
-        else:
-            features = F.adaptive_avg_pool2d(features, 1)
-        features = features.view(features.size(0), -1)
-
-        logit_grapheme_root = self.head_grapheme_root(features)
-        logit_vowel_diacritic = self.head_vowel_diacritic(features)
-        logit_consonant_diacritic = self.head_consonant_diacritic(features)
+        x = self.net._features(x)
+        logit_grapheme_root = self.head_grapheme_root(x)
+        logit_vowel_diacritic = self.head_vowel_diacritic(x)
+        logit_consonant_diacritic = self.head_consonant_diacritic(x)
 
         return logit_grapheme_root, logit_vowel_diacritic, logit_consonant_diacritic
 
@@ -89,16 +83,6 @@ class Efficient(nn.Module):
             self.net._dropout.p = 0.0
         print(self.net)
 
-        # self.pool = None
-        # if pooling == "Gem":
-        #     print("GeM pooling layer is used!")
-        #     self.pool = GeM()
-
-        # self.dropout_head = nn.Dropout(self.net._global_params.dropout_rate)
-
-        # self.head_grapheme_root = nn.Linear(n_channels_dict[encoder], num_classes[0])
-        # self.head_vowel_diacritic = nn.Linear(n_channels_dict[encoder], num_classes[1])
-        # self.head_consonant_diacritic = nn.Linear(n_channels_dict[encoder], num_classes[2])
         self.head_grapheme_root = Head(n_channels_dict[encoder], num_classes[0])
         self.head_vowel_diacritic = Head(n_channels_dict[encoder], num_classes[1])
         self.head_consonant_diacritic = Head(n_channels_dict[encoder], num_classes[2])
@@ -115,9 +99,6 @@ class Efficient(nn.Module):
 
     def forward(self, x):
         x = self.net.extract_features(x)
-        # x = self.pool(x)
-        # x = self.dropout_head(x)
-        # x = x.view(x.size(0), -1)
         logit_grapheme_root = self.head_grapheme_root(x)
         logit_vowel_diacritic = self.head_vowel_diacritic(x)
         logit_consonant_diacritic = self.head_consonant_diacritic(x)
