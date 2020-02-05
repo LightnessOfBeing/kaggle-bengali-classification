@@ -25,16 +25,16 @@ class BengaliDataset(Dataset):
         vowel_diacritic = self.vowel_diacritics[idx]
         consonant_diacritic = self.consonant_diacritics[idx]
 
-        if not self.processed:
-            image_path = os.path.join(self.data_folder, image_id + '.png')
-            image = cv2.imread(image_path, 0)
-            image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
-            if self.transform:
-                image = self.transform(image=image)['image']
-            image = np.transpose(image, (2, 0, 1)).astype(np.float32)
-        else:
-            image_path = os.path.join(self.data_folder, image_id + '.npz')
-            image = np.load(image_path)['image']
+        #if not self.processed:
+        image_path = os.path.join(self.data_folder, image_id + '.png')
+        image = cv2.imread(image_path, 0)
+        image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+        if self.transform:
+            image = self.transform(image=image)['image']
+        image = np.transpose(image, (2, 0, 1)).astype(np.float32)
+        #else:
+        #    image_path = os.path.join(self.data_folder, image_id + '.npz')
+        #    image = np.load(image_path)['image']
 
         return {
             'image': image,
