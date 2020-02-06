@@ -115,7 +115,7 @@ class MixupCutmixCallback(CriterionCallback):
         super().__init__(**kwargs)
 
         print("Custom MixupCutmixCallback is being initialized!")
-        print(f"Weights {weight_grapheme_root}, {weight_vowel_diacritic} {weight_consonant_diacritic}")
+        print(f"Weights {weight_grapheme_root}, {weight_vowel_diacritic}, {weight_consonant_diacritic}.")
 
         self.on_train_only = on_train_only
         self.fields = fields
