@@ -16,7 +16,7 @@ class BengaliDataset(Dataset):
         self.transform = transform
         self.processed = processed
         if self.processed:
-            self.array = np.zeros((200840, 3, 128, 128), dtype=np.uint8)
+            self.array = np.zeros((200840, 128, 128), dtype=np.uint8)
             self._populate_array()
 
     def _populate_array(self):
