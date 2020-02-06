@@ -17,6 +17,7 @@ class BengaliDataset(Dataset):
         self.processed = processed
         if self.processed:
             self.array = np.zeros((200840, 3, 128, 128), dtype=np.uint8)
+            self._populate_array()
 
     def _populate_array(self):
         assert len(self.image_ids) == self.array.shape[0]

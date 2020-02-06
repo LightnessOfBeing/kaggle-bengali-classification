@@ -4,6 +4,7 @@ model_params:
   pretrained: True
   num_classes: [168, 11, 7]
   activation: "Mish"
+  processed: True
 
 args:
   logdir: "./logs/bengali_logs"
