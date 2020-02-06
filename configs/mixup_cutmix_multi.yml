@@ -4,7 +4,6 @@ model_params:
   pretrained: True
   num_classes: [168, 11, 7]
   activation: "Mish"
-  processed: True
 
 args:
   logdir: "./logs/bengali_logs"
@@ -34,7 +33,7 @@ stages:
     train_csv: "train.csv"
     data_folder: "../input/grapheme-imgs-128x128/"
     train_aug_name: "mixup_aug"
-    processed: False
+    processed: True
 
   state_params:
     main_metric: hmar
