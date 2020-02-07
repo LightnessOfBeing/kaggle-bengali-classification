@@ -38,17 +38,18 @@ class Efficient(nn.Module):
         """ Returns output of the final convolution layer """
 
         # Stem
-        x = self._swish(self._bn0(self._conv_stem(inputs)))
+        x = self.net._swish(self.net._bn0(self.net._conv_stem(inputs)))
 
         # Blocks
-        for idx, block in enumerate(self._blocks):
-            drop_connect_rate = self._global_params.drop_connect_rate
+        for idx, block in enumerate(self.net._blocks):
+            drop_connect_rate = self.net._global_params.drop_connect_rate
             if drop_connect_rate:
-                drop_connect_rate *= float(idx) / len(self._blocks)
+                drop_connect_rate *= float(idx) / len(self.net._blocks)
             x = block(x, drop_connect_rate=drop_connect_rate)
+        return x
 
     def forward(self, x):
-        x = self.net.custom_extract_features(x)
+        x = self.custom_extract_features(x)
         logit_grapheme_root = self.head_grapheme_root(x)
         logit_vowel_diacritic = self.head_vowel_diacritic(x)
         logit_consonant_diacritic = self.head_consonant_diacritic(x)
