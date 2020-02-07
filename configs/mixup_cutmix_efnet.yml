@@ -30,10 +30,12 @@ stages:
   data_params:
     batch_size: 256
     num_workers: 4
-    train_csv: "train.csv"
+    train_csv_path: "../input/bengaliutils2/"
+    train_csv_name: "train_with_fold.csv"
     data_folder: "../input/grapheme-imgs-128x128/"
     train_aug_name: "mixup_aug"
-    processed: True
+    fold: 0
+    processed: False
 
   state_params:
     main_metric: hmar
