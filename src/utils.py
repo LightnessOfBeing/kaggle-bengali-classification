@@ -1,3 +1,5 @@
+from typing import Optional
+
 import torch.nn.functional as F
 import torch
 from efficientnet_pytorch.utils import MemoryEfficientSwish
@@ -95,4 +97,12 @@ def to_Mish(model):
             setattr(model, child_name, Mish())
         else:
             to_Mish(child)
+
+def bn_drop_lin(n_in:int, n_out:int, bn:bool=True, p:float=0., actn:Optional[nn.Module]=None):
+    "Sequence of batchnorm (if `bn`), dropout (with `p`) and linear (`n_in`,`n_out`) layers followed by `actn`."
+    layers = [nn.BatchNorm1d(n_in)] if bn else []
+    if p != 0: layers.append(nn.Dropout(p))
+    layers.append(nn.Linear(n_in, n_out))
+    if actn is not None: layers.append(actn)
+    return layers
 

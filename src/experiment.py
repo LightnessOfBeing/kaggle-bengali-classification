@@ -15,15 +15,14 @@ class Experiment(ConfigExperiment):
         df = pd.read_csv("../input/bengaliai-cv19/" + train_csv_name)
         data_folder = kwargs.get('data_folder', None)
         test_run = kwargs.get('test_run', None)
-        image_size = kwargs.get('image_size', None)
         train_aug_name = kwargs.get('train_aug_name', None)
         processed = kwargs.get('processed')
         if test_run:
             df = df[:2048]
         datasets = OrderedDict()
         if train_csv_name:
-            train_transform = get_augmentation(train_aug_name, image_size)
-            valid_transform = get_augmentation('valid_aug', image_size)
+            train_transform = get_augmentation(train_aug_name)
+            valid_transform = get_augmentation('valid_aug')
             train_df, valid_df = train_test_split(df, test_size=0.2, shuffle=True, random_state=65)
             if processed:
                 print("Processed images are used!")
@@ -46,7 +45,6 @@ class Experiment(ConfigExperiment):
     @staticmethod
     def get_transforms(stage: str = None, mode: str = None, **kwargs):
         train_aug_name = kwargs.get('train_aug_name', None)
-        image_size = kwargs.get('image_size', None)
         if mode == "train":
-            return get_augmentation(train_aug_name, image_size)
-        return get_augmentation('valid', image_size)
+            return get_augmentation(train_aug_name)
+        return get_augmentation('valid')
