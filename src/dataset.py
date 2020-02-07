@@ -20,6 +20,7 @@ class BengaliDataset(Dataset):
             self._populate_array()
 
     def _populate_array(self):
+        print(len(self.image_ids), self.array.shape[0])
         assert len(self.image_ids) == self.array.shape[0]
         print("Array population started!")
         for index, image_id in enumerate(self.image_ids):
