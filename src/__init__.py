@@ -2,7 +2,8 @@ from catalyst.dl import registry
 from catalyst.dl import SupervisedRunner as Runner
 from pytorch_toolbelt.losses import FocalLoss, LovaszLoss
 
-from .model import MultiHeadNet, Efficient
+from .models.multihead import MultiHeadNet
+from .models.efficient import Efficient
 from .experiment import Experiment
 from .losses import *
 from .callbacks import *
