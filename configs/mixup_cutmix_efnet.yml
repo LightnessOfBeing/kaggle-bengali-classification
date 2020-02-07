@@ -53,9 +53,9 @@ stages:
       output_key: ["logit_grapheme_root", "logit_vowel_diacritic", "logit_consonant_diacritic"]
       criterion_key: "ce"
       prefix: "loss"
-      weight_grapheme_root: 0.7
-      weight_vowel_diacritic: 0.1
-      weight_consonant_diacritic: 0.2
+      weight_grapheme_root: 2
+      weight_vowel_diacritic: 1
+      weight_consonant_diacritic: 1
 
     saver:
       callback: CheckpointCallback
