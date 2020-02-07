@@ -34,8 +34,21 @@ class Efficient(nn.Module):
             param.requires_grad = True
         print("Model unfreezed!")
 
+    def custom_extract_features(self, inputs):
+        """ Returns output of the final convolution layer """
+
+        # Stem
+        x = self._swish(self._bn0(self._conv_stem(inputs)))
+
+        # Blocks
+        for idx, block in enumerate(self._blocks):
+            drop_connect_rate = self._global_params.drop_connect_rate
+            if drop_connect_rate:
+                drop_connect_rate *= float(idx) / len(self._blocks)
+            x = block(x, drop_connect_rate=drop_connect_rate)
+
     def forward(self, x):
-        x = self.net.extract_features(x)
+        x = self.net.custom_extract_features(x)
         logit_grapheme_root = self.head_grapheme_root(x)
         logit_vowel_diacritic = self.head_vowel_diacritic(x)
         logit_consonant_diacritic = self.head_consonant_diacritic(x)
