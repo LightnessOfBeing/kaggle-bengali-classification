@@ -1,3 +1,4 @@
+import kornia
 import torch
 
 from torch import nn
@@ -37,6 +38,7 @@ class AverageHead(nn.Module):
                                                  affine=True, track_running_stats=True))
         self.post_layers = Sequential(Flatten(),
                                       Linear(in_features, num_classes))
+        self.max_blur = kornia.contrib.MaxBlurPool2d(3, True)
         self._init_weight()
 
     def _init_weight(self):
@@ -49,7 +51,7 @@ class AverageHead(nn.Module):
 
     def forward(self, x):
         x = self.pre_layers(x)
-        x = 0.5 * (F.adaptive_avg_pool2d(x, 1) + F.adaptive_max_pool2d(x, 1))
+        x = 0.5 * (F.adaptive_avg_pool2d(x, 1) + self.max_blur(x))
         return self.post_layers(x)
 
 

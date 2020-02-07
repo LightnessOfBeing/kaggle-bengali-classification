@@ -3,6 +3,7 @@ from torch import nn
 
 from src.models.head import Head, AverageHead
 from src.utils import to_Mish
+import kornia
 
 
 class Efficient(nn.Module):
