@@ -15,6 +15,7 @@ class BengaliDataset(Dataset):
         self.data_folder = data_folder
         self.transform = transform
         self.processed = processed
+        print(f"Processed {self.processed}")
         if self.processed:
             self.array = np.zeros((len(self.image_ids), 128, 128), dtype=np.uint8)
             self._populate_array()
