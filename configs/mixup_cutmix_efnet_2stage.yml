@@ -3,6 +3,7 @@ model_params:
   encoder: "efficientnet-b0"
   num_classes: [168, 11, 7]
   dropout: 0.0
+  activation: "Mish"
 
 args:
   logdir: "./logs/bengali_logs"
@@ -10,9 +11,8 @@ args:
   check: False
   verbose: True
 
-runner_params:  # OPTIONAL KEYWORD, параметры для инициализации Runner
-  # Например для SupervisedRunner
-  input_key: "image"  # Пример
+runner_params:
+  input_key: "image"
   output_key:
     - "logit_grapheme_root"
     - "logit_vowel_diacritic"
@@ -22,13 +22,19 @@ runner_params:  # OPTIONAL KEYWORD, параметры для инициализ
     - "vowel_diacritic"
     - "consonant_diacritic"
 
+#distributed_params:  # OPTIONAL KEYWORD, параметры для distributed training и NVIDIA Apex
+#  opt_level: O1
+
 stages:
   data_params:
     batch_size: 256
-    num_workers: 2
-    train_csv: "train.csv"
+    num_workers: 4
+    train_csv_path: "../input/bengaliutils2/"
+    train_csv_name: "train_with_fold.csv"
     data_folder: "../input/grapheme-imgs-128x128/"
     train_aug_name: "mixup_aug"
+    fold: 0
+    processed: False
 
   state_params:
     main_metric: hmar
@@ -37,7 +43,7 @@ stages:
   criterion_params:
     _key_value: True
     ce:
-      criterion: LovaszLoss
+      criterion: CrossEntropyLoss
 
   callbacks_params:
 
@@ -48,9 +54,9 @@ stages:
       output_key: ["logit_grapheme_root", "logit_vowel_diacritic", "logit_consonant_diacritic"]
       criterion_key: "ce"
       prefix: "loss"
-      weight_grapheme_root: 2.0
-      weight_vowel_diacritic: 1.0
-      weight_consonant_diacritic: 1.0
+      weight_grapheme_root: 2
+      weight_vowel_diacritic: 1
+      weight_consonant_diacritic: 1
 
     saver:
       callback: CheckpointCallback
@@ -68,20 +74,20 @@ stages:
 
   stage1:
     state_params:
-      num_epochs: 60
+      num_epochs: 82
+
+    optimizer_params:
+      optimizer: AdamW
 
     callbacks_params:
       checkpoint_loader:
         callback: CheckpointLoader
-        checkpoint_path: "efnet_mixup_cutmix_77.pth"
-
-    optimizer_params:
-      optimizer: SGD
-      lr: 0.00005
+        checkpoint_path: "enetb0_9666.pth"
 
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
-      init_lr: 0.00005
-      num_steps: 55
-      warmup_steps: 2
-      lr_range: [0.0001, 0.0000005]
+      init_lr: 0.0001
+      num_steps: 80
+      warmup_steps: 0
+      lr_range: [0.0001, 0.000001]
+
