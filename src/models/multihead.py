@@ -1,3 +1,10 @@
+from cnn_finetune import make_model
+from torch import nn
+
+from src.models.head import Head
+from src.utils import to_Mish
+
+
 class MultiHeadNet(nn.Module):
     def __init__(self, encoder, pretrained, num_classes, activation):
         super().__init__()
