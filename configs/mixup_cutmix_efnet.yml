@@ -28,12 +28,12 @@ runner_params:  # OPTIONAL KEYWORD, параметры для инициализ
 
 stages:
   data_params:
-    batch_size: 256
+    batch_size: 512
     num_workers: 4
     train_csv: "train.csv"
     data_folder: "../input/grapheme-imgs-128x128/"
     train_aug_name: "mixup_aug"
-    processed: False
+    processed: True
 
   state_params:
     main_metric: hmar
