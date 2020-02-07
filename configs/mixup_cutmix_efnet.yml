@@ -28,7 +28,7 @@ runner_params:  # OPTIONAL KEYWORD, параметры для инициализ
 
 stages:
   data_params:
-    batch_size: 512
+    batch_size: 256
     num_workers: 4
     train_csv: "train.csv"
     data_folder: "../input/grapheme-imgs-128x128/"
