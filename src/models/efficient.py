@@ -9,7 +9,7 @@ import kornia
 class Efficient(nn.Module):
     def __init__(self, num_classes, encoder='efficientnet-b0', dropout=None, activation="Mish"):
         super().__init__()
-        n_channels_dict = {'efficientnet-b0': 1280, 'efficientnet-b1': 1280, 'efficientnet-b2': 1408,
+        n_channels_dict = {'efficientnet-b0': (320, 1280), 'efficientnet-b1': (320, 1280), 'efficientnet-b2': (352, 1408),
                            'efficientnet-b3': 1536, 'efficientnet-b4': 1792, 'efficientnet-b5': 2048,
                            'efficientnet-b6': 2304, 'efficientnet-b7': 2560}
         self.net = EfficientNet.from_pretrained(encoder)
@@ -21,9 +21,11 @@ class Efficient(nn.Module):
             self.net._dropout.p = 0.0
         print(self.net)
 
-        self.head_grapheme_root = AverageHead(n_channels_dict[encoder], num_classes[0])
-        self.head_vowel_diacritic = AverageHead(n_channels_dict[encoder], num_classes[1])
-        self.head_consonant_diacritic = AverageHead(n_channels_dict[encoder], num_classes[2])
+        in_features = n_channels_dict[encoder][0]
+        out_features = n_channels_dict[encoder][1]
+        self.head_grapheme_root = AverageHead(in_features, num_classes[0], out_features)
+        self.head_vowel_diacritic = AverageHead(in_features, num_classes[1], out_features)
+        self.head_consonant_diacritic = AverageHead(in_features, num_classes[2], out_features)
 
     def freeze(self):
         for param in self.net.parameters():

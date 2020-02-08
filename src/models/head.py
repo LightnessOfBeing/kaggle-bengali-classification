@@ -1,10 +1,8 @@
-import kornia
 import torch
-
-from torch import nn
-from torch.nn import Parameter, Conv2d, BatchNorm2d, AdaptiveAvgPool2d, Sequential, Linear
-from torch.nn.modules.flatten import Flatten
 import torch.nn.functional as F
+from torch import nn
+from torch.nn import Parameter, Conv2d, BatchNorm2d, Sequential, Linear
+from torch.nn.modules.flatten import Flatten
 
 from src.utils import bn_drop_lin, Mish
 
@@ -31,14 +29,13 @@ class Head(nn.Module):
 
 
 class AverageHead(nn.Module):
-    def __init__(self, in_features, num_classes):
+    def __init__(self, in_features, num_classes, out_features):
         super().__init__()
-        self.pre_layers = Sequential(Conv2d(320, 1280, kernel_size=(1, 1), stride=(1, 1), bias=False),
-                                     BatchNorm2d(1280, eps=1e-05, momentum=0.1,
+        self.pre_layers = Sequential(Conv2d(in_features, out_features, kernel_size=(1, 1), stride=(1, 1), bias=False),
+                                     BatchNorm2d(out_features, eps=1e-05, momentum=0.1,
                                                  affine=True, track_running_stats=True))
         self.post_layers = Sequential(Flatten(),
                                       Linear(in_features, num_classes))
-        #self.max_blur = kornia.contrib.MaxBlurPool2d(3, True)
         self._init_weight()
 
     def _init_weight(self):
