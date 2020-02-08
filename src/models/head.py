@@ -35,7 +35,7 @@ class AverageHead(nn.Module):
                                      BatchNorm2d(out_features, eps=1e-05, momentum=0.1,
                                                  affine=True, track_running_stats=True))
         self.post_layers = Sequential(Flatten(),
-                                      Linear(in_features, num_classes))
+                                      Linear(out_features, num_classes))
         self._init_weight()
 
     def _init_weight(self):
