@@ -74,7 +74,7 @@ stages:
 
   stage1:
     state_params:
-      num_epochs: 41
+      num_epochs: 31
 
     optimizer_params:
       optimizer: AdamW
