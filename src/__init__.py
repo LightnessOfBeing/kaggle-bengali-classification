@@ -2,6 +2,7 @@ from catalyst.dl import registry
 from catalyst.dl import SupervisedRunner as Runner
 from pytorch_toolbelt.losses import FocalLoss, LovaszLoss
 
+from src.dataset import BalanceSampler
 from .models.multihead import MultiHeadNet
 from .models.efficient import Efficient
 from .experiment import Experiment
@@ -27,5 +28,8 @@ registry.Criterion(FocalLoss)
 registry.Criterion(LovaszLoss)
 registry.Criterion(OHEMLoss)
 registry.Criterion(ReducedFocalLoss)
+
+registry.Module(BalanceSampler)
+
 
 
