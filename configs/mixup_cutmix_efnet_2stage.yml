@@ -74,7 +74,7 @@ stages:
 
   stage1:
     state_params:
-      num_epochs: 31
+      num_epochs: 40
 
     optimizer_params:
       optimizer: AdamW
@@ -82,12 +82,12 @@ stages:
     callbacks_params:
       checkpoint_loader:
         callback: CheckpointLoader
-        checkpoint_path: "../input/bengaliutils2/enetb0_9666.pth"
+        checkpoint_path: "../input/bengaliutils2/enetb0_9695.pth"
 
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
-      init_lr: 0.0001
-      num_steps: 40
-      warmup_steps: 5
-      lr_range: [0.0005, 0.00001]
+      init_lr: 0.0002
+      num_steps: 35
+      warmup_steps: 0
+      lr_range: [0.0002, 0.00001]
 
