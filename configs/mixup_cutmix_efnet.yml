@@ -39,6 +39,7 @@ stages:
     samplers_params:  # KEYWORD, параметры sampler для каждого лоадера, такое же API, как в loaders_params
       train:
         sampler: BalanceSampler
+        df_path: "../input/bengaliutils2/train_with_fold.csv"
 
   state_params:
     main_metric: hmar
