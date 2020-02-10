@@ -78,7 +78,7 @@ class BalanceSampler(Sampler):
         dataset = pd.read_csv(df_path)
         self.length = len(dataset)
 
-        df = dataset.df.reset_index()
+        df = dataset.reset_index()
 
         group = []
         grapheme_gb = df.groupby(['grapheme'])
