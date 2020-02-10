@@ -1,10 +1,9 @@
 import os
-from struct import Struct
-import pandas as pd
+
 import cv2
 import numpy as np
+import pandas as pd
 from torch.utils.data import Dataset, Sampler
-from catalyst.contrib import registry
 
 
 class BengaliDataset(Dataset):
@@ -73,7 +72,6 @@ TASK = {
 NUM_TASK = len(TASK)
 NUM_CLASS = [TASK[k]['num_class'] for k in ['grapheme_root', 'vowel_diacritic', 'consonant_diacritic', 'grapheme']]
 
-@registry.Module
 class BalanceSampler(Sampler):
     def __init__(self, df_path="../input/bengaliutils2/train_with_fold.csv"):
         print("Balance sampler is inited!")

@@ -29,7 +29,7 @@ registry.Criterion(LovaszLoss)
 registry.Criterion(OHEMLoss)
 registry.Criterion(ReducedFocalLoss)
 
-registry.Module(BalanceSampler)
+registry.Sampler(BalanceSampler)
 
 
 
