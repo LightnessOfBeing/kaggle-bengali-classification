@@ -36,6 +36,8 @@ stages:
     train_aug_name: "mixup_aug"
     fold: 0
     processed: False
+    samplers_params:  # KEYWORD, параметры sampler для каждого лоадера, такое же API, как в loaders_params
+      sampler: BalanceSampler
 
   state_params:
     main_metric: hmar

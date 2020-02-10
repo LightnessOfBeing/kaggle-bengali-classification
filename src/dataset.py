@@ -1,8 +1,9 @@
 import os
-
+from struct import Struct
+import pandas as pd
 import cv2
 import numpy as np
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, Sampler
 
 
 class BengaliDataset(Dataset):
@@ -56,3 +57,67 @@ class BengaliDataset(Dataset):
             'vowel_diacritic': vowel_diacritic,
             'consonant_diacritic': consonant_diacritic
         }
+
+
+TASK = {
+    'grapheme_root': Struct(
+        num_class=168,
+    ),
+    'vowel_diacritic': Struct(
+        num_class=11,
+    ),
+    'consonant_diacritic': Struct(
+        num_class=7,
+    ),
+    'grapheme': Struct(
+        num_class=1295,
+        class_map=dict(pd.read_csv("../input/bengaliutils2/grapheme_1295.csv")[['grapheme', 'label']].values),
+        # freqency  = None,
+    ),
+}
+NUM_TASK = len(TASK)
+NUM_CLASS = [TASK[k].num_class for k in ['grapheme_root', 'vowel_diacritic', 'consonant_diacritic', 'grapheme']]
+
+
+class BalanceSampler(Sampler):
+    def __init__(self, df_path="../input/bengaliutils2/train_with_fold.csv"):
+        dataset = pd.read_csv(df_path)
+        self.length = len(dataset)
+
+        df = dataset.df.reset_index()
+
+        group = []
+        grapheme_gb = df.groupby(['grapheme'])
+        for k, i in TASK['grapheme'].class_map.items():
+            g = grapheme_gb.get_group(k).index
+            group.append(list(g))
+            assert (len(g) > 0)
+        self.group = group
+        print("Balance sampler is inited!")
+
+    def __iter__(self):
+        # l = iter(range(self.num_samples))
+        # return l
+
+        # for i in range(self.num_sample):
+        #     yield i
+
+        index = []
+        n = 0
+
+        is_loop = True
+        while is_loop:
+            num_class = TASK['grapheme'].num_class  # 1295
+            c = np.arange(num_class)
+            np.random.shuffle(c)
+            for t in c:
+                i = np.random.choice(self.group[t])
+                index.append(i)
+                n += 1
+                if n == self.length:
+                    is_loop = False
+                    break
+        return iter(index)
+
+    def __len__(self):
+        return self.length
