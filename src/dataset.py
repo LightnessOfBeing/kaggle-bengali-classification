@@ -75,10 +75,10 @@ NUM_CLASS = [TASK[k]['num_class'] for k in ['grapheme_root', 'vowel_diacritic', 
 class BalanceSampler(Sampler):
     def __init__(self, df_path="../input/bengaliutils2/train_with_fold.csv"):
         print("Balance sampler is inited!")
-        dataset = pd.read_csv(df_path)
-        self.length = len(dataset)
-
-        df = dataset.reset_index()
+        df = pd.read_csv(df_path)
+        df = df[df['fold'] != 0]
+        self.length = len(df)
+        df = df.reset_index()
 
         group = []
         grapheme_gb = df.groupby(['grapheme'])
