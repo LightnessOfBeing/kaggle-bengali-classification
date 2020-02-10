@@ -75,6 +75,7 @@ NUM_CLASS = [TASK[k]['num_class'] for k in ['grapheme_root', 'vowel_diacritic', 
 
 class BalanceSampler(Sampler):
     def __init__(self, df_path="../input/bengaliutils2/train_with_fold.csv"):
+        print("Balance sampler is inited!")
         dataset = pd.read_csv(df_path)
         self.length = len(dataset)
 
@@ -90,7 +91,6 @@ class BalanceSampler(Sampler):
         print("Balance sampler is inited!")
 
     def __iter__(self):
-        print("kek")
         # l = iter(range(self.num_samples))
         # return l
 

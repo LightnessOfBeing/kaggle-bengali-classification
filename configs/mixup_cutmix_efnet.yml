@@ -37,7 +37,8 @@ stages:
     fold: 0
     processed: False
     samplers_params:  # KEYWORD, параметры sampler для каждого лоадера, такое же API, как в loaders_params
-      sampler: BalanceSampler
+      train:
+        sampler: BalanceSampler
 
   state_params:
     main_metric: hmar
