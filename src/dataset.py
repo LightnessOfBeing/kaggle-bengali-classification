@@ -90,6 +90,7 @@ class BalanceSampler(Sampler):
         print("Balance sampler is inited!")
 
     def __iter__(self):
+        print("kek")
         # l = iter(range(self.num_samples))
         # return l
 
