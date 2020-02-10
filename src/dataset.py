@@ -60,23 +60,17 @@ class BengaliDataset(Dataset):
 
 
 TASK = {
-    'grapheme_root': Struct(
-        num_class=168,
-    ),
-    'vowel_diacritic': Struct(
-        num_class=11,
-    ),
-    'consonant_diacritic': Struct(
-        num_class=7,
-    ),
-    'grapheme': Struct(
-        num_class=1295,
-        class_map=dict(pd.read_csv("../input/bengaliutils2/grapheme_1295.csv")[['grapheme', 'label']].values),
-        # freqency  = None,
-    ),
+    'grapheme_root': {'num_class':168},
+    'vowel_diacritic': {'num_class':11},
+    'consonant_diacritic': {'num_class':168},
+    'grapheme': {
+        'num_class':1295,
+        'class_map': dict(pd.read_csv("../input/bengaliutils2/grapheme_1295.csv")[['grapheme', 'label']].values),
+    }
 }
+
 NUM_TASK = len(TASK)
-NUM_CLASS = [TASK[k].num_class for k in ['grapheme_root', 'vowel_diacritic', 'consonant_diacritic', 'grapheme']]
+NUM_CLASS = [TASK[k]['num_class'] for k in ['grapheme_root', 'vowel_diacritic', 'consonant_diacritic', 'grapheme']]
 
 
 class BalanceSampler(Sampler):
@@ -88,7 +82,7 @@ class BalanceSampler(Sampler):
 
         group = []
         grapheme_gb = df.groupby(['grapheme'])
-        for k, i in TASK['grapheme'].class_map.items():
+        for k, i in TASK['grapheme']['class_map'].items():
             g = grapheme_gb.get_group(k).index
             group.append(list(g))
             assert (len(g) > 0)
@@ -107,7 +101,7 @@ class BalanceSampler(Sampler):
 
         is_loop = True
         while is_loop:
-            num_class = TASK['grapheme'].num_class  # 1295
+            num_class = TASK['grapheme']['num_class']  # 1295
             c = np.arange(num_class)
             np.random.shuffle(c)
             for t in c:
