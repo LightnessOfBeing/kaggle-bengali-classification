@@ -5,7 +5,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 from catalyst.dl import CriterionCallback, utils
-from catalyst.dl.core import Callback, CallbackOrder, RunnerState
+from catalyst.dl.core import Callback, CallbackOrder, State
 from sklearn.metrics import recall_score
 
 from src.utils import rand_bbox
@@ -35,7 +35,7 @@ class HMacroAveragedRecall(Callback):
 
         super().__init__(CallbackOrder.Metric)
 
-    def on_batch_end(self, state: RunnerState):
+    def on_batch_end(self, state: State):
         input_grapheme_root = state.input[self.input_grapheme_root_key].detach().cpu().numpy()
         input_consonant_diacritic = state.input[self.input_consonant_diacritic_key].detach().cpu().numpy()
         input_vowel_diacritic = state.input[self.input_vowel_diacritic_key].detach().cpu().numpy()
@@ -72,7 +72,7 @@ class FreezeCallback(Callback):
     def __init__(self):
         super().__init__(CallbackOrder.Other)
 
-    def on_stage_start(self, state: RunnerState):
+    def on_stage_start(self, state: State):
         state.model.freeze()
 
 
@@ -81,7 +81,7 @@ class UnFreezeCallback(Callback):
     def __init__(self):
         super().__init__(CallbackOrder.Other)
 
-    def on_stage_start(self, state: RunnerState):
+    def on_stage_start(self, state: State):
         state.model.unfreeze()
 
 
@@ -128,17 +128,17 @@ class MixupCutmixCallback(CriterionCallback):
         self.weight_consonant_diacritic = weight_consonant_diacritic
         self.apply_mixup = True
 
-    def on_loader_start(self, state: RunnerState):
+    def on_loader_start(self, state: State):
         self.is_needed = not self.on_train_only or \
                          state.loader_name.startswith("train")
 
-    def do_mixup(self, state: RunnerState):
+    def do_mixup(self, state: State):
 
         for f in self.fields:
             state.input[f] = self.lam * state.input[f] + \
                              (1 - self.lam) * state.input[f][self.index]
 
-    def do_cutmix(self, state: RunnerState):
+    def do_cutmix(self, state: State):
 
         bbx1, bby1, bbx2, bby2 = \
             rand_bbox(state.input[self.fields[0]].shape, self.lam)
@@ -151,7 +151,7 @@ class MixupCutmixCallback(CriterionCallback):
                         / (state.input[self.fields[0]].shape[-1]
                            * state.input[self.fields[0]].shape[-2]))
 
-    def on_batch_start(self, state: RunnerState):
+    def on_batch_start(self, state: State):
         if not self.is_needed:
             return
 
@@ -169,7 +169,7 @@ class MixupCutmixCallback(CriterionCallback):
         else:
             self.do_cutmix(state)
 
-    def _compute_loss(self, state: RunnerState, criterion):
+    def _compute_loss(self, state: State, criterion):
         loss_arr = [0, 0, 0]
         if not self.is_needed:
             for i, (input_key, output_key) in enumerate(list(zip(self.input_key, self.output_key))):
@@ -256,11 +256,11 @@ class CutmixCallback(CriterionCallback):
 
         return bbx1, bby1, bbx2, bby2
 
-    def on_loader_start(self, state: RunnerState):
+    def on_loader_start(self, state: State):
         self.is_needed = not self.on_train_only or \
                          state.loader_name.startswith("train")
 
-    def on_batch_start(self, state: RunnerState):
+    def on_batch_start(self, state: State):
         if not self.is_needed:
             return
 
@@ -283,7 +283,7 @@ class CutmixCallback(CriterionCallback):
                         / (state.input[self.fields[0]].shape[-1]
                            * state.input[self.fields[0]].shape[-2]))
 
-    def _compute_loss(self, state: RunnerState, criterion):
+    def _compute_loss(self, state: State, criterion):
         """
         Computes loss.
         If self.is_needed is False then calls _compute_loss from CriterionCallback,
@@ -309,7 +309,7 @@ class CheckpointLoader(Callback):
         super().__init__(CallbackOrder.Other)
         self.checkpoint_path = checkpoint_path
 
-    def on_stage_start(self, state: RunnerState):
+    def on_stage_start(self, state: State):
         print(f'Checkpoint {self.checkpoint_path} is being loaded!')
         checkpoint = utils.load_checkpoint(self.checkpoint_path)
         utils.unpack_checkpoint(checkpoint, model=state.model)
@@ -320,7 +320,7 @@ class ImageViewerCallback(Callback):
     def __init__(self):
         super().__init__(CallbackOrder.Other)
 
-    def on_batch_start(self, state: RunnerState):
+    def on_batch_start(self, state: State):
         print(type(state.input["images"].numpy()))
         img = state.input["images"].numpy()[0]
         np.savetxt("kek.txt", img[0])
