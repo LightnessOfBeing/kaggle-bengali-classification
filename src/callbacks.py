@@ -164,10 +164,10 @@ class MixupCutmixCallback(CriterionCallback):
         self.index.to(state.device)
 
         self.apply_mixup = (np.random.rand() < 0.5)
-        if self.apply_mixup:
-            self.do_mixup(state)
-        else:
-            self.do_cutmix(state)
+       # if self.apply_mixup:
+       #     self.do_mixup(state)
+       # else:
+        self.do_cutmix(state)
 
     def _compute_loss(self, state: State, criterion):
         loss_arr = [0, 0, 0]
