@@ -71,7 +71,7 @@ class HMacroAveragedRecallSingle(Callback):
             self,
             input_key: str = "grapheme_root",
             output_key: str = "logit_grapheme_root",
-            prefix: str = "hmar_gr_sng",
+            prefix: str = "hmar_gr",
     ):
         self.input_key = input_key
         self.output_key = output_key
