@@ -1,0 +1,88 @@
+model_params:
+  model: Efficient
+  encoder: "efficientnet-b1"
+  num_classes: [168, 11, 7]
+  dropout: 0.0
+  activation: "Mish"
+
+args:
+  logdir: "./logs/bengali_logs"
+  seed: 65
+  check: False
+  verbose: True
+
+runner_params:  # OPTIONAL KEYWORD, параметры для инициализации Runner
+  # Например для SupervisedRunner
+  input_key: "image"  # Пример
+  output_key:
+    - "logit_grapheme_root"
+  input_target_key:
+    - "grapheme_root"
+
+#distributed_params:  # OPTIONAL KEYWORD, параметры для distributed training и NVIDIA Apex
+#  opt_level: O1
+
+stages:
+  data_params:
+    batch_size: 256
+    num_workers: 4
+    train_csv_path: "../input/bengaliutils2/"
+    train_csv_name: "train_with_fold.csv"
+    data_folder: "../input/grapheme-imgs-128x128/"
+    train_aug_name: "mixup_aug"
+    fold: 0
+    processed: False
+   # samplers_params:  # KEYWORD, параметры sampler для каждого лоадера, такое же API, как в loaders_params
+   #   train:
+   #     sampler: BalanceSampler
+   #     df_path: "../input/bengaliutils2/train_with_fold.csv"
+
+  state_params:
+    main_metric: hmar_gr
+    minimize_metric: False
+
+  criterion_params:
+    _key_value: True
+    ce:
+      criterion: CrossEntropyLoss
+
+  callbacks_params:
+
+    loss_mixup:
+      callback: MixupCutmixCallbackSingle
+      fields: ["image"]
+      criterion_key: "ce"
+      input_key: "grapheme_root"
+      output_key: "logit_grapheme_root"
+      prefix: "loss"
+
+    saver:
+      callback: CheckpointCallback
+      save_n_best: 3
+
+    #metrics:
+    #  callback: HMacroAveragedRecall
+
+    metrics_sng:
+      callback: HMacroAveragedRecallSingle
+
+    optimizer:
+      callback: OptimizerCallback
+
+    scheduler:
+      callback: SchedulerCallback
+      reduce_metric: loss
+
+  stage1:
+    state_params:
+      num_epochs: 82
+
+    optimizer_params:
+      optimizer: Adam
+
+    scheduler_params:
+      scheduler: OneCycleLRWithWarmup
+      init_lr: 0.001
+      num_steps: 80
+      warmup_steps: 5
+      lr_range: [0.005, 0.000005]

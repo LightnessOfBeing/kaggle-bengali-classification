@@ -221,8 +221,6 @@ class MixupCutmixCallbackSingle(CriterionCallback):
             fields: List[str] = ("features",),
             alpha=1.0,
             on_train_only=True,
-            in_key="grapheme_root",
-            out_key="logit_grapheme_root",
             **kwargs
     ):
         """
@@ -237,8 +235,6 @@ class MixupCutmixCallbackSingle(CriterionCallback):
                 So, if on_train_only is True, use a standard output/metric
                 for validation.
         """
-        self.in_key = in_key
-        self.out_key = out_key
         assert len(fields) > 0, \
             "At least one field for MixupCallback is required"
         assert alpha >= 0, "alpha must be>=0"
@@ -299,14 +295,14 @@ class MixupCutmixCallbackSingle(CriterionCallback):
     def _compute_loss(self, state: State, criterion):
         loss = 0
         if not self.is_needed:
-            pred = state.output[self.out_key]
-            y = state.input[self.in_key]
+            pred = state.output[self.output_key]
+            y = state.input[self.input_key]
             loss = criterion(pred, y)
 
         else:
-            pred = state.output[self.out_key]
-            y_a = state.input[self.in_key]
-            y_b = state.input[self.in_key][self.index]
+            pred = state.output[self.output_key]
+            y_a = state.input[self.input_key]
+            y_b = state.input[self.input_key][self.index]
             loss = self.lam * criterion(pred, y_a) + \
                               (1 - self.lam) * criterion(pred, y_b)
 
