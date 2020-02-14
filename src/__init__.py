@@ -21,6 +21,7 @@ registry.Callback(FreezeCallback)
 registry.Callback(ImageViewerCallback)
 registry.Callback(MixupCutmixCallback)
 registry.Callback(CheckpointLoader)
+registry.Callback(HMacroAveragedRecallSingle)
 
 # Register criterion
 registry.Criterion(FocalLoss)
