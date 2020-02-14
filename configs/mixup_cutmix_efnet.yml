@@ -42,7 +42,7 @@ stages:
    #     df_path: "../input/bengaliutils2/train_with_fold.csv"
 
   state_params:
-    main_metric: hmar
+    main_metric: hmar_gr
     minimize_metric: False
 
   criterion_params:
