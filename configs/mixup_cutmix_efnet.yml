@@ -70,6 +70,9 @@ stages:
     metrics:
       callback: HMacroAveragedRecall
 
+    metrics_sng:
+      callback: HMacroAveragedRecallSingle
+
     optimizer:
       callback: OptimizerCallback
 
