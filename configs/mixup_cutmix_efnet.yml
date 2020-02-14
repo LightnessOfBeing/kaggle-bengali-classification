@@ -16,12 +16,8 @@ runner_params:  # OPTIONAL KEYWORD, параметры для инициализ
   input_key: "image"  # Пример
   output_key:
     - "logit_grapheme_root"
-    - "logit_vowel_diacritic"
-    - "logit_consonant_diacritic"
   input_target_key:
     - "grapheme_root"
-    - "vowel_diacritic"
-    - "consonant_diacritic"
 
 #distributed_params:  # OPTIONAL KEYWORD, параметры для distributed training и NVIDIA Apex
 #  opt_level: O1
@@ -53,15 +49,10 @@ stages:
   callbacks_params:
 
     loss_mixup:
-      callback: MixupCutmixCallback
+      callback: MixupCutmixCallbackSingle
       fields: ["image"]
-      input_key: ["grapheme_root", "vowel_diacritic", "consonant_diacritic"]
-      output_key: ["logit_grapheme_root", "logit_vowel_diacritic", "logit_consonant_diacritic"]
       criterion_key: "ce"
       prefix: "loss"
-      weight_grapheme_root: 2
-      weight_vowel_diacritic: 1
-      weight_consonant_diacritic: 1
 
     saver:
       callback: CheckpointCallback
