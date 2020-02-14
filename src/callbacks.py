@@ -293,7 +293,6 @@ class MixupCutmixCallbackSingle(CriterionCallback):
             self.do_cutmix(state)
 
     def _compute_loss(self, state: State, criterion):
-        loss = 0
         if not self.is_needed:
             pred = state.output[self.output_key]
             y = state.input[self.input_key]

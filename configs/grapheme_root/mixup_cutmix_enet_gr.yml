@@ -14,10 +14,8 @@ args:
 runner_params:  # OPTIONAL KEYWORD, параметры для инициализации Runner
   # Например для SupervisedRunner
   input_key: "image"  # Пример
-  output_key:
-    - "logit_grapheme_root"
-  input_target_key:
-    - "grapheme_root"
+  input_target_key: "grapheme_root"
+  output_key: "logit_grapheme_root"
 
 #distributed_params:  # OPTIONAL KEYWORD, параметры для distributed training и NVIDIA Apex
 #  opt_level: O1
