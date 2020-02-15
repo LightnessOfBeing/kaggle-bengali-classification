@@ -17,8 +17,8 @@ runner_params:  # OPTIONAL KEYWORD, параметры для инициализ
   input_target_key: "grapheme_root"
   output_key: "logit_grapheme_root"
 
-#distributed_params:  # OPTIONAL KEYWORD, параметры для distributed training и NVIDIA Apex
-#  opt_level: O1
+distributed_params:  # OPTIONAL KEYWORD, параметры для distributed training и NVIDIA Apex
+  opt_level: O1
 
 stages:
   data_params:
