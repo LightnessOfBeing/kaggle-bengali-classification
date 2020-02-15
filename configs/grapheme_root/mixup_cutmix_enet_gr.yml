@@ -76,7 +76,7 @@ stages:
       num_epochs: 180
 
     optimizer_params:
-      optimizer: SGD
+      optimizer: Adam
       lr: 0.003
 
     scheduler_params:
