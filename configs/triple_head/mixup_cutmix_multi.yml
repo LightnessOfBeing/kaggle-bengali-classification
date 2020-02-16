@@ -28,11 +28,11 @@ distributed_params:  # OPTIONAL KEYWORD, параметры для distributed t
 
 stages:
   data_params:
-    batch_size: 128
+    batch_size: 200
     num_workers: 4
     train_csv_path: "../input/bengaliutils2/"
     train_csv_name: "train_with_fold.csv"
-    data_folder: "../input/bengali224/"
+    data_folder: "../input/grapheme-imgs-128x128/"
     train_aug_name: "mixup_aug"
     fold: 0
 
