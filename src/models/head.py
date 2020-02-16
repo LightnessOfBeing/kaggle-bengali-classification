@@ -10,7 +10,7 @@ from src.utils import bn_drop_lin, Mish
 class Head(nn.Module):
     def __init__(self, nc, n, ps=0.0):
         super().__init__()
-        layers = [GeM(), Mish(), Flatten()] + \
+        layers = [Mish(), Flatten()] + \
                  bn_drop_lin(nc, 512, True, ps, Mish()) + \
                  bn_drop_lin(512, n, True, ps)
         self.fc = nn.Sequential(*layers)
@@ -25,6 +25,7 @@ class Head(nn.Module):
                 m.bias.data.zero_()
 
     def forward(self, x):
+        x = 0.5 * (F.adaptive_avg_pool2d(x, 1) + F.adaptive_max_pool2d(x, 1))
         return self.fc(x)
 
 

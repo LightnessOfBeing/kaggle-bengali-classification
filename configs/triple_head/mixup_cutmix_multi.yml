@@ -28,12 +28,11 @@ distributed_params:  # OPTIONAL KEYWORD, параметры для distributed t
 
 stages:
   data_params:
-    batch_size: 512
+    batch_size: 256
     num_workers: 4
     train_csv: "train.csv"
-    data_folder: "../input/grapheme-imgs-128x128/"
+    data_folder: "../input/bengali224/"
     train_aug_name: "mixup_aug"
-    processed: True
 
   state_params:
     main_metric: hmar
@@ -53,9 +52,9 @@ stages:
       output_key: ["logit_grapheme_root", "logit_vowel_diacritic", "logit_consonant_diacritic"]
       criterion_key: "ce"
       prefix: "loss"
-      weight_grapheme_root: 0.7
-      weight_vowel_diacritic: 0.1
-      weight_consonant_diacritic: 0.2
+      weight_grapheme_root: 2
+      weight_vowel_diacritic: 1
+      weight_consonant_diacritic: 1
 
     saver:
       callback: CheckpointCallback
@@ -69,18 +68,18 @@ stages:
 
     scheduler:
       callback: SchedulerCallback
-      reduce_metric: loss
+      reduce_metric: hmar
 
   stage1:
     state_params:
-      num_epochs: 41
+      num_epochs: 1
 
     optimizer_params:
-      optimizer: AdamW
+      optimizer: Adam
 
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
       init_lr: 0.001
-      num_steps: 80
-      warmup_steps: 5
-      lr_range: [0.005, 0.000005]
+      num_steps: 10
+      warmup_steps: 10
+      lr_range: [0.003, 0.000005]
