@@ -24,8 +24,8 @@ class Efficient(nn.Module):
         in_features = n_channels_dict[encoder][0]
         out_features = n_channels_dict[encoder][1]
         self.head_grapheme_root = AverageHead(in_features, num_classes[0], out_features)
-        #self.head_vowel_diacritic = AverageHead(in_features, num_classes[1], out_features)
-        #self.head_consonant_diacritic = AverageHead(in_features, num_classes[2], out_features)
+        self.head_vowel_diacritic = AverageHead(in_features, num_classes[1], out_features)
+        self.head_consonant_diacritic = AverageHead(in_features, num_classes[2], out_features)
 
     def freeze(self):
         for param in self.net.parameters():
@@ -54,7 +54,7 @@ class Efficient(nn.Module):
     def forward(self, x):
         x = self.custom_extract_features(x)
         logit_grapheme_root = self.head_grapheme_root(x)
-        #logit_vowel_diacritic = self.head_vowel_diacritic(x)
-        #logit_consonant_diacritic = self.head_consonant_diacritic(x)
+        logit_vowel_diacritic = self.head_vowel_diacritic(x)
+        logit_consonant_diacritic = self.head_consonant_diacritic(x)
 
-        return logit_grapheme_root #, logit_vowel_diacritic, logit_consonant_diacritic
+        return logit_grapheme_root, logit_vowel_diacritic, logit_consonant_diacritic

@@ -32,7 +32,7 @@ stages:
     num_workers: 4
     train_csv_path: "../input/bengaliutils2/"
     train_csv_name: "train_with_fold.csv"
-    data_folder: "../input/grapheme-imgs-128x128/"
+    data_folder: "../input/bengali224/"
     train_aug_name: "mixup_aug"
     fold: 0
     processed: False
@@ -75,11 +75,11 @@ stages:
 
     scheduler:
       callback: SchedulerCallback
-      reduce_metric: loss
+      reduce_metric: hmar
 
   stage1:
     state_params:
-      num_epochs: 82
+      num_epochs: 110
 
     optimizer_params:
       optimizer: Adam
@@ -87,6 +87,6 @@ stages:
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
       init_lr: 0.001
-      num_steps: 80
-      warmup_steps: 5
-      lr_range: [0.005, 0.000005]
+      num_steps: 105
+      warmup_steps: 10
+      lr_range: [0.003, 0.000005]
