@@ -23,8 +23,8 @@ runner_params:  # OPTIONAL KEYWORD, параметры для инициализ
     - "vowel_diacritic"
     - "consonant_diacritic"
 
-#distributed_params:  # OPTIONAL KEYWORD, параметры для distributed training и NVIDIA Apex
-#  opt_level: O1
+distributed_params:  # OPTIONAL KEYWORD, параметры для distributed training и NVIDIA Apex
+  opt_level: O1
 
 stages:
   data_params:
