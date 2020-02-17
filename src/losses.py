@@ -122,11 +122,10 @@ class ReducedFocalLoss(nn.Module):
 
 
 class LabelSmoothingLoss(nn.Module):
-    def __init__(self, classes, smoothing=0.1, dim=-1):
+    def __init__(self, smoothing=0.1, dim=-1):
         super(LabelSmoothingLoss, self).__init__()
         self.confidence = 1.0 - smoothing
         self.smoothing = smoothing
-        self.cls = classes
         self.dim = dim
 
     def forward(self, pred, target):
