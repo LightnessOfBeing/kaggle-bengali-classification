@@ -5,6 +5,7 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
+
 class OHEMLoss(nn.Module):
     def __init__(self, rate=0.7):
         super(OHEMLoss, self).__init__()
@@ -24,13 +25,13 @@ class OHEMLoss(nn.Module):
 
 
 def reduced_focal_loss_with_logits(
-    input: torch.Tensor,
-    target: torch.Tensor,
-    gamma=2.0,
-    alpha: Optional[float] = None,
-    reduction="mean",
-    normalized=False,
-    threshold: Optional[float] = 0.5,
+        input: torch.Tensor,
+        target: torch.Tensor,
+        gamma=2.0,
+        alpha: Optional[float] = None,
+        reduction="mean",
+        normalized=False,
+        threshold: Optional[float] = 0.5,
 ) -> torch.Tensor:
     """Compute binary focal loss between target and output logits.
 
@@ -82,6 +83,7 @@ def reduced_focal_loss_with_logits(
 
     return loss
 
+
 class ReducedFocalLoss(nn.Module):
     def __init__(self, alpha=None, gamma=2, th=0.5, ignore_index=None):
         """
@@ -117,3 +119,21 @@ class ReducedFocalLoss(nn.Module):
                 cls_label_input, cls_label_target, gamma=self.gamma, alpha=self.alpha, threshold=0.5
             )
         return loss
+
+
+class LabelSmoothingLoss(nn.Module):
+    def __init__(self, classes, smoothing=0.1, dim=-1):
+        super(LabelSmoothingLoss, self).__init__()
+        self.confidence = 1.0 - smoothing
+        self.smoothing = smoothing
+        self.cls = classes
+        self.dim = dim
+
+    def forward(self, pred, target):
+        pred = pred.log_softmax(dim=self.dim)
+        with torch.no_grad():
+            # true_dist = pred.data.clone()
+            true_dist = torch.zeros_like(pred)
+            true_dist.fill_(self.smoothing / (self.cls - 1))
+            true_dist.scatter_(1, target.data.unsqueeze(1), self.confidence)
+        return torch.mean(torch.sum(-true_dist * pred, dim=self.dim))

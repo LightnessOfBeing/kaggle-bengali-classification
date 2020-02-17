@@ -32,5 +32,7 @@ registry.Criterion(ReducedFocalLoss)
 
 registry.Sampler(BalanceSampler)
 
+registry.Criterion(LabelSmoothingLoss)
+
 
 
