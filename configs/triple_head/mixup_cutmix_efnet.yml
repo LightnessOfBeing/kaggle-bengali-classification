@@ -1,6 +1,6 @@
 model_params:
   model: Efficient
-  encoder: "efficientnet-b1"
+  encoder: "efficientnet-b0"
   num_classes: [168, 11, 7]
   dropout: 0.0
   activation: "Mish"
@@ -75,7 +75,7 @@ stages:
 
     scheduler:
       callback: SchedulerCallback
-      reduce_metric: hmar
+      reduce_metric: loss
 
   stage1:
     state_params:
@@ -88,5 +88,5 @@ stages:
       scheduler: OneCycleLRWithWarmup
       init_lr: 0.001
       num_steps: 105
-      warmup_steps: 10
+      warmup_steps: 5
       lr_range: [0.003, 0.000005]
