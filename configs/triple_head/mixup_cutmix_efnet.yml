@@ -48,7 +48,7 @@ stages:
   criterion_params:
     _key_value: True
     ce:
-      criterion: LabelSmoothingLoss
+      criterion: CrossEntropyLoss
 
   callbacks_params:
 
