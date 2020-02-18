@@ -31,6 +31,8 @@ class EfficientNew(nn.Module):
         x = self.net.bn1(x)
         x = self.net.act1(x)
         x = self.net.blocks(x)
+        x = self.net.conv_head(x)
+        x = self.net.bn2(x)
         return x
 
     def forward(self, x):
