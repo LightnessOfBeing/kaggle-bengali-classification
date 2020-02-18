@@ -8,7 +8,6 @@ from .models.efficient import Efficient
 from .experiment import Experiment
 from .losses import *
 from .callbacks import *
-from .optimizers import *
 
 # Register models
 registry.Model(MultiHeadNet)
