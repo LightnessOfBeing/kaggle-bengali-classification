@@ -3,6 +3,7 @@ from catalyst.dl import SupervisedRunner as Runner
 from pytorch_toolbelt.losses import FocalLoss, LovaszLoss
 
 from src.dataset import BalanceSampler
+from src.models.efficient_new import EfficientNew
 from .models.multihead import MultiHeadNet
 from .models.efficient import Efficient
 from .experiment import Experiment
