@@ -26,22 +26,15 @@ class EfficientNew(nn.Module):
         self.head_vowel_diacritic = AverageHead(in_features, num_classes[1], out_features)
         self.head_consonant_diacritic = AverageHead(in_features, num_classes[2], out_features)
 
-    def custom_forward_features(self, inputs):
-        """ Returns output of the final convolution layer """
-
-        # Stem
-        x = self.net._swish(self.net._bn0(self.net._conv_stem(inputs)))
-
-        # Blocks
-        for idx, block in enumerate(self.net._blocks):
-            drop_connect_rate = self.net._global_params.drop_connect_rate
-            if drop_connect_rate:
-                drop_connect_rate *= float(idx) / len(self.net._blocks)
-            x = block(x, drop_connect_rate=drop_connect_rate)
+    def custom_forward_features(self, x):
+        x = self.net.conv_stem(x)
+        x = self.net.bn1(x)
+        x = self.net.act1(x)
+        x = self.net.blocks(x)
         return x
 
     def forward(self, x):
-        x = self.net.forward_features(x)
+        x = self.custom_forward_features(x)
         logit_grapheme_root = self.head_grapheme_root(x)
         logit_vowel_diacritic = self.head_vowel_diacritic(x)
         logit_consonant_diacritic = self.head_consonant_diacritic(x)
