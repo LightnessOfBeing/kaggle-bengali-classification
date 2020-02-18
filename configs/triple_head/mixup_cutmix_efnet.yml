@@ -47,7 +47,7 @@ stages:
   criterion_params:
     _key_value: True
     ce:
-      criterion: CrossEntropyLoss
+      criterion: LabelSmoothingLoss
 
   callbacks_params:
 
@@ -81,11 +81,12 @@ stages:
       num_epochs: 82
 
     optimizer_params:
-      optimizer: Adam
-      lr: 0.001
+      optimizer: AdamW
 
-    scheduler_params:
-      scheduler: ReduceLROnPlateau
-      factor: 0.65
-      patience: 4
-      min_lr: 5e-6
+      scheduler_params:
+        scheduler: OneCycleLRWithWarmup
+        init_lr: 0.001
+        num_steps: 82
+        warmup_steps: 5
+        lr_range: [0.002, 0.000005]
+
