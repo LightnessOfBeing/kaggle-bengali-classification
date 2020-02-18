@@ -1,21 +1,25 @@
 from albumentations import Compose, Resize, Rotate, HorizontalFlip, Normalize, VerticalFlip, ShiftScaleRotate, \
     RandomGridShuffle, Cutout, CoarseDropout
+from albumentations.pytorch import ToTensorV2
 
 
 def simple_aug():
     augs_list = [
         CoarseDropout(max_holes=1, max_height=50, max_width=50, fill_value=0, p=0.5),
-        Normalize(mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051))]
+        Normalize(mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051)),
+        ToTensorV2()]
     return Compose(augs_list, p=1)
 
 
 def mixup_aug():
-    augs_list = [Normalize(mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051))]
+    augs_list = [Normalize(mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051)),
+        ToTensorV2()]
     return Compose(augs_list, p=1)
 
 
 def valid_aug():
-    augs_list = [Normalize(mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051))]
+    augs_list = [Normalize(mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051)),
+        ToTensorV2()]
     return Compose(augs_list, p=1)
 
 

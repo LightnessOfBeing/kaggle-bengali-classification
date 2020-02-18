@@ -2,7 +2,6 @@ model_params:
   model: Efficient
   encoder: "efficientnet-b0"
   num_classes: [168, 11, 7]
-  dropout: 0.0
   activation: "Mish"
 
 args:
@@ -34,7 +33,7 @@ stages:
     train_csv_name: "train_with_fold.csv"
     data_folder: "../input/bengaliai128/train_images128"
     train_aug_name: "mixup_aug"
-    fold: 0
+    fold: 1
     processed: False
    # samplers_params:  # KEYWORD, параметры sampler для каждого лоадера, такое же API, как в loaders_params
    #   train:
@@ -75,7 +74,7 @@ stages:
 
     scheduler:
       callback: SchedulerCallback
-      reduce_metric: hmar
+      reduce_metric: loss
 
   stage1:
     state_params:
@@ -83,11 +82,10 @@ stages:
 
     optimizer_params:
       optimizer: Adam
-      lr: 0.003
+      lr: 0.001
 
     scheduler_params:
       scheduler: ReduceLROnPlateau
-      mode: max
       factor: 0.65
-      patience: 5
-      min_lr: 5e-7
+      patience: 4
+      min_lr: 5e-6

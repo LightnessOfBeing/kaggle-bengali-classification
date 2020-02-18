@@ -1,9 +1,8 @@
 from efficientnet_pytorch import EfficientNet
 from torch import nn
 
-from src.models.head import Head, AverageHead
+from src.models.head import AverageHead
 from src.utils import to_Mish
-import kornia
 
 
 class Efficient(nn.Module):
@@ -16,9 +15,9 @@ class Efficient(nn.Module):
         if activation == "Mish":
             to_Mish(self.net)
             print("Mish activation added!")
-        if dropout is not None:
-            print("Dropout is set to 0!")
-            self.net._dropout.p = 0.0
+       # if dropout is not None:
+       #     print("Dropout is set to 0!")
+       #     self.net._dropout.p = 0.0
       #  print(self.net)
 
         in_features = n_channels_dict[encoder][0]

@@ -48,7 +48,7 @@ class BengaliDataset(Dataset):
         image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
         if self.transform:
             image = self.transform(image=image)['image']
-        image = np.transpose(image, (2, 0, 1)).astype(np.float32)
+        #image = np.transpose(image, (2, 0, 1)).astype(np.float32)
 
         return {
             'image': image,
