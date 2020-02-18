@@ -12,6 +12,7 @@ from .callbacks import *
 # Register models
 registry.Model(MultiHeadNet)
 registry.Model(Efficient)
+registry.Model(EfficientNew)
 
 # Register callbacks
 registry.Callback(HMacroAveragedRecall)

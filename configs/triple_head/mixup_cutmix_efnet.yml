@@ -1,5 +1,5 @@
 model_params:
-  model: Efficient
+  model: EfficientNew
   encoder: "efficientnet-b0"
   num_classes: [168, 11, 7]
   activation: "Mish"
@@ -47,7 +47,7 @@ stages:
   criterion_params:
     _key_value: True
     ce:
-      criterion: LabelSmoothingLoss
+      criterion: CrossEntropyLoss
 
   callbacks_params:
 
