@@ -18,7 +18,7 @@ class Efficient(nn.Module):
        # if dropout is not None:
        #     print("Dropout is set to 0!")
        #     self.net._dropout.p = 0.0
-      #  print(self.net)
+        print(self.net)
 
         in_features = n_channels_dict[encoder][0]
         out_features = n_channels_dict[encoder][1]
