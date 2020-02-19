@@ -58,7 +58,7 @@ class BengaliDataset(Dataset):
             'consonant_diacritic': consonant_diacritic
         }
 
-
+'''
 TASK = {
     'grapheme_root': {'num_class':168},
     'vowel_diacritic': {'num_class':11},
@@ -115,3 +115,4 @@ class BalanceSampler(Sampler):
 
     def __len__(self):
         return self.length
+        '''

@@ -5,6 +5,7 @@ import torch
 from efficientnet_pytorch.utils import MemoryEfficientSwish
 import cv2
 import numpy as np
+from timm.models.activations import Swish
 from torch import nn
 
 
@@ -78,7 +79,7 @@ class MishFunction(torch.autograd.Function):
     @staticmethod
     def forward(ctx, x):
         ctx.save_for_backward(x)
-        return x * torch.tanh(F.softplus(x))   # x * tanh(ln(1 + exp(x)))
+        return x * torch.tanh(F.softplus(x))  # x * tanh(ln(1 + exp(x)))
 
     @staticmethod
     def backward(ctx, grad_output):
@@ -87,22 +88,25 @@ class MishFunction(torch.autograd.Function):
         tanh_sp = torch.tanh(F.softplus(x))
         return grad_output * (tanh_sp + x * sigmoid * (1 - tanh_sp * tanh_sp))
 
+
 class Mish(nn.Module):
     def forward(self, x):
         return MishFunction.apply(x)
 
+
 def to_Mish(model):
     for child_name, child in model.named_children():
-        if isinstance(child, nn.ReLU) or isinstance(child, MemoryEfficientSwish):
+        if isinstance(child, nn.ReLU) or isinstance(child, MemoryEfficientSwish) or \
+                isinstance(child, Swish):
             setattr(model, child_name, Mish())
         else:
             to_Mish(child)
 
-def bn_drop_lin(n_in:int, n_out:int, bn:bool=True, p:float=0., actn:Optional[nn.Module]=None):
+
+def bn_drop_lin(n_in: int, n_out: int, bn: bool = True, p: float = 0., actn: Optional[nn.Module] = None):
     "Sequence of batchnorm (if `bn`), dropout (with `p`) and linear (`n_in`,`n_out`) layers followed by `actn`."
     layers = [nn.BatchNorm1d(n_in)] if bn else []
     if p != 0: layers.append(nn.Dropout(p))
     layers.append(nn.Linear(n_in, n_out))
     if actn is not None: layers.append(actn)
     return layers
-

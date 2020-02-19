@@ -5,7 +5,8 @@ from albumentations.pytorch import ToTensorV2
 
 def simple_aug():
     augs_list = [
-        CoarseDropout(max_holes=1, max_height=50, max_width=50, fill_value=0, p=0.5),
+        CoarseDropout(min_holes=2, max_holes=10, max_height=10, max_width=10, fill_value=0, p=0.5),
+        Rotate(10),
         Normalize(mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051)),
         ToTensorV2()]
     return Compose(augs_list, p=1)
