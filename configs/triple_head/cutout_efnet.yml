@@ -53,7 +53,6 @@ stages:
 
     loss_grapheme_roots:
       callback: CustomCriterionCallback
-      fields: ["image"]
       input_key: "grapheme_root"
       output_key: "logit_grapheme_root"
       criterion_key: "ce"
@@ -61,7 +60,6 @@ stages:
 
     loss_vowel_diacritics:
       callback: CustomCriterionCallback
-      fields: ["image"]
       input_key: "vowel_diacritic"
       output_key: "logit_vowel_diacritic"
       criterion_key: "ce"
@@ -69,7 +67,6 @@ stages:
 
     loss_consonant_diacritics:
       callback: CustomCriterionCallback
-      fields: ["image"]
       input_key: "consonant_diacritic"
       output_key: "logit_consonant_diacritic"
       criterion_key: "ce"
