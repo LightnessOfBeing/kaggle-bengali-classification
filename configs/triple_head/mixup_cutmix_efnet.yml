@@ -81,14 +81,14 @@ stages:
       num_epochs: 150
 
     optimizer_params:
-      optimizer: SGD
+      optimizer: AdamW
       lr: 0.003
 
     scheduler_params:
       scheduler: ReduceLROnPlateau
       mode: max
       factor: 0.6
-      patience: 5
+      patience: 4
       verbose: True
       min_lr: 5e-6
 
