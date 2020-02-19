@@ -408,7 +408,7 @@ class CustomCriterionCallback(Callback):
         criterion = state.get_key(
             key="criterion", inner_key=self.criterion_key
         )
-
+        print("kekW")
         loss = self._compute_loss(state, criterion) * self.multiplier
 
         _add_loss_to_state(self.prefix, state, loss)
