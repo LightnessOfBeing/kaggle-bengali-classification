@@ -97,7 +97,7 @@ stages:
 
   stage1:
     state_params:
-      num_epochs: 82
+      num_epochs: 35
 
     optimizer_params:
       optimizer: AdamW
@@ -105,7 +105,7 @@ stages:
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
       init_lr: 0.001
-      num_steps: 82
+      num_steps: 30
       warmup_steps: 5
-      lr_range: [0.002, 0.000005]
+      lr_range: [0.003, 0.00001]
 
