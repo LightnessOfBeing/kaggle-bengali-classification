@@ -12,10 +12,10 @@ class EfficientNew(nn.Module):
                            'efficientnet-b3': 1536, 'efficientnet-b4': 1792, 'efficientnet-b5': 2048,
                            'efficientnet-b6': 2304, 'efficientnet-b7': 2560}
         self.net = timm.create_model('efficientnet_b0', pretrained=True)
-        if activation == "Mish":
+       # if activation == "Mish":
             # todo fix Swish
-            to_Mish(self.net)
-            print("Mish activation added!")
+      #      to_Mish(self.net)
+      #      print("Mish activation added!")
        # if dropout is not None:
        #     print("Dropout is set to 0!")
        #     self.net._dropout.p = 0.0
