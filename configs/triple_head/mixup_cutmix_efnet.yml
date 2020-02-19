@@ -74,19 +74,25 @@ stages:
 
     scheduler:
       callback: SchedulerCallback
-      reduce_metric: loss
+      reduce_metric: hmar
 
   stage1:
     state_params:
-      num_epochs: 82
+      num_epochs: 150
 
     optimizer_params:
-      optimizer: AdamW
+      optimizer: SGD
+      lr: 0.003
 
     scheduler_params:
-      scheduler: OneCycleLRWithWarmup
-      init_lr: 0.001
-      num_steps: 82
-      warmup_steps: 5
-      lr_range: [0.002, 0.000005]
+      scheduler: ReduceLROnPlateau
+      mode: max
+      factor: 0.6
+      patience: 5
+      verbose: True
+      min_lr: 5e-6
+
+
+
+
 
