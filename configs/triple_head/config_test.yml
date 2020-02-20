@@ -1,11 +1,11 @@
 model_params:
-  model: MultiHeadNet
-  arch: resnet18
-  pretrained: True
+  model: EfficientNew
+  encoder: efficientnet_b0
   num_classes:
     - 168
     - 11
     - 7
+  activation: Mish
 
 args:
   logdir: "./logs/bengali_logs"
@@ -15,94 +15,76 @@ args:
 
 runner_params:  # OPTIONAL KEYWORD, параметры для инициализации Runner
   # Например для SupervisedRunner
-  input_key: "images"  # Пример
+  input_key: "image"  # Пример
   output_key:
     - "logit_grapheme_root"
     - "logit_vowel_diacritic"
     - "logit_consonant_diacritic"
   input_target_key:
-    - "grapheme_roots"
-    - "vowel_diacritics"
-    - "consonant_diacritics"
+    - "grapheme_root"
+    - "vowel_diacritic"
+    - "consonant_diacritic"
 
 stages:
   data_params:
-    batch_size: 128
-    num_workers: 2
-
-    train_csv: "train.csv"
+    batch_size: 16
+    num_workers: 4
+    train_csv_path: "../input/bengaliai-cv19/"
+    train_csv_name: "train.csv"
     data_folder: "../input/grapheme-imgs-128x128/"
+    train_aug_name: "mixup_aug"
     test_run: True
+   # samplers_params:  # KEYWORD, параметры sampler для каждого лоадера, такое же API, как в loaders_params
+   #   train:
+   #     sampler: BalanceSampler
+   #     df_path: "../input/bengaliutils2/train_with_fold.csv"
 
   state_params:
-    main_metric: loss
-    minimize_metric: True
+    main_metric: hmar
+    minimize_metric: False
 
   criterion_params:
     _key_value: True
     ce:
       criterion: CrossEntropyLoss
 
-  optimizer_params:  # REQUIRED KEYWORD, параметры для оптимизатора
-    optimizer: Adam  # REQUIRED KEYWORD, имя оптимизатора
-    lr: 0.003
-    weight_decay: 0.0001
+  callbacks_params:
 
-  scheduler_params:  # REQUIRED KEYWORD, параметры для lr-scheduler
-    scheduler: StepLR  # REQUIRED KEYWORD, имя lr-scheduler
-    # на этом уровне могут лежать параметры для __init__ данного lr-scheduler, например
-    step_size: 10
-    gamma: 0.3
+    loss_mixup:
+      callback: MixupCutmixCallback
+      fields: ["image"]
+      input_key: ["grapheme_root", "vowel_diacritic", "consonant_diacritic"]
+      output_key: ["logit_grapheme_root", "logit_vowel_diacritic", "logit_consonant_diacritic"]
+      criterion_key: "ce"
+      prefix: "loss"
+      weight_grapheme_root: 7
+      weight_vowel_diacritic: 1
+      weight_consonant_diacritic: 2
 
-  stage1:  # Все, что не ключевое слово, расценивается, как имя стейджа. Для тренировки в Catalyst требуется хотябы один стейдж. Имя может быть произвольным
-    state_params:  # Вы можете переопределить любые параметры, для конкретного стейджа, например
-      num_epochs: 1
+    saver:
+      callback: CheckpointCallback
+      save_n_best: 3
 
-    callbacks_params:  # REQUIRED KEYWORD, самая важная часть, тут записываются все коллбеки для данного стейджа
-      # коллбеки записываются через key-value
-      loss_grapheme_roots:
-        callback: CriterionCallback  # KEYWORD имя коллбека
-        input_key: "grapheme_roots"
-        output_key: "logit_grapheme_root"
-        criterion_key: "ce"
-        prefix: "loss_gr"
+    metrics:
+      callback: HMacroAveragedRecall
 
-      loss_vowel_diacritics:
-        callback: CriterionCallback  # KEYWORD имя коллбека
-        input_key: "vowel_diacritics"
-        output_key: "logit_vowel_diacritic"
-        criterion_key: "ce"
-        prefix: "loss_vd"
+    optimizer:
+      callback: OptimizerCallback
 
-      loss_consonant_diacritics:
-        callback: CriterionCallback  # KEYWORD имя коллбека
-        input_key: "consonant_diacritics"
-        output_key: "logit_consonant_diacritic"
-        criterion_key: "ce"
-        prefix: "loss_cd"
+    scheduler:
+      callback: SchedulerCallback
+      reduce_metric: hmar
 
-      loss_aggregator:
-        callback: CriterionAggregatorCallback
-        prefix: "loss"
-        loss_aggregate_fn: "sum"
-        loss_keys:
-          - "loss_gr"
-          - "loss_vd"
-          - "loss_cd"
+  stage1:
+    state_params:
+      num_epochs: 100
 
-      optimizer:
-        callback: OptimizerCallback
+    optimizer_params:
+      optimizer: AdamW
 
-      scheduler:
-        callback: SchedulerCallback
-        reduce_metric: loss
-
-      saver:
-        callback: CheckpointCallback
-        save_n_best: 2
-
-      metrics:
-        callback: HMacroAveragedRecall
-
-      viewer:
-        callback: ImageViewerCallback
+    scheduler_params:
+      scheduler: OneCycleLRWithWarmup
+      init_lr: 0.0005
+      num_steps: 95
+      warmup_steps: 5
+      lr_range: [0.002, 0.000005]

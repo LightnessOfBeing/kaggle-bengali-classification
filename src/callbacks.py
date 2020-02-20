@@ -1,13 +1,11 @@
 from typing import List
 
-import catalyst
 import numpy as np
 import torch
 import torch.nn.functional as F
 from catalyst.dl import CriterionCallback, utils
 from catalyst.dl.core import Callback, CallbackOrder, State
 from sklearn.metrics import recall_score
-from catalyst.core import _State
 
 from src.utils import rand_bbox
 
@@ -152,6 +150,7 @@ class MixupCutmixCallback(CriterionCallback):
         self.weight_vowel_diacritic = weight_vowel_diacritic
         self.weight_consonant_diacritic = weight_consonant_diacritic
         self.apply_mixup = True
+        self.cnt = 0
 
     def on_loader_start(self, state: State):
         self.is_needed = not self.on_train_only or \
@@ -160,6 +159,7 @@ class MixupCutmixCallback(CriterionCallback):
     def do_mixup(self, state: State):
 
         for f in self.fields:
+            #print(f"self.lam = {self.lam}")
             state.input[f] = self.lam * state.input[f] + \
                              (1 - self.lam) * state.input[f][self.index]
 
@@ -180,10 +180,12 @@ class MixupCutmixCallback(CriterionCallback):
         if not self.is_needed:
             return
 
-        if self.alpha > 0:
-            self.lam = np.random.beta(self.alpha, self.alpha)
-        else:
-            self.lam = 1
+      #  if self.alpha > 0:
+      #      self.lam = np.random.beta(self.alpha, self.alpha)
+      #  else:
+      #      self.lam = 1
+
+        self.lam = 0.7
 
         self.index = torch.randperm(state.input[self.fields[0]].shape[0])
         self.index.to(state.device)
@@ -307,27 +309,6 @@ class MixupCutmixCallbackSingle(CriterionCallback):
                               (1 - self.lam) * criterion(pred, y_b)
 
         return loss
-
-
-def _add_loss_to_state(
-    loss_key,
-    state: _State,
-    loss: torch.Tensor
-):
-    if loss_key is None:
-        if state.loss is not None:
-            if isinstance(state.loss, list):
-                state.loss.append(loss)
-            else:
-                state.loss = [state.loss, loss]
-        else:
-            state.loss = loss
-    else:
-        if state.loss is not None:
-            assert isinstance(state.loss, dict)
-            state.loss[loss_key] = loss
-        else:
-            state.loss = {loss_key: loss}
 
 
 class CheckpointLoader(Callback):

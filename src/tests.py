@@ -1,3 +1,5 @@
+import os
+
 import cv2
 
 import matplotlib.pyplot as plt
@@ -38,5 +40,24 @@ def load_png(fname, aug):
     return image1
 
 if __name__ == "__main__":
-    im1 = load_png("../input/grapheme-imgs-128x128/Train_0.png", simple_aug())
+  #  im1 = load_png("../input/grapheme-imgs-128x128/Train_0.png", simple_aug())
+    ims = sorted(os.listdir('./png/'))
+    for i in range(len(ims)):
+        im = np.load(os.path.join("./png/", ims[i]))
+        plt.imshow(im)
+        plt.show()
    # im2 = load_parquet("test1.csv", valid_aug())
+
+'''
+
+
+
+        # 2 0 1
+        # 1 2 0
+        for i in range(state.input['image'].shape[0]):
+            im = state.input['image'][i, ...]
+            im = im.numpy()
+            im = np.transpose(im, (1, 2, 0))
+            np.save(f"./png/{self.cnt}.png", im)
+            self.cnt += 1
+'''
