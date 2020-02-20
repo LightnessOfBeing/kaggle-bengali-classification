@@ -1,6 +1,6 @@
 model_params:
   model: EfficientNew
-  encoder: "efficientnet-b0"
+  encoder: "efficientnet-b2"
   num_classes: [168, 11, 7]
   activation: "Mish"
 
@@ -78,19 +78,17 @@ stages:
 
   stage1:
     state_params:
-      num_epochs: 150
+      num_epochs: 100
 
     optimizer_params:
       optimizer: AdamW
-      lr: 0.003
 
     scheduler_params:
-      scheduler: ReduceLROnPlateau
-      mode: max
-      factor: 0.6
-      patience: 4
-      verbose: True
-      min_lr: 5e-6
+      scheduler: OneCycleLRWithWarmup
+        init_lr: 0.0005
+        num_steps: 95
+        warmup_steps: 10
+        lr_range: [0.002, 0.000005]
 
 
 
