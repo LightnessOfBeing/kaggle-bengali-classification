@@ -11,7 +11,7 @@ class EfficientNew(nn.Module):
         n_channels_dict = {'efficientnet-b0': (320, 1280), 'efficientnet-b1': (320, 1280), 'efficientnet-b2': (352, 1408),
                            'efficientnet-b3': 1536, 'efficientnet-b4': 1792, 'efficientnet-b5': 2048,
                            'efficientnet-b6': 2304, 'efficientnet-b7': 2560}
-        self.net = timm.create_model('efficientnet_b0', pretrained=True)
+        self.net = timm.create_model(encoder, pretrained=True)
        # if activation == "Mish":
             # todo fix Swish
       #      to_Mish(self.net)
