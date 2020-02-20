@@ -49,6 +49,7 @@ class AverageHead(nn.Module):
     def forward(self, x):
       #  x = self.pre_layers(x)
         x = 0.5 * (F.adaptive_avg_pool2d(x, 1) + F.adaptive_max_pool2d(x, 1))
+        x = F.dropout(x, 0.2)
         return self.post_layers(x)
 
 
