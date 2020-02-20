@@ -85,10 +85,10 @@ stages:
 
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
-      init_lr: 0.0005
+      init_lr: 0.00015
       num_steps: 95
       warmup_steps: 5
-      lr_range: [0.002, 0.000005]
+      lr_range: [0.00015, 0.000005]
 
 
 
