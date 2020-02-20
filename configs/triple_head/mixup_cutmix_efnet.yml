@@ -76,17 +76,17 @@ stages:
       callback: SchedulerCallback
       reduce_metric: hmar
 
+    finder:
+      callback: LRFinder
+      final_lr: 0.01
+      num_steps: 1000
+
   stage1:
     state_params:
       num_epochs: 100
 
     optimizer_params:
       optimizer: AdamW
-
-    finder:
-      callback: LRFinder
-      final_lr: 0.01
-      num_steps: 1000
 
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
