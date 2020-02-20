@@ -83,12 +83,19 @@ stages:
     optimizer_params:
       optimizer: AdamW
 
+    finder:
+      callback: LRFinder
+      final_lr: 0.01
+      num_steps: 1000
+
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
       init_lr: 0.00015
       num_steps: 95
       warmup_steps: 5
       lr_range: [0.00015, 0.000005]
+
+
 
 
 
