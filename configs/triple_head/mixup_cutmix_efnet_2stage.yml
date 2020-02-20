@@ -1,12 +1,11 @@
 model_params:
-  model: Efficient
-  encoder: "efficientnet-b0"
+  model: EfficientNew
+  encoder: "efficientnet_b2"
   num_classes: [168, 11, 7]
-  dropout: 0.0
   activation: "Mish"
 
 args:
-  logdir: "./logs/bengali_logs"
+  logdir: "./logs"
   seed: 65
   check: False
   verbose: True
@@ -33,7 +32,7 @@ stages:
     train_csv_name: "train_with_fold.csv"
     data_folder: "../input/bengali224/"
     train_aug_name: "mixup_aug"
-    fold: 0
+    fold: 1
     processed: False
 
   state_params:
@@ -54,9 +53,9 @@ stages:
       output_key: ["logit_grapheme_root", "logit_vowel_diacritic", "logit_consonant_diacritic"]
       criterion_key: "ce"
       prefix: "loss"
-      weight_grapheme_root: 2
+      weight_grapheme_root: 7
       weight_vowel_diacritic: 1
-      weight_consonant_diacritic: 1
+      weight_consonant_diacritic: 2
 
     saver:
       callback: CheckpointCallback
@@ -70,11 +69,10 @@ stages:
 
     scheduler:
       callback: SchedulerCallback
-      reduce_metric: loss
 
   stage1:
     state_params:
-      num_epochs: 40
+      num_epochs: 50
 
     optimizer_params:
       optimizer: AdamW
@@ -82,12 +80,12 @@ stages:
     callbacks_params:
       checkpoint_loader:
         callback: CheckpointLoader
-        checkpoint_path: "../input/bengaliutils2/enetb0_9695.pth"
+        checkpoint_path: "../input/bengaliutils2/enetb2_9662_f1.pth"
 
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
-      init_lr: 0.0002
-      num_steps: 35
-      warmup_steps: 0
-      lr_range: [0.0002, 0.00001]
+      init_lr: 0.00010
+      num_steps: 37
+      warmup_steps: 3
+      lr_range: [0.00015, 0.000005]
 
