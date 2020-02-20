@@ -6,7 +6,7 @@ from src.utils import to_Mish
 
 
 class EfficientNew(nn.Module):
-    def __init__(self, num_classes, encoder='efficientnet-b0', dropout=None, activation="Mish"):
+    def __init__(self, num_classes, encoder, activation):
         super().__init__()
         n_channels_dict = {'efficientnet-b0': (320, 1280), 'efficientnet-b1': (320, 1280), 'efficientnet-b2': (352, 1408),
                            'efficientnet-b3': 1536, 'efficientnet-b4': 1792, 'efficientnet-b5': 2048,

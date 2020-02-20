@@ -1,7 +1,7 @@
 model_params:
   model: EfficientNew
-  encoder: "efficientnet-b2"
   num_classes: [168, 11, 7]
+  encoder: "efficientnet_b2"
   activation: "Mish"
 
 args:
