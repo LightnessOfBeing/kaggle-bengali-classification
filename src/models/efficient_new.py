@@ -8,9 +8,9 @@ from src.utils import to_Mish
 class EfficientNew(nn.Module):
     def __init__(self, num_classes, encoder, activation):
         super().__init__()
-        n_channels_dict = {'efficientnet-b0': (320, 1280), 'efficientnet-b1': (320, 1280), 'efficientnet-b2': (352, 1408),
-                           'efficientnet-b3': 1536, 'efficientnet-b4': 1792, 'efficientnet-b5': 2048,
-                           'efficientnet-b6': 2304, 'efficientnet-b7': 2560}
+        n_channels_dict = {'efficientnet_b0': (320, 1280), 'efficientnet_b1': (320, 1280), 'efficientnet_b2': (352, 1408),
+                           'efficientnet_b3': 1536, 'efficientnet_b4': 1792, 'efficientnet_b5': 2048,
+                           'efficientnet_b6': 2304, 'efficientnet_b7': 2560}
         self.net = timm.create_model(encoder, pretrained=True)
        # if activation == "Mish":
             # todo fix Swish

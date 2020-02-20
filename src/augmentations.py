@@ -13,13 +13,13 @@ def simple_aug():
 
 def mixup_aug():
     augs_list = [Normalize(mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051)),
-        ToTensorV2()]
+                 ToTensorV2()]
     return Compose(augs_list, p=1)
 
 
 def valid_aug():
     augs_list = [Normalize(mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051)),
-        ToTensorV2()]
+                 ToTensorV2()]
     return Compose(augs_list, p=1)
 
 
