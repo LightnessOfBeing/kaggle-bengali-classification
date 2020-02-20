@@ -78,8 +78,8 @@ stages:
 
     finder:
       callback: LRFinder
-      final_lr: 0.01
-      num_steps: 200
+      final_lr: 0.1
+      num_steps: 50
 
   stage1:
     state_params:
