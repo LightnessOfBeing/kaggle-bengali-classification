@@ -23,7 +23,6 @@ registry.Callback(MixupCutmixCallback)
 registry.Callback(CheckpointLoader)
 registry.Callback(HMacroAveragedRecallSingle)
 registry.Callback(MixupCutmixCallbackSingle)
-registry.Callback(CustomCriterionCallback)
 
 # Register criterion
 registry.Criterion(FocalLoss)
