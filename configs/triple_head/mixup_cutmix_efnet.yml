@@ -1,11 +1,11 @@
 model_params:
   model: EfficientNew
   num_classes: [168, 11, 7]
-  encoder: "efficientnet_b2"
+  encoder: "efficientnet_b0"
   activation: "Mish"
 
 args:
-  logdir: "./logs/bengali_logs"
+  logdir: "./logs"
   seed: 65
   check: False
   verbose: True
