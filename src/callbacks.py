@@ -112,7 +112,7 @@ class MixupCutmixCallback(CriterionCallback):
     def __init__(
             self,
             fields: List[str] = ("features",),
-            alpha=1.0,
+            alpha=0.6,
             on_train_only=True,
             weight_grapheme_root=2.0,
             weight_vowel_diacritic=1.0,
@@ -197,6 +197,7 @@ class MixupCutmixCallback(CriterionCallback):
             self.do_mixup(state)
         else:
             self.do_cutmix(state)
+
 
     def _compute_loss(self, state: State, criterion):
         loss_arr = [0, 0, 0]

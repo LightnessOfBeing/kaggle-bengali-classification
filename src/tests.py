@@ -52,12 +52,13 @@ if __name__ == "__main__":
 
 
 
-        # 2 0 1
-        # 1 2 0
         for i in range(state.input['image'].shape[0]):
             im = state.input['image'][i, ...]
             im = im.numpy()
             im = np.transpose(im, (1, 2, 0))
             np.save(f"./png/{self.cnt}.png", im)
             self.cnt += 1
+        # 2 0 1
+        # 1 2 0
+        
 '''
