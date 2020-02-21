@@ -1,7 +1,7 @@
 model_params:
   model: EfficientNew
   num_classes: [168, 11, 7]
-  encoder: "efficientnet_b0"
+  encoder: "efficientnet_b4"
   activation: "Mish"
 
 args:
@@ -74,26 +74,20 @@ stages:
 
     scheduler:
       callback: SchedulerCallback
-      reduce_metric: hmar
-
-    finder:
-      callback: LRFinder
-      final_lr: 0.1
-      num_steps: 200
 
   stage1:
     state_params:
-      num_epochs: 100
+      num_epochs: 120
 
     optimizer_params:
       optimizer: AdamW
 
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
-      init_lr: 0.00015
-      num_steps: 95
+      init_lr: 0.0005
+      num_steps: 115
       warmup_steps: 5
-      lr_range: [0.00015, 0.000005]
+      lr_range: [0.001, 0.000005]
 
 
 

@@ -180,14 +180,14 @@ class MixupCutmixCallback(CriterionCallback):
         if not self.is_needed:
             return
 
-      #  if self.alpha > 0:
-      #      self.lam = np.random.beta(self.alpha, self.alpha)
-      #  else:
-      #      self.lam = 1
+        if self.alpha > 0:
+            self.lam = np.random.beta(self.alpha, self.alpha)
+        else:
+            self.lam = 1
 
-        self.lam = np.random.choice([0.2, 0.25, 0.3, 0.35, 0.4, 0.45,
-                                     0.5, 0.55, 0.6, 0.65, 0.7, 0.75,
-                                     0.8])
+      #  self.lam = np.random.choice([0.2, 0.25, 0.3, 0.35, 0.4, 0.45,
+      #                               0.5, 0.55, 0.6, 0.65, 0.7, 0.75,
+      #                               0.8])
 
         self.index = torch.randperm(state.input[self.fields[0]].shape[0])
         self.index.to(state.device)
