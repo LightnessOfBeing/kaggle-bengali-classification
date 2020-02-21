@@ -1,11 +1,11 @@
 model_params:
   model: EfficientNew
+  encoder: "efficientnet_b0"
   num_classes: [168, 11, 7]
-  encoder: "efficientnet_b4"
   activation: "Mish"
 
 args:
-  logdir: "./logs"
+  logdir: "./logs/"
   seed: 65
   check: False
   verbose: True
@@ -27,18 +27,14 @@ runner_params:  # OPTIONAL KEYWORD, параметры для инициализ
 
 stages:
   data_params:
-    batch_size: 128
+    batch_size: 256
     num_workers: 4
     train_csv_path: "../input/bengaliutils2/"
     train_csv_name: "train_with_fold.csv"
     data_folder: "../input/grapheme-imgs-128x128/"
     train_aug_name: "mixup_aug"
-    fold: 1
+    fold: 0
     processed: False
-   # samplers_params:  # KEYWORD, параметры sampler для каждого лоадера, такое же API, как в loaders_params
-   #   train:
-   #     sampler: BalanceSampler
-   #     df_path: "../input/bengaliutils2/train_with_fold.csv"
 
   state_params:
     main_metric: hmar
@@ -58,9 +54,9 @@ stages:
       output_key: ["logit_grapheme_root", "logit_vowel_diacritic", "logit_consonant_diacritic"]
       criterion_key: "ce"
       prefix: "loss"
-      weight_grapheme_root: 7
-      weight_vowel_diacritic: 1
-      weight_consonant_diacritic: 2
+      weight_grapheme_root: 2.0
+      weight_vowel_diacritic: 1.0
+      weight_consonant_diacritic: 1.0
 
     saver:
       callback: CheckpointCallback
@@ -74,6 +70,7 @@ stages:
 
     scheduler:
       callback: SchedulerCallback
+      reduce_metric: loss
 
   stage1:
     state_params:
@@ -84,14 +81,7 @@ stages:
 
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
-      init_lr: 0.0005
+      init_lr: 0.001
       num_steps: 115
       warmup_steps: 5
-      lr_range: [0.001, 0.000005]
-
-
-
-
-
-
-
+      lr_range: [0.005, 0.000005]

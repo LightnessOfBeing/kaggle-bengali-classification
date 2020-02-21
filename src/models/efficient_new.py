@@ -12,10 +12,9 @@ class EfficientNew(nn.Module):
                            'efficientnet_b3': 1536, 'efficientnet_b4': (448, 1792), 'efficientnet_b5': 2048,
                            'efficientnet_b6': 2304, 'efficientnet_b7': 2560}
         self.net = timm.create_model(encoder, pretrained=True)
-       # if activation == "Mish":
-            # todo fix Swish
-      #      to_Mish(self.net)
-      #      print("Mish activation added!")
+        if activation == "Mish":
+            to_Mish(self.net)
+            print("Mish activation added!")
        # if dropout is not None:
        #     print("Dropout is set to 0!")
        #     self.net._dropout.p = 0.0
@@ -27,14 +26,6 @@ class EfficientNew(nn.Module):
         self.head_vowel_diacritic = AverageHead(in_features, num_classes[1], out_features)
         self.head_consonant_diacritic = AverageHead(in_features, num_classes[2], out_features)
 
-    def custom_forward_features(self, x):
-        x = self.net.conv_stem(x)
-        x = self.net.bn1(x)
-        x = self.net.act1(x)
-        x = self.net.blocks(x)
-        x = self.net.conv_head(x)
-        x = self.net.bn2(x)
-        return x
 
     def forward(self, x):
         x = self.net.forward_features(x)
