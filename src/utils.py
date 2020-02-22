@@ -181,7 +181,7 @@ class FRN(nn.Module):
 def to_FRN(model):
     for child_name, child in model.named_children():
         if isinstance(child, BatchNorm2d):
-            setattr(model, child_name, GroupNorm(num_groups=child.num_features, num_channels=child.num_features))
+            setattr(model, child_name, GroupNorm(num_groups=32, num_channels=child.num_features))
         else:
             to_FRN(child)
 
