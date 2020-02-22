@@ -7,7 +7,7 @@ import cv2
 import numpy as np
 from timm.models.activations import Swish
 from torch import nn
-from torch.nn import AdaptiveAvgPool2d, Parameter, BatchNorm2d, GroupNorm
+from torch.nn import AdaptiveAvgPool2d, Parameter, BatchNorm2d, GroupNorm, Conv2d
 
 
 def load_image(path):
@@ -177,13 +177,63 @@ class FRN(nn.Module):
         return x
 
 
-
 def to_FRN(model):
     for child_name, child in model.named_children():
         if isinstance(child, BatchNorm2d):
             setattr(model, child_name, GroupNorm(num_groups=32, num_channels=child.num_features))
         else:
             to_FRN(child)
+
+
+class Conv2dWS(nn.Conv2d):
+
+    def __init__(self, in_channels, out_channels, kernel_size, stride,
+                 padding, dilation, transposed, output_padding,
+                 groups, bias, padding_mode):
+        super(Conv2d, self).__init__(in_channels, out_channels, kernel_size, stride,
+                 padding, dilation, transposed, output_padding,
+                 groups, bias, padding_mode)
+
+    def forward(self, x):
+        weight = self.weight
+        weight_mean = weight.mean(dim=1, keepdim=True).mean(dim=2,
+                                  keepdim=True).mean(dim=3, keepdim=True)
+        weight = weight - weight_mean
+        std = weight.view(weight.size(0), -1).std(dim=1).view(-1, 1, 1, 1) + 1e-5
+        weight = weight / std.expand_as(weight)
+        return F.conv2d(x, weight, self.bias, self.stride,
+                        self.padding, self.dilation, self.groups)
+
+
+def to_ws(mod):
+    before_name = None
+    before_child = None
+    is_conv = False
+
+    for name, child in mod.named_children():
+        if is_conv and isinstance(child, BatchNorm2d):
+            # Convert conv2 to conv2dws
+            if isinstance(before_child, Conv2d):
+                setattr(mod, before_name,
+                        Conv2dWS(in_channels=before_child.in_channels,
+                                 out_channels=before_child.out_channels,
+                                 kernel_size=before_child.kernel_size,
+                                 stride=before_child.stride,
+                                 padding=before_child.padding,
+                                 dilation=before_child.dilation,
+                                 groups=before_child.groups,
+                                 bias=before_child.bias,
+                                 output_padding=before_child.output_padding,
+                                 padding_mode=before_child.padding_mode,
+                                 transposed=before_child.transposed))
+            else:
+                raise NotImplementedError()
+        else:
+            to_ws(child)
+
+        before_name = name
+        before_child = child
+        is_conv = isinstance(child, Conv2d)
 
 
 def to_GeM(model):

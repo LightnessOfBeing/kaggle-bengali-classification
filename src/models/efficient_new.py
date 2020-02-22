@@ -2,7 +2,7 @@ import timm
 from torch import nn
 
 from src.models.head import AverageHead
-from src.utils import to_Mish, to_GeM, to_FRN
+from src.utils import to_Mish, to_ws
 
 
 class EfficientNew(nn.Module):
@@ -16,7 +16,7 @@ class EfficientNew(nn.Module):
             to_Mish(self.net)
             print("Mish activation added!")
        # to_GeM(self.net)
-        to_FRN(self.net)
+        to_ws(self.net)
         print(self.net)
 
         in_features = n_channels_dict[encoder][0]
