@@ -112,7 +112,7 @@ class MixupCutmixCallback(CriterionCallback):
     def __init__(
             self,
             fields: List[str] = ("features",),
-            alpha=0.1,
+            alpha=1.0,
             on_train_only=True,
             weight_grapheme_root=2.0,
             weight_vowel_diacritic=1.0,
