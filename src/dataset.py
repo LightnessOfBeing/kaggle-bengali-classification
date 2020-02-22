@@ -2,8 +2,7 @@ import os
 
 import cv2
 import numpy as np
-import pandas as pd
-from torch.utils.data import Dataset, Sampler
+from torch.utils.data import Dataset
 
 
 class BengaliDataset(Dataset):
