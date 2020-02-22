@@ -15,7 +15,7 @@ class EfficientNew(nn.Module):
         if activation == "Mish":
             to_Mish(self.net)
             print("Mish activation added!")
-        to_GeM(self.net)
+       # to_GeM(self.net)
         to_FRN(self.net)
         print(self.net)
 
