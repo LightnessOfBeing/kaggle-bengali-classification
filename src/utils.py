@@ -236,12 +236,12 @@ def to_ws(mod):
         is_conv = isinstance(child, Conv2d)
 
 
-def to_GN(model):
+def to_FRN(model):
     for child_name, child in model.named_children():
         if isinstance(child, BatchNorm2d):
-            setattr(model, child_name, GroupNorm(num_groups=child.num_features // 2, num_channels=child.num_features))
+            setattr(model, child_name, FRN(num_features=child.num_features))
         else:
-            to_GN(child)
+            to_FRN(child)
 
 
 def to_GeM(model):
