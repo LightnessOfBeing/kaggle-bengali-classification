@@ -7,9 +7,8 @@ import cv2
 import numpy as np
 from timm.models.activations import Swish
 from torch import nn
-from torch.nn import AdaptiveAvgPool2d
+from torch.nn import AdaptiveAvgPool2d, Parameter
 
-from src.models.head import GeM
 
 def load_image(path):
     image = cv2.imread(path, 0)
@@ -104,13 +103,31 @@ def to_Mish(model):
         else:
             to_Mish(child)
 
+
+def gem(x, p=3, eps=1e-6):
+    return F.avg_pool2d(x.clamp(min=eps).pow(p), (x.size(-2), x.size(-1))).pow(1. / p)
+
+
+class GeM(nn.Module):
+    def __init__(self, p=3, eps=1e-6):
+        super(GeM, self).__init__()
+        self.p = Parameter(torch.ones(1) * p)
+        self.eps = eps
+
+    def forward(self, x):
+        return gem(x, p=self.p, eps=self.eps)
+
+    def __repr__(self):
+        return self.__class__.__name__ + '(' + 'p=' + '{:.4f}'.format(self.p.data.tolist()[0]) + ', ' + 'eps=' + str(
+            self.eps) + ')'
+
+
 def to_GeM(model):
     for child_name, child in model.named_children():
         if isinstance(child, AdaptiveAvgPool2d):
             setattr(model, child_name, GeM())
         else:
             to_GeM(child)
-
 
 
 def bn_drop_lin(n_in: int, n_out: int, bn: bool = True, p: float = 0., actn: Optional[nn.Module] = None):
