@@ -2,7 +2,7 @@ import timm
 from torch import nn
 
 from src.models.head import AverageHead
-from src.utils import to_Mish
+from src.utils import to_Mish, to_GeM
 
 
 class EfficientNew(nn.Module):
@@ -15,9 +15,7 @@ class EfficientNew(nn.Module):
         if activation == "Mish":
             to_Mish(self.net)
             print("Mish activation added!")
-       # if dropout is not None:
-       #     print("Dropout is set to 0!")
-       #     self.net._dropout.p = 0.0
+        to_GeM(self.net)
         print(self.net)
 
         in_features = n_channels_dict[encoder][0]
@@ -30,7 +28,7 @@ class EfficientNew(nn.Module):
     def forward(self, x):
         x = self.net.forward_features(x)
         logit_grapheme_root = self.head_grapheme_root(x)
-      #  logit_vowel_diacritic = self.head_vowel_diacritic(x)
-      #  logit_consonant_diacritic = self.head_consonant_diacritic(x)
+        logit_vowel_diacritic = self.head_vowel_diacritic(x)
+        logit_consonant_diacritic = self.head_consonant_diacritic(x)
 
-        return logit_grapheme_root #, logit_vowel_diacritic, logit_consonant_diacritic
+        return logit_grapheme_root, logit_vowel_diacritic, logit_consonant_diacritic
