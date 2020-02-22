@@ -30,7 +30,7 @@ class EfficientNew(nn.Module):
     def forward(self, x):
         x = self.net.forward_features(x)
         logit_grapheme_root = self.head_grapheme_root(x)
-        logit_vowel_diacritic = self.head_vowel_diacritic(x)
-        logit_consonant_diacritic = self.head_consonant_diacritic(x)
+      #  logit_vowel_diacritic = self.head_vowel_diacritic(x)
+      #  logit_consonant_diacritic = self.head_consonant_diacritic(x)
 
-        return logit_grapheme_root, logit_vowel_diacritic, logit_consonant_diacritic
+        return logit_grapheme_root #, logit_vowel_diacritic, logit_consonant_diacritic
