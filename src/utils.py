@@ -5,7 +5,6 @@ import torch
 from efficientnet_pytorch.utils import MemoryEfficientSwish
 import cv2
 import numpy as np
-from timm.models import SelectAdaptivePool2d
 from timm.models.activations import Swish
 from torch import nn
 from torch.nn import AdaptiveAvgPool2d
@@ -108,8 +107,7 @@ def to_Mish(model):
 
 def to_GeM(model):
     for child_name, child in model.named_children():
-        if isinstance(child, AdaptiveAvgPool2d) or\
-                isinstance(child, SelectAdaptivePool2d):
+        if isinstance(child, AdaptiveAvgPool2d):
             setattr(model, child_name, GeM())
         else:
             to_GeM(child)
