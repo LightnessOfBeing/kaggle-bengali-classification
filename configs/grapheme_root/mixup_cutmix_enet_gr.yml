@@ -1,8 +1,7 @@
 model_params:
-  model: Efficient
-  encoder: "efficientnet-b0"
+  model: EfficientNew
+  encoder: "efficientnet_b0"
   num_classes: [168, 11, 7]
-  dropout: 0.0
   activation: "Mish"
 
 args:
@@ -22,7 +21,7 @@ distributed_params:  # OPTIONAL KEYWORD, параметры для distributed t
 
 stages:
   data_params:
-    batch_size: 512
+    batch_size: 256
     num_workers: 4
     train_csv_path: "../input/bengaliutils2/"
     train_csv_name: "train_with_fold.csv"
@@ -73,16 +72,19 @@ stages:
 
   stage1:
     state_params:
-      num_epochs: 180
+      num_epochs: 60
 
     optimizer_params:
-      optimizer: Adam
-      lr: 0.003
+      optimizer: AdamW
+
+    callbacks_params:
+      checkpoint_loader:
+        callback: CheckpointLoader
+        checkpoint_path: "../input/bengaliutils2/b0_9668_f0_a1.pth"
 
     scheduler_params:
-      scheduler: ReduceLROnPlateau
-      factor: 0.6
-      patience: 5
-      verbose: True
-      mode: max
-      min_lr: 5e-6
+      scheduler: OneCycleLRWithWarmup
+      init_lr: 0.00010
+      num_steps: 55
+      warmup_steps: 3
+      lr_range: [0.00015, 0.000005]

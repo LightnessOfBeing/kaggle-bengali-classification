@@ -112,7 +112,7 @@ class MixupCutmixCallback(CriterionCallback):
     def __init__(
             self,
             fields: List[str] = ("features",),
-            alpha=0.8,
+            alpha=1,
             on_train_only=True,
             weight_grapheme_root=2.0,
             weight_vowel_diacritic=1.0,
@@ -142,7 +142,7 @@ class MixupCutmixCallback(CriterionCallback):
 
         self.on_train_only = on_train_only
         self.fields = fields
-        self.alpha = alpha
+        self.alpha = np.random.uniform(0.6, 1.0)
         self.lam = 1
         self.index = None
         self.is_needed = True
@@ -251,7 +251,7 @@ class MixupCutmixCallbackSingle(CriterionCallback):
 
         self.on_train_only = on_train_only
         self.fields = fields
-        self.alpha = alpha
+        self.alpha = np.random.uniform(0.6, 1.0)
         self.lam = 1
         self.index = None
         self.is_needed = True
