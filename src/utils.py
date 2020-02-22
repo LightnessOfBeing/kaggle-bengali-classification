@@ -7,7 +7,7 @@ import cv2
 import numpy as np
 from timm.models.activations import Swish
 from torch import nn
-from torch.nn import AdaptiveAvgPool2d, Parameter, BatchNorm2d
+from torch.nn import AdaptiveAvgPool2d, Parameter, BatchNorm2d, GroupNorm
 
 
 def load_image(path):
@@ -181,7 +181,7 @@ class FRN(nn.Module):
 def to_FRN(model):
     for child_name, child in model.named_children():
         if isinstance(child, BatchNorm2d):
-            setattr(model, child_name, FRN(num_features=child.num_features))
+            setattr(model, child_name, GroupNorm(num_groups=child.num_features, num_channels=child.num_features))
         else:
             to_FRN(child)
 
