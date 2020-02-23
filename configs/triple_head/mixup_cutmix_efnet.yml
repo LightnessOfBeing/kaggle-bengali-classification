@@ -2,7 +2,6 @@ model_params:
   model: EfficientNew
   encoder: "efficientnet_b0"
   num_classes: [168, 11, 7]
-  activation: "Mish"
 
 args:
   logdir: "./logs/"
