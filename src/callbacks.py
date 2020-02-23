@@ -194,17 +194,18 @@ class MixupCutmixCallback(CriterionCallback):
         self.index = torch.randperm(state.input[self.fields[0]].shape[0])
         self.index.to(state.device)
 
-        self.apply_mixup = (np.random.rand() < 0.5)
+        num = np.random.rand()
+        self.gridmask_only = (num >= 0.6)
 
-        if self.apply_mixup:
+        if num < 0.3:
             self.do_mixup(state)
-        else:
+        elif num >= 0.3 and num < 0.6:
             self.do_cutmix(state)
 
 
     def _compute_loss(self, state: State, criterion):
         loss_arr = [0, 0, 0]
-        if not self.is_needed:
+        if not self.is_needed or self.gridmask_only:
             for i, (input_key, output_key) in enumerate(list(zip(self.input_key, self.output_key))):
                 pred = state.output[output_key]
                 y = state.input[input_key]
