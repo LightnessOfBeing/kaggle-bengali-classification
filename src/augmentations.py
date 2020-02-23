@@ -136,6 +136,7 @@ def get_augmentation(aug_name):
     aug_dict = {
         'valid_aug': valid_aug,
         'mixup_aug': mixup_aug,
-        'simple_aug': simple_aug
+        'simple_aug': simple_aug,
+        'gridmask_aug': gridmask_aug
     }
     return aug_dict[aug_name]()
