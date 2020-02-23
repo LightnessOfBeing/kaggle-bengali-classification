@@ -12,8 +12,7 @@ def simple_aug():
 
 
 def mixup_aug():
-    augs_list = [HorizontalFlip(p=0.5),
-                 Normalize(mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051)),
+    augs_list = [Normalize(mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051)),
                  ToTensorV2()]
     return Compose(augs_list, p=1)
 

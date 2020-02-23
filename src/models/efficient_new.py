@@ -17,7 +17,7 @@ class EfficientNew(nn.Module):
             print("Mish activation added!")
        # to_GeM(self.net)
        # to_ws(self.net)
-       # to_FRN(self.net)
+        to_FRN(self.net)
         print(self.net)
 
         in_features = n_channels_dict[encoder][0]
