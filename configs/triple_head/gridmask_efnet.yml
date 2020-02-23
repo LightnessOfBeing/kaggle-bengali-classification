@@ -77,9 +77,9 @@ stages:
       prefix: "loss"
       loss_aggregate_fn: "weighted_sum"
       loss_keys:
-        loss_gr: 2.0
+        loss_gr: 10.0
         loss_vd: 1.0
-        loss_cd: 1.0
+        loss_cd: 2.0
 
     saver:
       callback: CheckpointCallback
