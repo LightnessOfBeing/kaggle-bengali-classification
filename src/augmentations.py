@@ -113,7 +113,7 @@ def gridmask_aug():
     augs_list = [OneOf([GridMask(num_grid=(10, 15), rotate=10, mode=0, fill_value=0),
                         GridMask(num_grid=(10, 15), rotate=10, mode=2, fill_value=0),
                         GridMask(num_grid=(10, 15), rotate=0, mode=0, fill_value=0),
-                        GridMask(num_grid=(10, 15), rotate=0, mode=2, fill_value=0)], p=1),
+                        GridMask(num_grid=(10, 15), rotate=0, mode=2, fill_value=0)], p=0.7),
                  Normalize(mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051)),
                  ToTensorV2()]
 
