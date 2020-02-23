@@ -156,6 +156,7 @@ class MixupCutmixCallback(CriterionCallback):
         self.is_needed = not self.on_train_only or \
                          state.loader_name.startswith("train")
 
+
     def do_mixup(self, state: State):
 
         for f in self.fields:
@@ -177,6 +178,7 @@ class MixupCutmixCallback(CriterionCallback):
                            * state.input[self.fields[0]].shape[-2]))
 
     def on_batch_start(self, state: State):
+
         if not self.is_needed:
             return
 
@@ -193,10 +195,11 @@ class MixupCutmixCallback(CriterionCallback):
         self.index.to(state.device)
 
         self.apply_mixup = (np.random.rand() < 0.5)
-        if self.apply_mixup:
-            self.do_mixup(state)
-        else:
-            self.do_cutmix(state)
+
+       # if self.apply_mixup:
+       #     self.do_mixup(state)
+       # else:
+        #    self.do_cutmix(state)
 
 
     def _compute_loss(self, state: State, criterion):

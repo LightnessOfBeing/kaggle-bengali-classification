@@ -1,13 +1,13 @@
 from typing import Optional
 
-import torch.nn.functional as F
-import torch
-from efficientnet_pytorch.utils import MemoryEfficientSwish
 import cv2
 import numpy as np
+import torch
+import torch.nn.functional as F
+from efficientnet_pytorch.utils import MemoryEfficientSwish
 from timm.models.activations import Swish
 from torch import nn
-from torch.nn import AdaptiveAvgPool2d, Parameter, BatchNorm2d, GroupNorm, Conv2d
+from torch.nn import AdaptiveAvgPool2d, Parameter, BatchNorm2d, Conv2d
 
 
 def load_image(path):
@@ -122,6 +122,14 @@ class GeM(nn.Module):
             self.eps) + ')'
 
 
+def to_GeM(model):
+    for child_name, child in model.named_children():
+        if isinstance(child, AdaptiveAvgPool2d):
+            setattr(model, child_name, GeM())
+        else:
+            to_GeM(child)
+
+
 class FRN(nn.Module):
     def __init__(self, num_features, eps=1e-6, is_eps_leanable=False):
         """
@@ -180,7 +188,7 @@ class FRN(nn.Module):
 def to_FRN(model):
     for child_name, child in model.named_children():
         if isinstance(child, BatchNorm2d):
-            setattr(model, child_name, GroupNorm(num_groups=32, num_channels=child.num_features))
+            setattr(model, child_name, FRN(num_features=child.num_features))
         else:
             to_FRN(child)
 
@@ -191,13 +199,13 @@ class Conv2dWS(nn.Conv2d):
                  padding, dilation, transposed, output_padding,
                  groups, bias, padding_mode):
         super(Conv2d, self).__init__(in_channels, out_channels, kernel_size, stride,
-                 padding, dilation, transposed, output_padding,
-                 groups, bias, padding_mode)
+                                     padding, dilation, transposed, output_padding,
+                                     groups, bias, padding_mode)
 
     def forward(self, x):
         weight = self.weight
         weight_mean = weight.mean(dim=1, keepdim=True).mean(dim=2,
-                                  keepdim=True).mean(dim=3, keepdim=True)
+                                                            keepdim=True).mean(dim=3, keepdim=True)
         weight = weight - weight_mean
         std = weight.view(weight.size(0), -1).std(dim=1).view(-1, 1, 1, 1) + 1e-5
         weight = weight / std.expand_as(weight)
@@ -234,22 +242,6 @@ def to_ws(mod):
         before_name = name
         before_child = child
         is_conv = isinstance(child, Conv2d)
-
-
-def to_FRN(model):
-    for child_name, child in model.named_children():
-        if isinstance(child, BatchNorm2d):
-            setattr(model, child_name, FRN(num_features=child.num_features))
-        else:
-            to_FRN(child)
-
-
-def to_GeM(model):
-    for child_name, child in model.named_children():
-        if isinstance(child, AdaptiveAvgPool2d):
-            setattr(model, child_name, GeM())
-        else:
-            to_GeM(child)
 
 
 def bn_drop_lin(n_in: int, n_out: int, bn: bool = True, p: float = 0., actn: Optional[nn.Module] = None):
