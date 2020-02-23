@@ -12,9 +12,7 @@ class EfficientNew(nn.Module):
                            'efficientnet_b3': 1536, 'efficientnet_b4': (448, 1792), 'efficientnet_b5': 2048,
                            'efficientnet_b6': 2304, 'efficientnet_b7': 2560}
         self.net = timm.create_model(encoder, pretrained=True)
-        if activation == "Mish":
-            to_Mish(self.net)
-            print("Mish activation added!")
+        to_Mish(self.net)
        # to_GeM(self.net)
        # to_ws(self.net)
        # to_FRN(self.net)
