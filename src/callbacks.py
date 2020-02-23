@@ -195,11 +195,11 @@ class MixupCutmixCallback(CriterionCallback):
         self.index.to(state.device)
 
         num = np.random.rand()
-        self.gridmask_only = (num >= 0.6)
+        self.gridmask_only = (num >= 0.8)
 
-        if num < 0.3:
+        if num < 0.4:
             self.do_mixup(state)
-        elif num >= 0.3 and num < 0.6:
+        elif num >= 0.4 and num < 0.8:
             self.do_cutmix(state)
 
 
