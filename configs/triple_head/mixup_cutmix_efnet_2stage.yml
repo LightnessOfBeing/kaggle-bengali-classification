@@ -87,6 +87,6 @@ stages:
       scheduler: ReduceLROnPlateau
       factor: 0.5
       mode: max
-      patience: 4
+      patience: 3
       min_lr: 1e-6
 
