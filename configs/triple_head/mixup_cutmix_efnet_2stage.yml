@@ -1,6 +1,6 @@
 model_params:
   model: EfficientNew
-  encoder: "efficientnet_b4"
+  encoder: "efficientnet_b0"
   num_classes: [168, 11, 7]
 
 args:
@@ -21,7 +21,7 @@ runner_params:
     - "consonant_diacritic"
 
 distributed_params:  # OPTIONAL KEYWORD, параметры для distributed training и NVIDIA Apex
-  opt_level: O1
+  opt_level: O2
 
 stages:
   data_params:
@@ -29,8 +29,8 @@ stages:
     num_workers: 4
     train_csv_path: "../input/bengaliutils2/"
     train_csv_name: "train_with_fold.csv"
-    data_folder: "../input/grapheme-imgs-128x128/"
-    train_aug_name: "gridmask_aug"
+    data_folder: "../input/bengaliai128/train_images128/"
+    train_aug_name: "mixup_aug"
     fold: 0
     processed: False
 
@@ -52,9 +52,9 @@ stages:
       output_key: ["logit_grapheme_root", "logit_vowel_diacritic", "logit_consonant_diacritic"]
       criterion_key: "ce"
       prefix: "loss"
-      weight_grapheme_root: 2
+      weight_grapheme_root: 5
       weight_vowel_diacritic: 1
-      weight_consonant_diacritic: 1
+      weight_consonant_diacritic: 2
 
     saver:
       callback: CheckpointCallback
@@ -84,7 +84,7 @@ stages:
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
       init_lr: 0.0001
-      num_steps: 55
+      num_steps: 54
       warmup_steps: 0
-      lr_range: [0.0001, 0.000005]
+      lr_range: [0.0001, 0.000001]
 
