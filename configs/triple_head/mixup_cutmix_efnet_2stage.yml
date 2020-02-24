@@ -81,7 +81,7 @@ stages:
     callbacks_params:
       checkpoint_loader:
         callback: CheckpointLoader
-        checkpoint_path: "../input/bengaliutils/b0_9732.pth"
+        checkpoint_path: "../input/bengaliutils2/b0_9732.pth"
 
     scheduler_params:
       scheduler: ReduceLROnPlateau
