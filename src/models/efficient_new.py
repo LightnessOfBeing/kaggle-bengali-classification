@@ -8,8 +8,8 @@ from src.utils import to_Mish, to_ws, to_FRN, to_GeM
 class EfficientNew(nn.Module):
     def __init__(self, num_classes, encoder):
         super().__init__()
-        n_channels_dict = {'efficientnet_b0': (320, 1280), 'efficientnet_b1': (320, 1280), 'efficientnet_b2': (352, 1408),
-                           'efficientnet_b3': 1536, 'efficientnet_b4': (448, 1792), 'efficientnet_b5': 2048,
+        n_channels_dict = {'efficientnet_b0': 1280, 'efficientnet_b1': 1280, 'efficientnet_b2': 1408,
+                           'efficientnet_b3': 1536, 'efficientnet_b4': 1792, 'efficientnet_b5': 2048,
                            'efficientnet_b6': 2304, 'efficientnet_b7': 2560}
         self.net = timm.create_model(encoder, pretrained=True)
         to_Mish(self.net)
@@ -18,11 +18,10 @@ class EfficientNew(nn.Module):
        # to_FRN(self.net)
         print(self.net)
 
-        in_features = n_channels_dict[encoder][0]
-        out_features = n_channels_dict[encoder][1]
-        self.head_grapheme_root = AverageHead(in_features, num_classes[0], out_features)
-        self.head_vowel_diacritic = AverageHead(in_features, num_classes[1], out_features)
-        self.head_consonant_diacritic = AverageHead(in_features, num_classes[2], out_features)
+        out_features = n_channels_dict[encoder]
+        self.head_grapheme_root = AverageHead(num_classes[0], out_features)
+        self.head_vowel_diacritic = AverageHead(num_classes[1], out_features)
+        self.head_consonant_diacritic = AverageHead(num_classes[2], out_features)
 
 
     def forward(self, x):

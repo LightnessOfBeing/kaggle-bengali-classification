@@ -1,6 +1,6 @@
 model_params:
   model: EfficientNew
-  encoder: "efficientnet_b0"
+  encoder: "efficientnet_b4"
   num_classes: [168, 11, 7]
 
 args:
