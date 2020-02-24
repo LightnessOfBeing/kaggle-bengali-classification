@@ -195,17 +195,16 @@ class MixupCutmixCallback(CriterionCallback):
         self.index.to(state.device)
 
         num = np.random.rand()
-        self.gridmask_only = (num >= 0.8)
 
-        if num < 0.4:
+        if num < 0.5:
             self.do_mixup(state)
-        elif num >= 0.4 and num < 0.8:
+        else:
             self.do_cutmix(state)
 
 
     def _compute_loss(self, state: State, criterion):
         loss_arr = [0, 0, 0]
-        if not self.is_needed or self.gridmask_only:
+        if not self.is_needed:
             for i, (input_key, output_key) in enumerate(list(zip(self.input_key, self.output_key))):
                 pred = state.output[output_key]
                 y = state.input[input_key]
