@@ -68,6 +68,7 @@ stages:
 
     scheduler:
       callback: SchedulerCallback
+      reduce_metric: hmar
 
   stage1:
     state_params:
@@ -75,6 +76,7 @@ stages:
 
     optimizer_params:
       optimizer: AdamW
+      lr: 5e-5
 
     callbacks_params:
       checkpoint_loader:
@@ -83,8 +85,8 @@ stages:
 
     scheduler_params:
       scheduler: ReduceLROnPlateau
-      init_lr: 5e-5
       factor: 0.5
+      mode: max
       patience: 4
       min_lr: 1e-6
 
