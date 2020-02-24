@@ -2,7 +2,6 @@ model_params:
   model: EfficientNew
   encoder: "efficientnet_b0"
   num_classes: [168, 11, 7]
-  activation: "Mish"
 
 args:
   logdir: "./logs"
@@ -26,12 +25,12 @@ distributed_params:  # OPTIONAL KEYWORD, параметры для distributed t
 
 stages:
   data_params:
-    batch_size: 128
+    batch_size: 256
     num_workers: 4
     train_csv_path: "../input/bengaliutils2/"
     train_csv_name: "train_with_fold.csv"
-    data_folder: "../input/bengali224/"
-    train_aug_name: "mixup_aug"
+    data_folder: "../input/grapheme-imgs-128x128/"
+    train_aug_name: "gridmask_aug"
     fold: 0
     processed: False
 
@@ -53,9 +52,9 @@ stages:
       output_key: ["logit_grapheme_root", "logit_vowel_diacritic", "logit_consonant_diacritic"]
       criterion_key: "ce"
       prefix: "loss"
-      weight_grapheme_root: 7
+      weight_grapheme_root: 2
       weight_vowel_diacritic: 1
-      weight_consonant_diacritic: 2
+      weight_consonant_diacritic: 1
 
     saver:
       callback: CheckpointCallback
@@ -84,8 +83,8 @@ stages:
 
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
-      init_lr: 0.00010
+      init_lr: 0.0001
       num_steps: 55
-      warmup_steps: 3
-      lr_range: [0.00015, 0.000005]
+      warmup_steps: 0
+      lr_range: [0.0001, 0.000005]
 
