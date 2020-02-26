@@ -49,6 +49,7 @@ stages:
     loss_mixup:
       callback: MixupCutmixCallback
       fields: ["image"]
+      alpha: 0.65
       input_key: ["grapheme_root", "vowel_diacritic", "consonant_diacritic"]
       output_key: ["logit_grapheme_root", "logit_vowel_diacritic", "logit_consonant_diacritic"]
       criterion_key: "ce"

@@ -114,7 +114,7 @@ class MixupCutmixCallback(CriterionCallback):
     def __init__(
             self,
             fields: List[str] = ("features",),
-            alpha=0.65,
+            alpha=1.0,
             on_train_only=True,
             weight_grapheme_root=2.0,
             weight_vowel_diacritic=1.0,
@@ -139,8 +139,6 @@ class MixupCutmixCallback(CriterionCallback):
 
         super().__init__(**kwargs)
 
-        print(f"Custom MixupCutmixCallback is being initialized with alpha = {self.alpha}!")
-        print(f"Weights {weight_grapheme_root}, {weight_vowel_diacritic}, {weight_consonant_diacritic}.")
 
         self.on_train_only = on_train_only
         self.fields = fields
@@ -153,6 +151,13 @@ class MixupCutmixCallback(CriterionCallback):
         self.weight_consonant_diacritic = weight_consonant_diacritic
         self.apply_mixup = True
         self.cnt = 0
+
+        print(f"Weights {self.weight_grapheme_root},"
+              f" {self.weight_vowel_diacritic},"
+              f" {self.weight_consonant_diacritic}.")
+
+        print(f"MixupCutmixCallback is initialized"
+              f" with alpha = {self.alpha}!")
 
     def on_loader_start(self, state: State):
         self.is_needed = not self.on_train_only or \
