@@ -65,6 +65,7 @@ class HMacroAveragedRecall(Callback):
         state.metric_manager.add_batch_value(name="hmar_cd", value=scores[1])
         state.metric_manager.add_batch_value(name="hmar_vd", value=scores[2])
 
+
 class HMacroAveragedRecallSingle(Callback):
     def __init__(
             self,
@@ -89,6 +90,7 @@ class HMacroAveragedRecallSingle(Callback):
         score = recall_score(input, output, average='macro')
 
         state.metric_manager.add_batch_value(name=self.prefix, value=score)
+
 
 class FreezeCallback(Callback):
 
@@ -137,7 +139,7 @@ class MixupCutmixCallback(CriterionCallback):
 
         super().__init__(**kwargs)
 
-        print("Custom MixupCutmixCallback is being initialized!")
+        print(f"Custom MixupCutmixCallback is being initialized with alpha = {self.alpha}!")
         print(f"Weights {weight_grapheme_root}, {weight_vowel_diacritic}, {weight_consonant_diacritic}.")
 
         self.on_train_only = on_train_only
@@ -156,11 +158,9 @@ class MixupCutmixCallback(CriterionCallback):
         self.is_needed = not self.on_train_only or \
                          state.loader_name.startswith("train")
 
-
     def do_mixup(self, state: State):
 
         for f in self.fields:
-            #print(f"self.lam = {self.lam}")
             state.input[f] = self.lam * state.input[f] + \
                              (1 - self.lam) * state.input[f][self.index]
 
@@ -187,10 +187,9 @@ class MixupCutmixCallback(CriterionCallback):
         else:
             self.lam = 1
 
-      #  self.lam = np.random.choice([0.2, 0.25, 0.3, 0.35, 0.4, 0.45,
-      #                               0.5, 0.55, 0.6, 0.65, 0.7, 0.75,
-      #                               0.8])
-
+        #  self.lam = np.random.choice([0.2, 0.25, 0.3, 0.35, 0.4, 0.45,
+        #                               0.5, 0.55, 0.6, 0.65, 0.7, 0.75,
+        #                               0.8])
         self.index = torch.randperm(state.input[self.fields[0]].shape[0])
         self.index.to(state.device)
 
@@ -200,7 +199,6 @@ class MixupCutmixCallback(CriterionCallback):
             self.do_mixup(state)
         else:
             self.do_cutmix(state)
-
 
     def _compute_loss(self, state: State, criterion):
         loss_arr = [0, 0, 0]

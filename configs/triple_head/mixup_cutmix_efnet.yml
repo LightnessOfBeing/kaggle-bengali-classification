@@ -21,8 +21,8 @@ runner_params:  # OPTIONAL KEYWORD, параметры для инициализ
     - "vowel_diacritic"
     - "consonant_diacritic"
 
-distributed_params:  # OPTIONAL KEYWORD, параметры для distributed training и NVIDIA Apex
-  opt_level: O2
+#distributed_params:  # OPTIONAL KEYWORD, параметры для distributed training и NVIDIA Apex
+#  opt_level: O2
 
 stages:
   data_params:
@@ -49,6 +49,7 @@ stages:
     loss_mixup:
       callback: MixupCutmixCallback
       fields: ["image"]
+      alpha: 0.65
       input_key: ["grapheme_root", "vowel_diacritic", "consonant_diacritic"]
       output_key: ["logit_grapheme_root", "logit_vowel_diacritic", "logit_consonant_diacritic"]
       criterion_key: "ce"
@@ -81,6 +82,6 @@ stages:
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
       init_lr: 0.001
-      num_steps: 132
+      num_steps: 133
       warmup_steps: 5
       lr_range: [0.005, 0.000001]
