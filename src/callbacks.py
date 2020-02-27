@@ -114,7 +114,8 @@ class MixupCutmixCallback(CriterionCallback):
     def __init__(
             self,
             fields: List[str] = ("features",),
-            alpha=1.0,
+            cutmix_alpha=1.0,
+            mixup_alpha=1.0,
             on_train_only=True,
             weight_grapheme_root=2.0,
             weight_vowel_diacritic=1.0,
@@ -135,14 +136,13 @@ class MixupCutmixCallback(CriterionCallback):
         """
         assert len(fields) > 0, \
             "At least one field for MixupCallback is required"
-        assert alpha >= 0, "alpha must be>=0"
 
         super().__init__(**kwargs)
 
-
         self.on_train_only = on_train_only
         self.fields = fields
-        self.alpha = alpha
+        self.cutmix_alpha = cutmix_alpha
+        self.mixup_alpha = mixup_alpha
         self.lam = 1
         self.index = None
         self.is_needed = True
@@ -156,8 +156,8 @@ class MixupCutmixCallback(CriterionCallback):
               f" {self.weight_vowel_diacritic},"
               f" {self.weight_consonant_diacritic}.")
 
-        print(f"MixupCutmixCallback is initialized"
-              f" with alpha = {self.alpha}!")
+        print(f"MixupCutmixCallback \n cutmix_alpha = {self.cutmix_alpha} "
+              f"\n mixup_alpha = {self.mixup_alpha}!")
 
     def on_loader_start(self, state: State):
         self.is_needed = not self.on_train_only or \
@@ -165,11 +165,21 @@ class MixupCutmixCallback(CriterionCallback):
 
     def do_mixup(self, state: State):
 
+        if self.mixup_alpha > 0:
+            self.lam = np.random.beta(self.mixup_alpha, self.mixup_alpha)
+        else:
+            self.lam = 1
+
         for f in self.fields:
             state.input[f] = self.lam * state.input[f] + \
                              (1 - self.lam) * state.input[f][self.index]
 
     def do_cutmix(self, state: State):
+
+        if self.cutmix_alpha > 0:
+            self.lam = np.random.beta(self.cutmix_alpha, self.cutmix_alpha)
+        else:
+            self.lam = 1
 
         bbx1, bby1, bbx2, bby2 = \
             rand_bbox(state.input[self.fields[0]].shape, self.lam)
@@ -187,14 +197,6 @@ class MixupCutmixCallback(CriterionCallback):
         if not self.is_needed:
             return
 
-        if self.alpha > 0:
-            self.lam = np.random.beta(self.alpha, self.alpha)
-        else:
-            self.lam = 1
-
-        #  self.lam = np.random.choice([0.2, 0.25, 0.3, 0.35, 0.4, 0.45,
-        #                               0.5, 0.55, 0.6, 0.65, 0.7, 0.75,
-        #                               0.8])
         self.index = torch.randperm(state.input[self.fields[0]].shape[0])
         self.index.to(state.device)
 

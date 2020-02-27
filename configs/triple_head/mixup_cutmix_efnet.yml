@@ -1,6 +1,6 @@
 model_params:
   model: EfficientNew
-  encoder: "seresnext50_32x4d"
+  encoder: "efficientnet_b3"
   num_classes: [168, 11, 7]
 
 args:
@@ -49,6 +49,8 @@ stages:
     loss_mixup:
       callback: MixupCutmixCallback
       fields: ["image"]
+      cutmix_alpha: 1.0
+      mixup_alpha: 0.4
       input_key: ["grapheme_root", "vowel_diacritic", "consonant_diacritic"]
       output_key: ["logit_grapheme_root", "logit_vowel_diacritic", "logit_consonant_diacritic"]
       criterion_key: "ce"
