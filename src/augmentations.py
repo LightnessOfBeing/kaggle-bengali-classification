@@ -103,19 +103,21 @@ class GridMask(DualTransform):
 
 def simple_aug():
     augs_list = [
-        CoarseDropout(min_holes=2, max_holes=10, max_height=10, max_width=10, fill_value=0, p=0.5),
+        CoarseDropout(min_holes=2, max_holes=10, max_height=10, max_width=10, fill_value=0, p=0.),
         Normalize(mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051)),
         ToTensorV2()]
     return Compose(augs_list, p=1)
 
 
 def gridmask_aug():
-    augs_list = [OneOf([GridMask(num_grid=(10, 15), rotate=10, mode=0, fill_value=0),
+    augs_list = [OneOf([OneOf([GridMask(num_grid=(10, 15), rotate=10, mode=0, fill_value=0),
                         GridMask(num_grid=(10, 15), rotate=10, mode=2, fill_value=0),
                         GridMask(num_grid=(10, 15), rotate=0, mode=0, fill_value=0),
-                        GridMask(num_grid=(10, 15), rotate=0, mode=2, fill_value=0)], p=0.4),
-                 Normalize(mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051)),
-                 ToTensorV2()]
+                        GridMask(num_grid=(10, 15), rotate=0, mode=2, fill_value=0)], p=0.7),
+                       CoarseDropout(min_holes=2, max_holes=10, max_height=15,
+                                     max_width=15, fill_value=0, p=0.7)]),
+                 Normalize(mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051))]
+                # ToTensorV2()]
 
     return Compose(augs_list)
 

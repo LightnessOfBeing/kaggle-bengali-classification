@@ -1,6 +1,6 @@
 model_params:
   model: EfficientNew
-  encoder: "efficientnet_b0"
+  encoder: "efficientnet_b3"
   num_classes: [168, 11, 7]
 
 args:
@@ -52,7 +52,7 @@ stages:
       output_key: ["logit_grapheme_root", "logit_vowel_diacritic", "logit_consonant_diacritic"]
       criterion_key: "ce"
       prefix: "loss"
-      weight_grapheme_root: 2
+      weight_grapheme_root: 5
       weight_vowel_diacritic: 1
       weight_consonant_diacritic: 1
 
@@ -76,17 +76,17 @@ stages:
 
     optimizer_params:
       optimizer: AdamW
-      lr: 5e-5
+
+    scheduler_params:
+      scheduler: OneCycleLRWithWarmup
+      init_lr: 5e-6
+      num_steps: 55
+      warmup_steps: 5
+      lr_range: [8e-5, 1e-7]
 
     callbacks_params:
       checkpoint_loader:
         callback: CheckpointLoader
-        checkpoint_path: "../input/bengaliutils2/b0_9732.pth"
+        checkpoint_path: "../input/bengaliutils2/b3_9791.pth"
 
-    scheduler_params:
-      scheduler: ReduceLROnPlateau
-      factor: 0.5
-      mode: max
-      patience: 3
-      min_lr: 1e-6
 
