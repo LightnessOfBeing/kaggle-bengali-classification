@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from albumentations import Normalize
 
-from src.augmentations import valid_aug, cutout_aug
+from src.augmentations import valid_aug, cutout_aug_1
 from src.utils import HEIGHT, WIDTH, crop_resize
 
 
@@ -37,7 +37,7 @@ def load_png(fname, aug):
     return image1
 
 if __name__ == "__main__":
-    im1 = load_png("../input/grapheme-imgs-128x128/Train_0.png", cutout_aug())
+    im1 = load_png("../input/grapheme-imgs-128x128/Train_0.png", cutout_aug_1())
 '''
     ims = sorted(os.listdir('./png/'))
     for i in range(len(ims)):
