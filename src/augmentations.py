@@ -1,5 +1,5 @@
 import numpy as np
-from albumentations import Compose, Normalize, CoarseDropout, DualTransform, OneOf
+from albumentations import Compose, Normalize, CoarseDropout, DualTransform, OneOf, ShiftScaleRotate
 from albumentations.augmentations import functional as F
 from albumentations.pytorch import ToTensorV2
 
@@ -126,6 +126,14 @@ def cutout_aug_3():
     return Compose(augs_list, p=1)
 
 
+def shiftscalerotate_aug():
+    augs_list = [
+        ShiftScaleRotate(rotate_limit=10, scale_limit=.1),
+        Normalize(mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051)),
+        ToTensorV2()]
+    return Compose(augs_list, p=1)
+
+
 def gridmask_aug():
     augs_list = [OneOf([OneOf([GridMask(num_grid=(10, 15), rotate=10, mode=0, fill_value=0),
                                GridMask(num_grid=(10, 15), rotate=10, mode=2, fill_value=0),
@@ -158,6 +166,7 @@ def get_augmentation(aug_name):
         'cutout_aug_1': cutout_aug_1,
         'cutout_aug_2': cutout_aug_2,
         'cutout_aug_3': cutout_aug_3,
-        'gridmask_aug': gridmask_aug
+        'gridmask_aug': gridmask_aug,
+        'shiftscalerotate_aug': shiftscalerotate_aug
     }
     return aug_dict[aug_name]()
