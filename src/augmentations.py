@@ -101,9 +101,10 @@ class GridMask(DualTransform):
         return ('num_grid', 'fill_value', 'rotate', 'mode')
 
 
-def simple_aug():
+def cutout_aug():
     augs_list = [
-        CoarseDropout(min_holes=2, max_holes=10, max_height=10, max_width=10, fill_value=0, p=0.),
+        OneOf([CoarseDropout(min_holes=2, max_holes=10, max_height=12, max_width=12, fill_value=0, p=0.3),
+               CoarseDropout(max_holes=1, max_height=64, max_width=64, fill_value=0, p=0.3)]),
         Normalize(mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051)),
         ToTensorV2()]
     return Compose(augs_list, p=1)
@@ -116,8 +117,8 @@ def gridmask_aug():
                         GridMask(num_grid=(10, 15), rotate=0, mode=2, fill_value=0)], p=0.7),
                        CoarseDropout(min_holes=2, max_holes=10, max_height=15,
                                      max_width=15, fill_value=0, p=0.7)]),
-                 Normalize(mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051))]
-                # ToTensorV2()]
+                 Normalize(mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051)),
+                 ToTensorV2()]
 
     return Compose(augs_list)
 
@@ -138,7 +139,7 @@ def get_augmentation(aug_name):
     aug_dict = {
         'valid_aug': valid_aug,
         'mixup_aug': mixup_aug,
-        'simple_aug': simple_aug,
+        'cutout_aug': cutout_aug,
         'gridmask_aug': gridmask_aug
     }
     return aug_dict[aug_name]()

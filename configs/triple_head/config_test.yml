@@ -5,7 +5,6 @@ model_params:
     - 168
     - 11
     - 7
-  activation: Mish
 
 args:
   logdir: "./logs/bengali_logs"

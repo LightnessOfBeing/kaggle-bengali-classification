@@ -30,7 +30,7 @@ stages:
     train_csv_path: "../input/bengaliutils2/"
     train_csv_name: "train_with_fold.csv"
     data_folder: "../input/bengaliai128/train_images128/"
-    train_aug_name: "mixup_aug"
+    train_aug_name: "cutout_aug"
     fold: 0
     processed: False
 
@@ -79,10 +79,10 @@ stages:
 
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
-      init_lr: 5e-6
+      init_lr: 5e-5
       num_steps: 55
-      warmup_steps: 5
-      lr_range: [8e-5, 1e-7]
+      warmup_steps: 0
+      lr_range: [5e-5, 1e-7]
 
     callbacks_params:
       checkpoint_loader:

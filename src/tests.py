@@ -1,14 +1,11 @@
-import os
-
 import cv2
-
 import matplotlib.pyplot as plt
-import pandas as pd
 import numpy as np
+import pandas as pd
 from albumentations import Normalize
 
-from src.augmentations import valid_aug, simple_aug, gridmask_aug
-from src.utils import HEIGHT, WIDTH, crop_resize, load_image
+from src.augmentations import valid_aug, cutout_aug
+from src.utils import HEIGHT, WIDTH, crop_resize
 
 
 def visualize_image(img):
@@ -40,18 +37,15 @@ def load_png(fname, aug):
     return image1
 
 if __name__ == "__main__":
-    im1 = load_png("../input/grapheme-imgs-128x128/Train_0.png", gridmask_aug())
-    plt.imshow(im1)
-    plt.show()
-    '''
+    im1 = load_png("../input/grapheme-imgs-128x128/Train_0.png", cutout_aug())
+'''
     ims = sorted(os.listdir('./png/'))
     for i in range(len(ims)):
         im = np.load(os.path.join("./png/", ims[i]))
         plt.imshow(im)
         plt.show()
-   # im2 = load_parquet("test1.csv", valid_aug())
-    '''
-'''
+
+
         for i in range(state.input['image'].shape[0]):
             im = state.input['image'][i, ...]
             im = im.numpy()
