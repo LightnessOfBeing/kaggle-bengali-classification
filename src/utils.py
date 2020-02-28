@@ -5,7 +5,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 from efficientnet_pytorch.utils import MemoryEfficientSwish
-from timm.models.activations import Swish
+from timm.models.layers.activations import Swish
 from torch import nn
 from torch.nn import AdaptiveAvgPool2d, Parameter, BatchNorm2d, Conv2d
 
