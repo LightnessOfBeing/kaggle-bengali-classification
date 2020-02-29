@@ -1,6 +1,6 @@
 model_params:
   model: EfficientNew
-  encoder: "efficientnet_b0"
+  encoder: "tf_efficientnet_b0_ns"
   num_classes: [168, 11, 7]
 
 args:
@@ -73,7 +73,7 @@ stages:
 
   stage1:
     state_params:
-      num_epochs: 140
+      num_epochs: 82
 
     optimizer_params:
       optimizer: AdamW
@@ -81,6 +81,6 @@ stages:
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
       init_lr: 0.001
-      num_steps: 132
+      num_steps: 78
       warmup_steps: 5
-      lr_range: [0.005, 0.000001]
+      lr_range: [0.003, 0.00001]

@@ -1,5 +1,8 @@
+import cv2
+
 import numpy as np
-from albumentations import Compose, Normalize, CoarseDropout, DualTransform, OneOf, ShiftScaleRotate
+from albumentations import Compose, Normalize, CoarseDropout, DualTransform, OneOf, ShiftScaleRotate, IAAPerspective, \
+    IAAAffine
 from albumentations.augmentations import functional as F
 from albumentations.pytorch import ToTensorV2
 
@@ -128,7 +131,8 @@ def cutout_aug_3():
 
 def shiftscalerotate_aug():
     augs_list = [
-        ShiftScaleRotate(rotate_limit=10, scale_limit=.1),
+        OneOf([ShiftScaleRotate(scale_limit=.15, rotate_limit=20, border_mode=cv2.BORDER_CONSTANT),
+               IAAAffine(shear=20, mode='constant'), IAAPerspective()]),
         Normalize(mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051)),
         ToTensorV2()]
     return Compose(augs_list, p=1)
