@@ -22,13 +22,13 @@ runner_params:  # OPTIONAL KEYWORD, параметры для инициализ
     - "consonant_diacritic"
 
 distributed_params:  # OPTIONAL KEYWORD, параметры для distributed training и NVIDIA Apex
-  rank: -1
+  rank: 2
   opt_level: O2
 
 stages:
   data_params:
-    batch_size: 32
-    num_workers: 4
+    batch_size: 90
+    num_workers: 8
     train_csv_path: "../input/bengaliutils2/"
     train_csv_name: "train_with_fold.csv"
     data_folder: "../input/bengaliai224/train_images224/"
