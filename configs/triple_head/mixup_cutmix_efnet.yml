@@ -1,6 +1,6 @@
 model_params:
   model: EfficientNew
-  encoder: "tf_efficientnet_b0_ns"
+  encoder: "tf_efficientnet_b4_ns"
   num_classes: [168, 11, 7]
 
 args:
@@ -27,7 +27,7 @@ distributed_params:  # OPTIONAL KEYWORD, параметры для distributed t
 
 stages:
   data_params:
-    batch_size: 256
+    batch_size: 64
     num_workers: 4
     train_csv_path: "../input/bengaliutils2/"
     train_csv_name: "train_with_fold.csv"
@@ -74,7 +74,7 @@ stages:
 
   stage1:
     state_params:
-      num_epochs: 1
+      num_epochs: 120
 
     optimizer_params:
       optimizer: AdamW
@@ -82,6 +82,6 @@ stages:
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
       init_lr: 0.001
-      num_steps: 78
+      num_steps: 114
       warmup_steps: 5
-      lr_range: [0.003, 0.00001]
+      lr_range: [0.003, 0.000001]
