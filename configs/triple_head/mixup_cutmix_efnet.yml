@@ -31,7 +31,7 @@ stages:
     num_workers: 4
     train_csv_path: "../input/bengaliutils2/"
     train_csv_name: "train_with_fold.csv"
-    data_folder: "../input/bengaliai128/train_images128/"
+    data_folder: "../input/bengaliai224/train_images224/"
     train_aug_name: "mixup_aug"
     fold: 0
     processed: False
