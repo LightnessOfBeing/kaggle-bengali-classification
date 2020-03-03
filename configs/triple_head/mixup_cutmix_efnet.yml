@@ -1,6 +1,6 @@
 model_params:
   model: EfficientNew
-  encoder: "tf_efficientnet_b3_ns"
+  encoder: "tf_efficientnet_b4_ns"
   num_classes: [168, 11, 7]
 
 args:
