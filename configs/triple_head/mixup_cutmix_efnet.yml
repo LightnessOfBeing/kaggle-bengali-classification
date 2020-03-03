@@ -22,7 +22,7 @@ runner_params:  # OPTIONAL KEYWORD, параметры для инициализ
     - "consonant_diacritic"
 
 distributed_params:  # OPTIONAL KEYWORD, параметры для distributed training и NVIDIA Apex
-  rank: 2
+  rank: 0
   opt_level: O2
 
 stages:
