@@ -32,12 +32,13 @@ def load_png(fname, aug):
     image = cv2.imread(fname, 0)
     image = cv2.cvtColor(image,cv2.COLOR_GRAY2BGR)
     image1 = aug(image=image)['image']
-    plt.imshow(image1)
-    plt.show()
+  #  plt.imshow(image1)
+  #  plt.show()
     return image1
 
 if __name__ == "__main__":
     im1 = load_png("../input/grapheme-imgs-128x128/Train_0.png", cutout_aug_1())
+    np.save('kek1.npy', im1)
 '''
     ims = sorted(os.listdir('./png/'))
     for i in range(len(ims)):
