@@ -11,7 +11,8 @@ class EfficientNew(nn.Module):
         n_channels_dict = {'efficientnet_b0': 1280, 'efficientnet_b1': 1280, 'efficientnet_b2': 1408,
                            'efficientnet_b3': 1536, 'efficientnet_b4': 1792, 'efficientnet_b5': 2048,
                            'efficientnet_b6': 2304, 'efficientnet_b7': 2560, 'seresnext50_32x4d': 2048,
-                           'tf_efficientnet_b0_ns': 1280, 'tf_efficientnet_b4_ns': 1792}
+                           'tf_efficientnet_b0_ns': 1280, 'tf_efficientnet_b3_ns': 1536,
+                           'tf_efficientnet_b4_ns': 1792}
         self.net = timm.create_model(encoder, pretrained=True)
         to_Mish(self.net)
        # to_GeM(self.net)
