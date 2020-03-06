@@ -148,20 +148,20 @@ def gridmask_aug():
                                GridMask(num_grid=(10, 15), rotate=0, mode=2, fill_value=0)], p=0.7),
                         CoarseDropout(min_holes=2, max_holes=10, max_height=15,
                                       max_width=15, fill_value=0, p=0.7)]),
-                 Normalize(mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051)),
+                 Normalize(),
                  ToTensorV2()]
 
     return Compose(augs_list)
 
 
 def mixup_aug():
-    augs_list = [Normalize(mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051)),
+    augs_list = [Normalize(),
                  ToTensorV2()]
     return Compose(augs_list, p=1)
 
 
 def valid_aug():
-    augs_list = [Normalize(mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051)),
+    augs_list = [Normalize(),
                  ToTensorV2()]
     return Compose(augs_list, p=1)
 
