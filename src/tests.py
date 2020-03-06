@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from albumentations import Normalize
 
-from src.augmentations import valid_aug, cutout_aug_1
+from src.augmentations import valid_aug, cutout_aug_1, shiftscalerotate_aug
 from src.utils import HEIGHT, WIDTH, crop_resize
 
 
@@ -29,16 +29,17 @@ def load_parquet(fname, aug):
 stats = (0.0692, 0.2051)
 
 def load_png(fname, aug):
+    print(fname)
     image = cv2.imread(fname, 0)
-    image = cv2.cvtColor(image,cv2.COLOR_GRAY2BGR)
+    image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
     image1 = aug(image=image)['image']
-  #  plt.imshow(image1)
-  #  plt.show()
-    return image1
+    plt.imshow(image1)
+    plt.show()
+    return image
 
 if __name__ == "__main__":
-    im1 = load_png("../input/grapheme-imgs-128x128/Train_0.png", cutout_aug_1())
-    np.save('kek1.npy', im1)
+    im1 = load_png("../input/grapheme-imgs-128x128/Train_0_iafoss.png", shiftscalerotate_aug())
+    im1 = load_png("../input/grapheme-imgs-128x128/Train_0.png", shiftscalerotate_aug())
 '''
     ims = sorted(os.listdir('./png/'))
     for i in range(len(ims)):

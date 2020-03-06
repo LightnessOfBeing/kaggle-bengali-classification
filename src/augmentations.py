@@ -107,7 +107,7 @@ class GridMask(DualTransform):
 def cutout_aug_1():
     augs_list = [
         CoarseDropout(min_holes=2, max_holes=10, max_height=12, max_width=12, fill_value=0, p=0.3),
-        Normalize(mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051)),
+        Normalize(),
         ToTensorV2()]
     return Compose(augs_list, p=1)
 
@@ -115,7 +115,7 @@ def cutout_aug_1():
 def cutout_aug_2():
     augs_list = [
         CoarseDropout(max_holes=1, max_height=64, max_width=64, fill_value=0, p=0.3),
-        Normalize(mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051)),
+        Normalize(),
         ToTensorV2()]
     return Compose(augs_list, p=1)
 
@@ -124,16 +124,19 @@ def cutout_aug_3():
     augs_list = [
         OneOf([CoarseDropout(min_holes=2, max_holes=10, max_height=12, max_width=12, fill_value=0, p=0.3),
                CoarseDropout(max_holes=1, max_height=64, max_width=64, fill_value=0, p=0.3)]),
-        Normalize(mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051)),
+        Normalize(),
         ToTensorV2()]
     return Compose(augs_list, p=1)
 
 
 def shiftscalerotate_aug():
     augs_list = [
-        OneOf([ShiftScaleRotate(scale_limit=.15, rotate_limit=20, border_mode=cv2.BORDER_CONSTANT),
-               IAAAffine(shear=20, mode='constant'), IAAPerspective()]),
-        Normalize(mean=(0.0692, 0.0692, 0.0692), std=(0.2051, 0.2051, 0.2051)),
+        OneOf([
+            ShiftScaleRotate(scale_limit=.15, rotate_limit=15, border_mode=cv2.BORDER_REPLICATE, p=0.5),
+            IAAAffine(shear=20, p=0.5),
+            IAAPerspective(p=0.5),
+         ]),
+        Normalize(),
         ToTensorV2()]
     return Compose(augs_list, p=1)
 
