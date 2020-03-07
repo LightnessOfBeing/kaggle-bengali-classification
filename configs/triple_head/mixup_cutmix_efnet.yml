@@ -31,7 +31,7 @@ stages:
     train_csv_path: "../input/bengaliutils2/"
     train_csv_name: "train_with_fold.csv"
     data_folder: "../input/bengaliai128/train_images128/"
-    train_aug_name: "shiftscalerotate_aug"
+    train_aug_name: "mixup_aug"
     fold: 0
     processed: False
 
@@ -53,8 +53,8 @@ stages:
       output_key: ["logit_grapheme_root", "logit_vowel_diacritic", "logit_consonant_diacritic"]
       criterion_key: "ce"
       prefix: "loss"
-      cutmix_alpha: 0.4
-      mixup_alpha: 0.4
+      cutmix_alpha: 1.0
+      mixup_alpha: 3.0
       weight_grapheme_root: 2.0
       weight_vowel_diacritic: 1.0
       weight_consonant_diacritic: 1.0
@@ -85,4 +85,4 @@ stages:
       init_lr: 0.001
       num_steps: 79
       warmup_steps: 5
-      lr_range: [0.003, 0.000005]
+      lr_range: [0.003, 0.00001]
