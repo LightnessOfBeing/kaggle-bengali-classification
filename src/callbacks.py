@@ -191,12 +191,13 @@ class MixupCutmixCallback(CriterionCallback):
         self.lam = 1 - ((bbx2 - bbx1) * (bby2 - bby1)
                         / (state.input[self.fields[0]].shape[-1]
                            * state.input[self.fields[0]].shape[-2]))
-
+    '''
     def on_epoch_start(self, state: State):
         if state.epoch == 85:
             self.weight_consonant_diacritic = 0.0
             self.weight_vowel_diacritic = 0.0
             print("Only grapheme weights")
+    '''
 
     def on_batch_start(self, state: State):
 

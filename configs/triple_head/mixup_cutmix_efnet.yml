@@ -54,10 +54,10 @@ stages:
       criterion_key: "ce"
       prefix: "loss"
       cutmix_alpha: 1.0
-      mixup_alpha: 3.0
-      weight_grapheme_root: 2.0
+      mixup_alpha: 4.0
+      weight_grapheme_root: 7.0
       weight_vowel_diacritic: 1.0
-      weight_consonant_diacritic: 1.0
+      weight_consonant_diacritic: 2.0
 
     saver:
       callback: CheckpointCallback
@@ -75,7 +75,7 @@ stages:
 
   stage1:
     state_params:
-      num_epochs: 140
+      num_epochs: 200
 
     optimizer_params:
       optimizer: AdamW
@@ -83,6 +83,6 @@ stages:
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
       init_lr: 0.001
-      num_steps: 136
-      warmup_steps: 4
-      lr_range: [0.003, 0.000005]
+      num_steps: 194
+      warmup_steps: 5
+      lr_range: [0.003, 0.000001]
