@@ -53,8 +53,8 @@ stages:
       output_key: ["logit_grapheme_root", "logit_vowel_diacritic", "logit_consonant_diacritic"]
       criterion_key: "ce"
       prefix: "loss"
-      cutmix_alpha: 0.2
-      mixup_alpha: 0.2
+      cutmix_alpha: 0.4
+      mixup_alpha: 0.4
       weight_grapheme_root: 2.0
       weight_vowel_diacritic: 1.0
       weight_consonant_diacritic: 1.0
