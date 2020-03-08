@@ -108,3 +108,8 @@ stages:
       warmup_steps: 0
       lr_range: [0.00001, 0.000001]
 
+    callbacks_params:
+      checkpoint_loader:
+        callback: CheckpointLoader
+        checkpoint_path: "../input/bengaliutils2/b0 9780 200 ep.pth"
+
