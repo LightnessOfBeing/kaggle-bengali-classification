@@ -2,6 +2,7 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import torch
 from albumentations import Normalize
 
 from src.augmentations import valid_aug, cutout_aug_1, shiftscalerotate_aug
@@ -31,15 +32,19 @@ stats = (0.0692, 0.2051)
 def load_png(fname, aug):
     print(fname)
     image = cv2.imread(fname, 0)
-    image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+   # image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+    image = torch.from_numpy(image)
+    image = image.expand(3, 1, 1)
     image1 = aug(image=image)['image']
-    plt.imshow(image1)
+   # print(image1.shape)
+    plt.imshow(image1[:,:,2])
     plt.show()
     return image
 
 if __name__ == "__main__":
-    im1 = load_png("../input/grapheme-imgs-128x128/Train_0_iafoss.png", shiftscalerotate_aug())
-    im1 = load_png("../input/grapheme-imgs-128x128/Train_0.png", shiftscalerotate_aug())
+    for i in range(10):
+        im1 = load_png("../input/grapheme-imgs-128x128/Train_0_iafoss.png", shiftscalerotate_aug())
+        im1 = load_png("../input/grapheme-imgs-128x128/Train_0.png", shiftscalerotate_aug())
 '''
     ims = sorted(os.listdir('./png/'))
     for i in range(len(ims)):

@@ -135,7 +135,7 @@ def shiftscalerotate_aug():
             ShiftScaleRotate(scale_limit=.15, rotate_limit=15, border_mode=cv2.BORDER_REPLICATE, p=0.5),
             IAAAffine(shear=20, p=0.5),
             IAAPerspective(p=0.5),
-         ], p=0.7),
+         ], p=0.5),
         Normalize(),
         ToTensorV2()]
     return Compose(augs_list, p=1)

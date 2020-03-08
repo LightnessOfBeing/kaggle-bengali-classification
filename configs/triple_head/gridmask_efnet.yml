@@ -1,6 +1,6 @@
 model_params:
   model: EfficientNew
-  encoder: "efficientnet_b0"
+  encoder: "tf_efficientnet_b0_ns"
   num_classes: [168, 11, 7]
 
 args:
@@ -21,17 +21,17 @@ runner_params:  # OPTIONAL KEYWORD, параметры для инициализ
     - "vowel_diacritic"
     - "consonant_diacritic"
 
-#distributed_params:  # OPTIONAL KEYWORD, параметры для distributed training и NVIDIA Apex
-#  opt_level: O1
+distributed_params:  # OPTIONAL KEYWORD, параметры для distributed training и NVIDIA Apex
+  opt_level: O2
 
 stages:
   data_params:
     batch_size: 256
-    num_workers: 4
+    num_workers: 8
     train_csv_path: "../input/bengaliutils2/"
     train_csv_name: "train_with_fold.csv"
     data_folder: "../input/grapheme-imgs-128x128/"
-    train_aug_name: "gridmask_aug"
+    train_aug_name: "shiftscalerotate_aug"
     fold: 0
     processed: False
    # samplers_params:  # KEYWORD, параметры sampler для каждого лоадера, такое же API, как в loaders_params
