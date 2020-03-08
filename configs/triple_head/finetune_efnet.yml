@@ -76,7 +76,7 @@ stages:
       prefix: "loss"
       loss_aggregate_fn: "weighted_sum"
       loss_keys:
-        loss_gr: 10.0
+        loss_gr: 7.0
         loss_vd: 1.0
         loss_cd: 2.0
 
@@ -103,8 +103,8 @@ stages:
 
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
-      init_lr: 0.001
+      init_lr: 0.00001
       num_steps: 32
-      warmup_steps: 5
-      lr_range: [0.003, 0.00001]
+      warmup_steps: 0
+      lr_range: [0.00001, 0.000001]
 

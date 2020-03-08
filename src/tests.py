@@ -32,9 +32,10 @@ stats = (0.0692, 0.2051)
 def load_png(fname, aug):
     print(fname)
     image = cv2.imread(fname, 0)
-   # image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
-    image = torch.from_numpy(image)
-    image = image.expand(3, 1, 1)
+    image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+ #   image = torch.from_numpy(image)
+   # image = image.expand(3, -1, -1)
+    print(image.shape)
     image1 = aug(image=image)['image']
    # print(image1.shape)
     plt.imshow(image1[:,:,2])
