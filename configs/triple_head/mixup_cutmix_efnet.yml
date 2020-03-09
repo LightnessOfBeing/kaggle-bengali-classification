@@ -1,6 +1,6 @@
 model_params:
   model: EfficientNew
-  encoder: "tf_efficientnet_b3_ns"
+  encoder: "tf_efficientnet_b0_ns"
   num_classes: [168, 11, 7]
 
 args:
@@ -30,7 +30,7 @@ stages:
     num_workers: 8
     train_csv_path: "../input/bengaliutils2/"
     train_csv_name: "train_with_fold.csv"
-    data_folder: "../input/bengaliai128/train_images128/"
+    data_folder: "../input/137x236-images/137x236_images/"
     train_aug_name: "mixup_aug"
     fold: 0
     processed: False
@@ -75,7 +75,7 @@ stages:
 
   stage1:
     state_params:
-      num_epochs: 150
+      num_epochs: 100
 
     optimizer_params:
       optimizer: AdamW
@@ -83,6 +83,6 @@ stages:
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
       init_lr: 0.001
-      num_steps: 145
+      num_steps: 96
       warmup_steps: 5
       lr_range: [0.003, 0.000001]
