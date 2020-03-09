@@ -164,15 +164,15 @@ class MixupCutmixCallback(CriterionCallback):
                          state.loader_name.startswith("train")
 
     def on_epoch_start(self, state: State):
-        if state.epoch == 40:
+        if state.epoch == 30:
             state.criterion['ce'].change_rate(0.7)
-        elif state.epoch == 60:
+        elif state.epoch == 50:
             state.criterion['ce'].change_rate(0.6)
-        elif state.epoch == 85:
+        elif state.epoch == 75:
             state.criterion['ce'].change_rate(0.5)
-        elif state.epoch == 110:
+        elif state.epoch == 100:
             state.criterion['ce'].change_rate(0.4)
-        elif state.epoch == 135:
+        elif state.epoch == 120:
             state.criterion['ce'].change_rate(0.3)
 
     def do_mixup(self, state: State):
