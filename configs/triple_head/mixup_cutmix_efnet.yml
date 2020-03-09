@@ -42,7 +42,7 @@ stages:
   criterion_params:
     _key_value: True
     ce:
-      criterion: OHEM
+      criterion: OHEMLoss
 
   callbacks_params:
 
