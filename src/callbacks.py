@@ -165,7 +165,8 @@ class MixupCutmixCallback(CriterionCallback):
 
     def on_epoch_start(self, state: State):
         if state.epoch < 5:
-            state.criterion.change_rate(0.8)
+            print(state.criterion.keys())
+            state.criterion['ce'].change_rate(0.8)
         if state.epoch == 30:
             state.criterion.change_rate(0.7)
         elif state.epoch == 50:
