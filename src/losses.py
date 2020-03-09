@@ -9,6 +9,7 @@ import torch.nn.functional as F
 class OHEMLoss(nn.Module):
     def __init__(self, rate=0.8):
         super(OHEMLoss, self).__init__()
+        print(f"OHEM is initialized with rate={rate}.")
         self.rate = rate
 
     def change_rate(self, new_rate):
