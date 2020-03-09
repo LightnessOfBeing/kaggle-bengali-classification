@@ -30,7 +30,7 @@ stages:
     num_workers: 8
     train_csv_path: "../input/bengaliutils2/"
     train_csv_name: "train_with_fold.csv"
-    data_folder: "../input/137x236-images/137x236_images/"
+    data_folder: "../input/bengaliai128/train_images128/"
     train_aug_name: "mixup_aug"
     fold: 0
     processed: False
@@ -75,7 +75,7 @@ stages:
 
   stage1:
     state_params:
-      num_epochs: 100
+      num_epochs: 160
 
     optimizer_params:
       optimizer: AdamW
@@ -83,6 +83,6 @@ stages:
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
       init_lr: 0.001
-      num_steps: 96
+      num_steps: 156
       warmup_steps: 5
       lr_range: [0.003, 0.000001]
