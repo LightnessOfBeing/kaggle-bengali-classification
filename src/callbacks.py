@@ -164,7 +164,7 @@ class MixupCutmixCallback(CriterionCallback):
                          state.loader_name.startswith("train")
 
     def on_epoch_start(self, state: State):
-        if state.epoch == 1:
+        if state.epoch < 5:
             state.criterion.change_rate(0.8)
         if state.epoch == 30:
             state.criterion.change_rate(0.7)
