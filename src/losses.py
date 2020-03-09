@@ -7,9 +7,13 @@ import torch.nn.functional as F
 
 
 class OHEMLoss(nn.Module):
-    def __init__(self, rate=0.7):
+    def __init__(self, rate=0.8):
         super(OHEMLoss, self).__init__()
         self.rate = rate
+
+    def change_rate(self, new_rate):
+        print(f"Rate Has changed! New rate is {new_rate}.")
+        self.rate = new_rate
 
     def forward(self, cls_pred, cls_target):
         batch_size = cls_pred.size(0)
