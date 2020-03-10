@@ -163,20 +163,7 @@ class MixupCutmixCallback(CriterionCallback):
         self.is_needed = not self.on_train_only or \
                          state.loader_name.startswith("train")
 
-    def on_epoch_start(self, state: State):
-        if state.epoch == 30:
-            state.criterion['ce'].change_rate(0.7)
-        elif state.epoch == 50:
-            state.criterion['ce'].change_rate(0.6)
-        elif state.epoch == 75:
-            state.criterion['ce'].change_rate(0.5)
-        elif state.epoch == 100:
-            state.criterion['ce'].change_rate(0.4)
-        elif state.epoch == 120:
-            state.criterion['ce'].change_rate(0.3)
-
     def do_mixup(self, state: State):
-
         if self.mixup_alpha > 0:
             self.lam = np.random.beta(self.mixup_alpha, self.mixup_alpha)
         else:
