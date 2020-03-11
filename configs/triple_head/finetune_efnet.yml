@@ -1,6 +1,6 @@
 model_params:
   model: EfficientNew
-  encoder: "tf_efficientnet_b0_ns"
+  encoder: "tf_efficientnet_b3_ns"
   num_classes: [168, 11, 7]
 
 args:
@@ -26,7 +26,7 @@ distributed_params:  # OPTIONAL KEYWORD, параметры для distributed t
 
 stages:
   data_params:
-    batch_size: 256
+    batch_size: 160
     num_workers: 8
     train_csv_path: "../input/bengaliutils2/"
     train_csv_name: "train_with_fold.csv"

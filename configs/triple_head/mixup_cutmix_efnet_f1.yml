@@ -1,12 +1,10 @@
 model_params:
-  model: MultiHeadNet
-  encoder: "se_resnext50_32x4d"
-  pretrained: True
+  model: EfficientNew
+  encoder: "tf_efficientnet_b3_ns"
   num_classes: [168, 11, 7]
-  activation: "Mish"
 
 args:
-  logdir: "./logs/bengali_logs"
+  logdir: "./logs/"
   seed: 65
   check: False
   verbose: True
@@ -24,15 +22,17 @@ runner_params:  # OPTIONAL KEYWORD, параметры для инициализ
     - "consonant_diacritic"
 
 distributed_params:  # OPTIONAL KEYWORD, параметры для distributed training и NVIDIA Apex
-  opt_level: O1
+  opt_level: O2
 
 stages:
   data_params:
-    batch_size: 256
-    num_workers: 4
-    train_csv: "train.csv"
-    data_folder: "../input/grapheme-imgs-128x128/"
+    batch_size: 160
+    num_workers: 8
+    train_csv_path: "../input/bengaliutils2/"
+    train_csv_name: "train_with_fold.csv"
+    data_folder: "../input/137x236-images/137x236_images/"
     train_aug_name: "mixup_aug"
+    fold: 1
     processed: False
 
   state_params:
@@ -53,9 +53,11 @@ stages:
       output_key: ["logit_grapheme_root", "logit_vowel_diacritic", "logit_consonant_diacritic"]
       criterion_key: "ce"
       prefix: "loss"
-      weight_grapheme_root: 2
-      weight_vowel_diacritic: 1
-      weight_consonant_diacritic: 1
+      cutmix_alpha: 1.0
+      mixup_alpha: 4.0
+      weight_grapheme_root: 7.0
+      weight_vowel_diacritic: 1.0
+      weight_consonant_diacritic: 2.0
 
     saver:
       callback: CheckpointCallback
@@ -73,19 +75,14 @@ stages:
 
   stage1:
     state_params:
-      num_epochs: 41
-
-    callbacks_params:
-      checkpoint_loader:
-        callback: CheckpointLoader
-        checkpoint_path: "se_resnext_41ep.pth"
+      num_epochs: 100
 
     optimizer_params:
       optimizer: AdamW
 
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
-      init_lr: 0.0026
-      num_steps: 40
-      warmup_steps: 0
-      lr_range: [0.0026, 0.000005]
+      init_lr: 0.001
+      num_steps: 96
+      warmup_steps: 5
+      lr_range: [0.003, 0.000001]
