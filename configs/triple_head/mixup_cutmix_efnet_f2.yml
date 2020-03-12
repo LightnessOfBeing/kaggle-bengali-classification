@@ -1,0 +1,88 @@
+model_params:
+  model: EfficientNew
+  encoder: "tf_efficientnet_b3_ns"
+  num_classes: [168, 11, 7]
+
+args:
+  logdir: "./logs/"
+  seed: 65
+  check: False
+  verbose: True
+
+runner_params:  # OPTIONAL KEYWORD, параметры для инициализации Runner
+  # Например для SupervisedRunner
+  input_key: "image"  # Пример
+  output_key:
+    - "logit_grapheme_root"
+    - "logit_vowel_diacritic"
+    - "logit_consonant_diacritic"
+  input_target_key:
+    - "grapheme_root"
+    - "vowel_diacritic"
+    - "consonant_diacritic"
+
+distributed_params:  # OPTIONAL KEYWORD, параметры для distributed training и NVIDIA Apex
+  opt_level: O2
+
+stages:
+  data_params:
+    batch_size: 160
+    num_workers: 8
+    train_csv_path: "../input/bengaliutils2/"
+    train_csv_name: "train_with_fold.csv"
+    data_folder: "../input/137x236-images/137x236_images/"
+    train_aug_name: "mixup_aug"
+    fold: 2
+    processed: False
+
+  state_params:
+    main_metric: hmar
+    minimize_metric: False
+
+  criterion_params:
+    _key_value: True
+    ce:
+      criterion: CrossEntropyLoss
+
+  callbacks_params:
+
+    loss_mixup:
+      callback: MixupCutmixCallback
+      fields: ["image"]
+      input_key: ["grapheme_root", "vowel_diacritic", "consonant_diacritic"]
+      output_key: ["logit_grapheme_root", "logit_vowel_diacritic", "logit_consonant_diacritic"]
+      criterion_key: "ce"
+      prefix: "loss"
+      cutmix_alpha: 1.0
+      mixup_alpha: 4.0
+      weight_grapheme_root: 7.0
+      weight_vowel_diacritic: 1.0
+      weight_consonant_diacritic: 2.0
+
+    saver:
+      callback: CheckpointCallback
+      save_n_best: 3
+
+    metrics:
+      callback: HMacroAveragedRecall
+
+    optimizer:
+      callback: OptimizerCallback
+
+    scheduler:
+      callback: SchedulerCallback
+      reduce_metric: loss
+
+  stage1:
+    state_params:
+      num_epochs: 100
+
+    optimizer_params:
+      optimizer: AdamW
+
+    scheduler_params:
+      scheduler: OneCycleLRWithWarmup
+      init_lr: 0.001
+      num_steps: 96
+      warmup_steps: 5
+      lr_range: [0.003, 0.000001]
