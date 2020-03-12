@@ -32,7 +32,7 @@ stadges:
     train_csv_name: "train_with_fold.csv"
     data_folder: "../input/137x236-images/137x236_images/"
     train_aug_name: "mixup_aug"
-    fold: 1
+    fold: 2
     processed: False
    # samplers_params:  # KEYWORD, параметры sampler для каждого лоадера, такое же API, как в loaders_params
    #   train:
@@ -103,10 +103,10 @@ stadges:
 
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
-      init_lr: 0.000015
+      init_lr: 0.00002
       num_steps: 32
       warmup_steps: 0
-      lr_range: [0.000015, 0.000001]
+      lr_range: [0.00002, 0.000001]
 
     callbacks_params:
       checkpoint_loader:
