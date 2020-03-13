@@ -1,10 +1,10 @@
 model_params:
   model: EfficientNew
-  encoder: "efficientnet_b0"
+  encoder: "tf_efficientnet_b3_ns"
   num_classes: [168, 11, 7]
 
 args:
-  logdir: "./logs"
+  logdir: "./logs/"
   seed: 65
   check: False
   verbose: True
@@ -20,18 +20,18 @@ runner_params:
     - "vowel_diacritic"
     - "consonant_diacritic"
 
-distributed_params:  # OPTIONAL KEYWORD, параметры для distributed training и NVIDIA Apex
+distributed_params:
   opt_level: O2
 
 stages:
   data_params:
-    batch_size: 256
-    num_workers: 4
+    batch_size: 160
+    num_workers: 8
     train_csv_path: "../input/bengaliutils2/"
     train_csv_name: "train_with_fold.csv"
-    data_folder: "../input/bengaliai128/train_images128/"
-    train_aug_name: "shiftscalerotate_aug"
-    fold: 0
+    data_folder: "../input/137x236-images/137x236_images/"
+    train_aug_name: "mixup_aug"
+    fold: 4
     processed: False
 
   state_params:
@@ -52,9 +52,11 @@ stages:
       output_key: ["logit_grapheme_root", "logit_vowel_diacritic", "logit_consonant_diacritic"]
       criterion_key: "ce"
       prefix: "loss"
-      weight_grapheme_root: 5
-      weight_vowel_diacritic: 1
-      weight_consonant_diacritic: 1
+      cutmix_alpha: 1.0
+      mixup_alpha: 4.0
+      weight_grapheme_root: 7.0
+      weight_vowel_diacritic: 1.0
+      weight_consonant_diacritic: 2.0
 
     saver:
       callback: CheckpointCallback
@@ -68,25 +70,18 @@ stages:
 
     scheduler:
       callback: SchedulerCallback
-      reduce_metric: hmar
+      reduce_metric: loss
 
   stage1:
     state_params:
-      num_epochs: 60
+      num_epochs: 100
 
     optimizer_params:
       optimizer: AdamW
 
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
-      init_lr: 5e-5
-      num_steps: 55
-      warmup_steps: 0
-      lr_range: [5e-5, 1e-7]
-
-    callbacks_params:
-      checkpoint_loader:
-        callback: CheckpointLoader
-        checkpoint_path: "../input/bengaliutils2/b3_9791.pth"
-
-
+      init_lr: 0.001
+      num_steps: 96
+      warmup_steps: 5
+      lr_range: [0.003, 0.000001]

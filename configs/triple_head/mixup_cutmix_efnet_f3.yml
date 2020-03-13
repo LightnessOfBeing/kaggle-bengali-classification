@@ -1,19 +1,16 @@
 model_params:
-  model: MultiHeadNet
-  encoder: "se_resnext50_32x4d"
-  pretrained: True
+  model: EfficientNew
+  encoder: "tf_efficientnet_b3_ns"
   num_classes: [168, 11, 7]
-  activation: "Mish"
 
 args:
-  logdir: "./logs/bengali_logs"
+  logdir: "./logs/"
   seed: 65
   check: False
   verbose: True
 
-runner_params:  # OPTIONAL KEYWORD, параметры для инициализации Runner
-  # Например для SupervisedRunner
-  input_key: "image"  # Пример
+runner_params:
+  input_key: "image"
   output_key:
     - "logit_grapheme_root"
     - "logit_vowel_diacritic"
@@ -23,18 +20,19 @@ runner_params:  # OPTIONAL KEYWORD, параметры для инициализ
     - "vowel_diacritic"
     - "consonant_diacritic"
 
-distributed_params:  # OPTIONAL KEYWORD, параметры для distributed training и NVIDIA Apex
-  opt_level: O1
+distributed_params:
+  opt_level: O2
 
 stages:
   data_params:
-    batch_size: 128
-    num_workers: 4
+    batch_size: 160
+    num_workers: 8
     train_csv_path: "../input/bengaliutils2/"
     train_csv_name: "train_with_fold.csv"
-    data_folder: "../input/grapheme-imgs-128x128/"
+    data_folder: "../input/137x236-images/137x236_images/"
     train_aug_name: "mixup_aug"
-    fold: 0
+    fold: 3
+    processed: False
 
   state_params:
     main_metric: hmar
@@ -54,9 +52,11 @@ stages:
       output_key: ["logit_grapheme_root", "logit_vowel_diacritic", "logit_consonant_diacritic"]
       criterion_key: "ce"
       prefix: "loss"
-      weight_grapheme_root: 2
-      weight_vowel_diacritic: 1
-      weight_consonant_diacritic: 1
+      cutmix_alpha: 1.0
+      mixup_alpha: 4.0
+      weight_grapheme_root: 7.0
+      weight_vowel_diacritic: 1.0
+      weight_consonant_diacritic: 2.0
 
     saver:
       callback: CheckpointCallback
@@ -70,7 +70,7 @@ stages:
 
     scheduler:
       callback: SchedulerCallback
-      reduce_metric: hmar
+      reduce_metric: loss
 
   stage1:
     state_params:
@@ -82,6 +82,6 @@ stages:
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
       init_lr: 0.001
-      num_steps: 95
-      warmup_steps: 10
-      lr_range: [0.003, 0.000005]
+      num_steps: 96
+      warmup_steps: 5
+      lr_range: [0.003, 0.000001]
