@@ -23,7 +23,7 @@ runner_params:
 distributed_params:
   opt_level: O2
 
-stadges:
+stages:
   data_params:
     batch_size: 160
     num_workers: 8
