@@ -103,13 +103,13 @@ stadges:
 
     scheduler_params:
       scheduler: OneCycleLRWithWarmup
-      init_lr: 0.000015
+      init_lr: 0.00002
       num_steps: 32
       warmup_steps: 0
-      lr_range: [0.000015, 0.000001]
+      lr_range: [0.00002, 0.000001]
 
     callbacks_params:
       checkpoint_loader:
         callback: CheckpointLoader
-        checkpoint_path: "./logs/checkpoints/best.pth"
+        checkpoint_path: "../input/bengaliutils2/b3_9827_f1.pth"
 
