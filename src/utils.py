@@ -19,7 +19,6 @@ def load_image(path):
 HEIGHT = 137
 WIDTH = 236
 SIZE = 128
-stats = (0.0692, 0.2051)
 
 
 def bbox(img):

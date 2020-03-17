@@ -10,9 +10,8 @@ args:
   check: False
   verbose: True
 
-runner_params:  # OPTIONAL KEYWORD, параметры для инициализации Runner
-  # Например для SupervisedRunner
-  input_key: "image"  # Пример
+runner_params:
+  input_key: "image"
   output_key:
     - "logit_grapheme_root"
     - "logit_vowel_diacritic"
@@ -84,15 +83,15 @@ stages:
       callback: SchedulerCallback
       reduce_metric: loss
 
-  stage1:  # Все, что не ключевое слово, расценивается, как имя стейджа. Для тренировки в Catalyst требуется хотябы один стейдж. Имя может быть произвольным
-    state_params:  # Вы можете переопределить любые параметры, для конкретного стейджа, например
+  stage1:
+    state_params:
       num_epochs: 3
 
     callbacks_params:
       freeze:
         callback: FreezeCallback
 
-    optimizer_params:  # Пример, переопределенного оптимизатора
+    optimizer_params:
       optimizer: AdamW
       lr: 0.001
 
@@ -110,7 +109,7 @@ stages:
       unfreeze:
         callback: UnFreezeCallback
 
-    optimizer_params:  # Пример, переопределенного оптимизатора
+    optimizer_params:
       optimizer: AdamW
 
     scheduler_params:

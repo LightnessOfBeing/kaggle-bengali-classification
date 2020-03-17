@@ -28,8 +28,6 @@ class MultiHeadNet(nn.Module):
             param.requires_grad = False
         print("Model freezed!")
 
-        # nvidia 
-
     def unfreeze(self):
         for param in self.model._features.parameters():
             param.requires_grad = True

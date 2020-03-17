@@ -9,9 +9,8 @@ args:
   check: False
   verbose: True
 
-runner_params:  # OPTIONAL KEYWORD, параметры для инициализации Runner
-  # Например для SupervisedRunner
-  input_key: "image"  # Пример
+runner_params:
+  input_key: "image"
   output_key:
     - "logit_grapheme_root"
     - "logit_vowel_diacritic"
@@ -21,7 +20,7 @@ runner_params:  # OPTIONAL KEYWORD, параметры для инициализ
     - "vowel_diacritic"
     - "consonant_diacritic"
 
-distributed_params:  # OPTIONAL KEYWORD, параметры для distributed training и NVIDIA Apex
+distributed_params:
   opt_level: O2
 
 stages:
@@ -34,10 +33,6 @@ stages:
     train_aug_name: "mixup_aug"
     fold: 0
     processed: False
-   # samplers_params:  # KEYWORD, параметры sampler для каждого лоадера, такое же API, как в loaders_params
-   #   train:
-   #     sampler: BalanceSampler
-   #     df_path: "../input/bengaliutils2/train_with_fold.csv"
 
   state_params:
     main_metric: hmar

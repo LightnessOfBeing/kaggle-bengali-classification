@@ -12,9 +12,8 @@ args:
   check: False
   verbose: True
 
-runner_params:  # OPTIONAL KEYWORD, параметры для инициализации Runner
-  # Например для SupervisedRunner
-  input_key: "image"  # Пример
+runner_params:
+  input_key: "image"
   output_key:
     - "logit_grapheme_root"
     - "logit_vowel_diacritic"
@@ -33,10 +32,6 @@ stages:
     data_folder: "../input/grapheme-imgs-128x128/"
     train_aug_name: "mixup_aug"
     test_run: True
-   # samplers_params:  # KEYWORD, параметры sampler для каждого лоадера, такое же API, как в loaders_params
-   #   train:
-   #     sampler: BalanceSampler
-   #     df_path: "../input/bengaliutils2/train_with_fold.csv"
 
   state_params:
     main_metric: hmar

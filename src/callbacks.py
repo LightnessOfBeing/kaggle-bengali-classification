@@ -238,14 +238,3 @@ class CheckpointLoader(Callback):
         print(f'Checkpoint {self.checkpoint_path} is being loaded!')
         checkpoint = utils.load_checkpoint(self.checkpoint_path)
         utils.unpack_checkpoint(checkpoint, model=state.model)
-
-
-class ImageViewerCallback(Callback):
-
-    def __init__(self):
-        super().__init__(CallbackOrder.Other)
-
-    def on_batch_start(self, state: State):
-        print(type(state.input["images"].numpy()))
-        img = state.input["images"].numpy()[0]
-        np.savetxt("kek.txt", img[0])

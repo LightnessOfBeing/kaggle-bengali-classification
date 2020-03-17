@@ -1,6 +1,6 @@
 from catalyst.dl import registry
 from catalyst.dl import SupervisedRunner as Runner
-from pytorch_toolbelt.losses import FocalLoss, LovaszLoss
+from pytorch_toolbelt.losses import FocalLoss
 
 from src.models.efficient_new import EfficientNew
 from .models.multihead import MultiHeadNet
@@ -25,7 +25,6 @@ registry.Callback(HMacroAveragedRecallSingle)
 
 # Register criterion
 registry.Criterion(FocalLoss)
-registry.Criterion(LovaszLoss)
 registry.Criterion(OHEMLoss)
 registry.Criterion(ReducedFocalLoss)
 
