@@ -1,6 +1,6 @@
 
 # Bengali.AI Handwritten Grapheme Classification
-https://www.kaggle.com/c/understanding_cloud_organization
+https://www.kaggle.com/c/bengaliai-cv19/overview
 
 41st place solution (out of 2,059 teams Top 2%)
 
