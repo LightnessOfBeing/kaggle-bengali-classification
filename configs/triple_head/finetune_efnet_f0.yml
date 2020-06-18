@@ -107,4 +107,3 @@ stages:
       checkpoint_loader:
         callback: CheckpointLoader
         checkpoint_path: "./logs/checkpoints/best.pth"
-

@@ -1,8 +1,15 @@
 import cv2
-
 import numpy as np
-from albumentations import Compose, Normalize, CoarseDropout, DualTransform, OneOf, ShiftScaleRotate, IAAPerspective, \
-    IAAAffine
+from albumentations import (
+    CoarseDropout,
+    Compose,
+    DualTransform,
+    IAAAffine,
+    IAAPerspective,
+    Normalize,
+    OneOf,
+    ShiftScaleRotate,
+)
 from albumentations.augmentations import functional as F
 from albumentations.pytorch import ToTensorV2
 
@@ -35,7 +42,9 @@ class GridMask(DualTransform):
     |  https://github.com/akuxcw/GridMask
     """
 
-    def __init__(self, num_grid=3, fill_value=0, rotate=0, mode=0, always_apply=False, p=0.5):
+    def __init__(
+        self, num_grid=3, fill_value=0, rotate=0, mode=0, always_apply=False, p=0.5
+    ):
         super(GridMask, self).__init__(always_apply, p)
         if isinstance(num_grid, int):
             num_grid = (num_grid, num_grid)
@@ -56,17 +65,19 @@ class GridMask(DualTransform):
             for n, n_g in enumerate(range(self.num_grid[0], self.num_grid[1] + 1, 1)):
                 grid_h = height / n_g
                 grid_w = width / n_g
-                this_mask = np.ones((int((n_g + 1) * grid_h), int((n_g + 1) * grid_w))).astype(np.uint8)
+                this_mask = np.ones(
+                    (int((n_g + 1) * grid_h), int((n_g + 1) * grid_w))
+                ).astype(np.uint8)
                 for i in range(n_g + 1):
                     for j in range(n_g + 1):
                         this_mask[
-                        int(i * grid_h): int(i * grid_h + grid_h / 2),
-                        int(j * grid_w): int(j * grid_w + grid_w / 2)
+                            int(i * grid_h) : int(i * grid_h + grid_h / 2),
+                            int(j * grid_w) : int(j * grid_w + grid_w / 2),
                         ] = self.fill_value
                         if self.mode == 2:
                             this_mask[
-                            int(i * grid_h + grid_h / 2): int(i * grid_h + grid_h),
-                            int(j * grid_w + grid_w / 2): int(j * grid_w + grid_w)
+                                int(i * grid_h + grid_h / 2) : int(i * grid_h + grid_h),
+                                int(j * grid_w + grid_w / 2) : int(j * grid_w + grid_w),
                             ] = self.fill_value
 
                 if self.mode == 1:
@@ -80,11 +91,11 @@ class GridMask(DualTransform):
         h, w = image.shape[:2]
         mask = F.rotate(mask, angle) if self.rotate[1] > 0 else mask
         mask = mask[:, :, np.newaxis] if image.ndim == 3 else mask
-        image *= mask[rand_h:rand_h + h, rand_w:rand_w + w].astype(image.dtype)
+        image *= mask[rand_h : rand_h + h, rand_w : rand_w + w].astype(image.dtype)
         return image
 
     def get_params_dependent_on_targets(self, params):
-        img = params['image']
+        img = params["image"]
         height, width = img.shape[:2]
         self.init_masks(height, width)
 
@@ -92,23 +103,30 @@ class GridMask(DualTransform):
         mask = self.masks[mid]
         rand_h = np.random.randint(self.rand_h_max[mid])
         rand_w = np.random.randint(self.rand_w_max[mid])
-        angle = np.random.randint(self.rotate[0], self.rotate[1]) if self.rotate[1] > 0 else 0
+        angle = (
+            np.random.randint(self.rotate[0], self.rotate[1])
+            if self.rotate[1] > 0
+            else 0
+        )
 
-        return {'mask': mask, 'rand_h': rand_h, 'rand_w': rand_w, 'angle': angle}
+        return {"mask": mask, "rand_h": rand_h, "rand_w": rand_w, "angle": angle}
 
     @property
     def targets_as_params(self):
-        return ['image']
+        return ["image"]
 
     def get_transform_init_args_names(self):
-        return ('num_grid', 'fill_value', 'rotate', 'mode')
+        return ("num_grid", "fill_value", "rotate", "mode")
 
 
 def cutout_aug_1():
     augs_list = [
-        CoarseDropout(min_holes=2, max_holes=10, max_height=12, max_width=12, fill_value=0, p=0.3),
+        CoarseDropout(
+            min_holes=2, max_holes=10, max_height=12, max_width=12, fill_value=0, p=0.3
+        ),
         Normalize(),
-        ToTensorV2()]
+        ToTensorV2(),
+    ]
     return Compose(augs_list, p=1)
 
 
@@ -116,64 +134,103 @@ def cutout_aug_2():
     augs_list = [
         CoarseDropout(max_holes=1, max_height=64, max_width=64, fill_value=0, p=0.3),
         Normalize(),
-        ToTensorV2()]
+        ToTensorV2(),
+    ]
     return Compose(augs_list, p=1)
 
 
 def cutout_aug_3():
     augs_list = [
-        OneOf([CoarseDropout(min_holes=2, max_holes=10, max_height=12, max_width=12, fill_value=0, p=0.3),
-               CoarseDropout(max_holes=1, max_height=64, max_width=64, fill_value=0, p=0.3)]),
+        OneOf(
+            [
+                CoarseDropout(
+                    min_holes=2,
+                    max_holes=10,
+                    max_height=12,
+                    max_width=12,
+                    fill_value=0,
+                    p=0.3,
+                ),
+                CoarseDropout(
+                    max_holes=1, max_height=64, max_width=64, fill_value=0, p=0.3
+                ),
+            ]
+        ),
         Normalize(),
-        ToTensorV2()]
+        ToTensorV2(),
+    ]
     return Compose(augs_list, p=1)
 
 
 def shiftscalerotate_aug():
     augs_list = [
-        OneOf([
-            ShiftScaleRotate(scale_limit=.15, rotate_limit=15, border_mode=cv2.BORDER_REPLICATE, p=0.5),
-            IAAAffine(shear=20, p=0.5),
-            IAAPerspective(p=0.5),
-         ], p=0.5),
+        OneOf(
+            [
+                ShiftScaleRotate(
+                    scale_limit=0.15,
+                    rotate_limit=15,
+                    border_mode=cv2.BORDER_REPLICATE,
+                    p=0.5,
+                ),
+                IAAAffine(shear=20, p=0.5),
+                IAAPerspective(p=0.5),
+            ],
+            p=0.5,
+        ),
         Normalize(),
-        ToTensorV2()]
+        ToTensorV2(),
+    ]
     return Compose(augs_list, p=1)
 
 
 def gridmask_aug():
-    augs_list = [OneOf([OneOf([GridMask(num_grid=(10, 15), rotate=10, mode=0, fill_value=0),
-                               GridMask(num_grid=(10, 15), rotate=10, mode=2, fill_value=0),
-                               GridMask(num_grid=(10, 15), rotate=0, mode=0, fill_value=0),
-                               GridMask(num_grid=(10, 15), rotate=0, mode=2, fill_value=0)], p=0.7),
-                        CoarseDropout(min_holes=2, max_holes=10, max_height=15,
-                                      max_width=15, fill_value=0, p=0.7)]),
-                 Normalize(),
-                 ToTensorV2()]
+    augs_list = [
+        OneOf(
+            [
+                OneOf(
+                    [
+                        GridMask(num_grid=(10, 15), rotate=10, mode=0, fill_value=0),
+                        GridMask(num_grid=(10, 15), rotate=10, mode=2, fill_value=0),
+                        GridMask(num_grid=(10, 15), rotate=0, mode=0, fill_value=0),
+                        GridMask(num_grid=(10, 15), rotate=0, mode=2, fill_value=0),
+                    ],
+                    p=0.7,
+                ),
+                CoarseDropout(
+                    min_holes=2,
+                    max_holes=10,
+                    max_height=15,
+                    max_width=15,
+                    fill_value=0,
+                    p=0.7,
+                ),
+            ]
+        ),
+        Normalize(),
+        ToTensorV2(),
+    ]
 
     return Compose(augs_list)
 
 
 def mixup_aug():
-    augs_list = [Normalize(),
-                 ToTensorV2()]
+    augs_list = [Normalize(), ToTensorV2()]
     return Compose(augs_list, p=1)
 
 
 def valid_aug():
-    augs_list = [Normalize(),
-                 ToTensorV2()]
+    augs_list = [Normalize(), ToTensorV2()]
     return Compose(augs_list, p=1)
 
 
 def get_augmentation(aug_name):
     aug_dict = {
-        'valid_aug': valid_aug,
-        'mixup_aug': mixup_aug,
-        'cutout_aug_1': cutout_aug_1,
-        'cutout_aug_2': cutout_aug_2,
-        'cutout_aug_3': cutout_aug_3,
-        'gridmask_aug': gridmask_aug,
-        'shiftscalerotate_aug': shiftscalerotate_aug
+        "valid_aug": valid_aug,
+        "mixup_aug": mixup_aug,
+        "cutout_aug_1": cutout_aug_1,
+        "cutout_aug_2": cutout_aug_2,
+        "cutout_aug_3": cutout_aug_3,
+        "gridmask_aug": gridmask_aug,
+        "shiftscalerotate_aug": shiftscalerotate_aug,
     }
     return aug_dict[aug_name]()

@@ -1,9 +1,8 @@
 from typing import Optional
 
 import torch
-
-from torch import nn
 import torch.nn.functional as F
+from torch import nn
 
 
 class OHEMLoss(nn.Module):
@@ -18,7 +17,9 @@ class OHEMLoss(nn.Module):
 
     def forward(self, cls_pred, cls_target):
         batch_size = cls_pred.size(0)
-        ohem_cls_loss = F.cross_entropy(cls_pred, cls_target, reduction='none', ignore_index=-1)
+        ohem_cls_loss = F.cross_entropy(
+            cls_pred, cls_target, reduction="none", ignore_index=-1
+        )
 
         sorted_ohem_loss, idx = torch.sort(ohem_cls_loss, descending=True)
         keep_num = min(sorted_ohem_loss.size()[0], int(batch_size * self.rate))
@@ -30,13 +31,13 @@ class OHEMLoss(nn.Module):
 
 
 def reduced_focal_loss_with_logits(
-        input: torch.Tensor,
-        target: torch.Tensor,
-        gamma=2.0,
-        alpha: Optional[float] = None,
-        reduction="mean",
-        normalized=False,
-        threshold: Optional[float] = 0.5,
+    input: torch.Tensor,
+    target: torch.Tensor,
+    gamma=2.0,
+    alpha: Optional[float] = None,
+    reduction="mean",
+    normalized=False,
+    threshold: Optional[float] = 0.5,
 ) -> torch.Tensor:
     """Compute binary focal loss between target and output logits.
 
@@ -121,7 +122,11 @@ class ReducedFocalLoss(nn.Module):
                 cls_label_input = cls_label_input[not_ignored]
 
             loss += reduced_focal_loss_with_logits(
-                cls_label_input, cls_label_target, gamma=self.gamma, alpha=self.alpha, threshold=0.5
+                cls_label_input,
+                cls_label_target,
+                gamma=self.gamma,
+                alpha=self.alpha,
+                threshold=0.5,
             )
         return loss
 

@@ -7,7 +7,7 @@ import torch.nn.functional as F
 from efficientnet_pytorch.utils import MemoryEfficientSwish
 from timm.models.layers.activations import Swish
 from torch import nn
-from torch.nn import AdaptiveAvgPool2d, Parameter, BatchNorm2d, Conv2d
+from torch.nn import AdaptiveAvgPool2d, BatchNorm2d, Conv2d, Parameter
 
 
 def load_image(path):
@@ -44,14 +44,14 @@ def crop_resize(img0, size=SIZE, pad=16):
     lx, ly = xmax - xmin, ymax - ymin
     l = max(lx, ly) + pad
     # make sure that the aspect ratio is kept in rescaling
-    img = np.pad(img, [((l - ly) // 2,), ((l - lx) // 2,)], mode='constant')
+    img = np.pad(img, [((l - ly) // 2,), ((l - lx) // 2,)], mode="constant")
     return cv2.resize(img, (size, size))
 
 
 def rand_bbox(size, lam):
     W = size[2]
     H = size[3]
-    cut_rat = np.sqrt(1. - lam)
+    cut_rat = np.sqrt(1.0 - lam)
     cut_w = np.int(W * cut_rat)
     cut_h = np.int(H * cut_rat)
 
@@ -70,7 +70,7 @@ def rand_bbox(size, lam):
 def dropout_replace(model):
     for child_name, child in model.named_children():
         if isinstance(child, nn.Dropout):
-            setattr(model, child_name, nn.Dropout(p=0.))
+            setattr(model, child_name, nn.Dropout(p=0.0))
         else:
             dropout_replace(child)
 
@@ -96,15 +96,18 @@ class Mish(nn.Module):
 
 def to_Mish(model):
     for child_name, child in model.named_children():
-        if isinstance(child, nn.ReLU) or isinstance(child, MemoryEfficientSwish) or \
-                isinstance(child, Swish):
+        if (
+            isinstance(child, nn.ReLU)
+            or isinstance(child, MemoryEfficientSwish)
+            or isinstance(child, Swish)
+        ):
             setattr(model, child_name, Mish())
         else:
             to_Mish(child)
 
 
 def gem(x, p=3, eps=1e-6):
-    return F.avg_pool2d(x.clamp(min=eps).pow(p), (x.size(-2), x.size(-1))).pow(1. / p)
+    return F.avg_pool2d(x.clamp(min=eps).pow(p), (x.size(-2), x.size(-1))).pow(1.0 / p)
 
 
 class GeM(nn.Module):
@@ -117,8 +120,16 @@ class GeM(nn.Module):
         return gem(x, p=self.p, eps=self.eps)
 
     def __repr__(self):
-        return self.__class__.__name__ + '(' + 'p=' + '{:.4f}'.format(self.p.data.tolist()[0]) + ', ' + 'eps=' + str(
-            self.eps) + ')'
+        return (
+            self.__class__.__name__
+            + "("
+            + "p="
+            + "{:.4f}".format(self.p.data.tolist()[0])
+            + ", "
+            + "eps="
+            + str(self.eps)
+            + ")"
+        )
 
 
 def to_GeM(model):
@@ -145,13 +156,15 @@ class FRN(nn.Module):
         self.is_eps_leanable = is_eps_leanable
 
         self.weight = nn.parameter.Parameter(
-            torch.Tensor(1, num_features, 1, 1), requires_grad=True)
+            torch.Tensor(1, num_features, 1, 1), requires_grad=True
+        )
         self.bias = nn.parameter.Parameter(
-            torch.Tensor(1, num_features, 1, 1), requires_grad=True)
+            torch.Tensor(1, num_features, 1, 1), requires_grad=True
+        )
         if is_eps_leanable:
             self.eps = nn.parameter.Parameter(torch.Tensor(1), requires_grad=True)
         else:
-            self.register_buffer('eps', torch.Tensor([eps]))
+            self.register_buffer("eps", torch.Tensor([eps]))
         self.reset_parameters()
 
     def reset_parameters(self):
@@ -161,7 +174,7 @@ class FRN(nn.Module):
             nn.init.constant_(self.eps, self.init_eps)
 
     def extra_repr(self):
-        return 'num_features={num_features}, eps={init_eps}'.format(**self.__dict__)
+        return "num_features={num_features}, eps={init_eps}".format(**self.__dict__)
 
     def forward(self, x):
         """
@@ -193,23 +206,47 @@ def to_FRN(model):
 
 
 class Conv2dWS(nn.Conv2d):
-
-    def __init__(self, in_channels, out_channels, kernel_size, stride,
-                 padding, dilation, transposed, output_padding,
-                 groups, bias, padding_mode):
-        super(Conv2d, self).__init__(in_channels, out_channels, kernel_size, stride,
-                                     padding, dilation, transposed, output_padding,
-                                     groups, bias, padding_mode)
+    def __init__(
+        self,
+        in_channels,
+        out_channels,
+        kernel_size,
+        stride,
+        padding,
+        dilation,
+        transposed,
+        output_padding,
+        groups,
+        bias,
+        padding_mode,
+    ):
+        super(Conv2d, self).__init__(
+            in_channels,
+            out_channels,
+            kernel_size,
+            stride,
+            padding,
+            dilation,
+            transposed,
+            output_padding,
+            groups,
+            bias,
+            padding_mode,
+        )
 
     def forward(self, x):
         weight = self.weight
-        weight_mean = weight.mean(dim=1, keepdim=True).mean(dim=2,
-                                                            keepdim=True).mean(dim=3, keepdim=True)
+        weight_mean = (
+            weight.mean(dim=1, keepdim=True)
+            .mean(dim=2, keepdim=True)
+            .mean(dim=3, keepdim=True)
+        )
         weight = weight - weight_mean
         std = weight.view(weight.size(0), -1).std(dim=1).view(-1, 1, 1, 1) + 1e-5
         weight = weight / std.expand_as(weight)
-        return F.conv2d(x, weight, self.bias, self.stride,
-                        self.padding, self.dilation, self.groups)
+        return F.conv2d(
+            x, weight, self.bias, self.stride, self.padding, self.dilation, self.groups
+        )
 
 
 def to_ws(mod):
@@ -221,18 +258,23 @@ def to_ws(mod):
         if is_conv and isinstance(child, BatchNorm2d):
             # Convert conv2 to conv2dws
             if isinstance(before_child, Conv2d):
-                setattr(mod, before_name,
-                        Conv2dWS(in_channels=before_child.in_channels,
-                                 out_channels=before_child.out_channels,
-                                 kernel_size=before_child.kernel_size,
-                                 stride=before_child.stride,
-                                 padding=before_child.padding,
-                                 dilation=before_child.dilation,
-                                 groups=before_child.groups,
-                                 bias=before_child.bias,
-                                 output_padding=before_child.output_padding,
-                                 padding_mode=before_child.padding_mode,
-                                 transposed=before_child.transposed))
+                setattr(
+                    mod,
+                    before_name,
+                    Conv2dWS(
+                        in_channels=before_child.in_channels,
+                        out_channels=before_child.out_channels,
+                        kernel_size=before_child.kernel_size,
+                        stride=before_child.stride,
+                        padding=before_child.padding,
+                        dilation=before_child.dilation,
+                        groups=before_child.groups,
+                        bias=before_child.bias,
+                        output_padding=before_child.output_padding,
+                        padding_mode=before_child.padding_mode,
+                        transposed=before_child.transposed,
+                    ),
+                )
             else:
                 raise NotImplementedError()
         else:
@@ -243,10 +285,18 @@ def to_ws(mod):
         is_conv = isinstance(child, Conv2d)
 
 
-def bn_drop_lin(n_in: int, n_out: int, bn: bool = True, p: float = 0., actn: Optional[nn.Module] = None):
+def bn_drop_lin(
+    n_in: int,
+    n_out: int,
+    bn: bool = True,
+    p: float = 0.0,
+    actn: Optional[nn.Module] = None,
+):
     "Sequence of batchnorm (if `bn`), dropout (with `p`) and linear (`n_in`,`n_out`) layers followed by `actn`."
     layers = [nn.BatchNorm1d(n_in)] if bn else []
-    if p != 0: layers.append(nn.Dropout(p))
+    if p != 0:
+        layers.append(nn.Dropout(p))
     layers.append(nn.Linear(n_in, n_out))
-    if actn is not None: layers.append(actn)
+    if actn is not None:
+        layers.append(actn)
     return layers

@@ -16,7 +16,9 @@ class GraphemeDatasetTest(Dataset):
     def __init__(self, fname, transform):
         self.transform = transform
         self.df = pd.read_parquet(fname)[:1000]
-        self.data = 255 - self.df.iloc[:, 1:].values.reshape(-1, HEIGHT, WIDTH).astype(np.uint8)
+        self.data = 255 - self.df.iloc[:, 1:].values.reshape(-1, HEIGHT, WIDTH).astype(
+            np.uint8
+        )
 
     def __len__(self):
         return len(self.data)
@@ -28,19 +30,22 @@ class GraphemeDatasetTest(Dataset):
         image = crop_resize(image)
         image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
         if self.transform:
-            image = self.transform(image=image)['image']
+            image = self.transform(image=image)["image"]
         image = np.transpose(image, (2, 0, 1)).astype(np.float32)
         return image, name
 
 
-TEST = ['test_image_data_0.parquet',
-        'test_image_data_1.parquet',
-        'test_image_data_2.parquet',
-        'test_image_data_3.parquet']
+TEST = [
+    "test_image_data_0.parquet",
+    "test_image_data_1.parquet",
+    "test_image_data_2.parquet",
+    "test_image_data_3.parquet",
+]
 
 log_dir = "logs/bengali_logs"
 
-device = torch.device('cuda')
+device = torch.device("cuda")
+
 
 @click.command()
 @click.option("--data_folder", type=str, default="../input/bengaliai-cv19/")
@@ -53,8 +58,8 @@ def predict(data_folder, weights_path, arch, sub_name, bs, num_workers):
     row_id, target = [], []
     model = MultiHeadNet(arch, True, [168, 11, 7])
     checkpoint = torch.load(weights_path)
-    #checkpoint = torch.load(checkpoint, map_location=torch.device('cpu'))
-    model.load_state_dict(checkpoint['model_state_dict'])
+    # checkpoint = torch.load(checkpoint, map_location=torch.device('cpu'))
+    model.load_state_dict(checkpoint["model_state_dict"])
     model = model.to(device)
     model.eval()
     row_id, target = [], []
@@ -69,16 +74,20 @@ def predict(data_folder, weights_path, arch, sub_name, bs, num_workers):
                 p2 = p2.argmax(-1).view(-1).cpu()
                 p3 = p3.argmax(-1).view(-1).cpu()
                 for idx, name in enumerate(y):
-                    row_id += [f'{name}_grapheme_root', f'{name}_vowel_diacritic',
-                               f'{name}_consonant_diacritic']
+                    row_id += [
+                        f"{name}_grapheme_root",
+                        f"{name}_vowel_diacritic",
+                        f"{name}_consonant_diacritic",
+                    ]
                     target += [p1[idx].item(), p2[idx].item(), p3[idx].item()]
 
-    sub_df = pd.DataFrame({'row_id': row_id, 'target': target})
+    sub_df = pd.DataFrame({"row_id": row_id, "target": target})
     sub_df.to_csv(sub_name, index=False)
     sub_df.head()
     return
 
-'''
+
+"""
 def predict(data_folder, weights_path, arch, sub_name, bs, num_workers):
     row_id, target = [], []
     model = MultiHeadNet(arch, True, [168, 11, 7])
@@ -127,10 +136,10 @@ def predict(data_folder, weights_path, arch, sub_name, bs, num_workers):
     sub_df.to_csv("submission_parquet.csv", index=False)
     sub_df.head()
     return
-'''
+"""
 
 if __name__ == "__main__":
-    '''
+    """
     image_id = os.path.join("../input/grapheme-imgs-128x128", "Train_0.png")
     model = make_model(
         model_name='resnet18',
@@ -142,5 +151,5 @@ if __name__ == "__main__":
     image = valid_aug()(image=image)
     plt.imshow(image)
     image = np.transpose(image, (2, 0, 1)).astype(np.float32)
-    '''
+    """
     predict()

@@ -9,9 +9,7 @@ class MultiHeadNet(nn.Module):
     def __init__(self, encoder, pretrained, num_classes, activation):
         super().__init__()
         self.net = make_model(
-            model_name=encoder,
-            pretrained=pretrained,
-            num_classes=1000
+            model_name=encoder, pretrained=pretrained, num_classes=1000
         )
         in_features = self.net._classifier.in_features
         if activation == "Mish":
@@ -21,7 +19,6 @@ class MultiHeadNet(nn.Module):
         self.head_vowel_diacritic = Head(in_features, num_classes[1])
         self.head_consonant_diacritic = Head(in_features, num_classes[2])
         print(self.net)
-
 
     def freeze(self):
         for param in self.model._features.parameters():

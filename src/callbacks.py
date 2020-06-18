@@ -12,16 +12,14 @@ from src.utils import rand_bbox
 
 class HMacroAveragedRecall(Callback):
     def __init__(
-            self,
-            input_grapheme_root_key: str = "grapheme_root",
-            input_consonant_diacritic_key: str = "consonant_diacritic",
-            input_vowel_diacritic_key: str = "vowel_diacritic",
-
-            output_grapheme_root_key: str = "logit_grapheme_root",
-            output_consonant_diacritic_key: str = "logit_consonant_diacritic",
-            output_vowel_diacritic_key: str = "logit_vowel_diacritic",
-
-            prefix: str = "hmar",
+        self,
+        input_grapheme_root_key: str = "grapheme_root",
+        input_consonant_diacritic_key: str = "consonant_diacritic",
+        input_vowel_diacritic_key: str = "vowel_diacritic",
+        output_grapheme_root_key: str = "logit_grapheme_root",
+        output_consonant_diacritic_key: str = "logit_consonant_diacritic",
+        output_vowel_diacritic_key: str = "logit_vowel_diacritic",
+        prefix: str = "hmar",
     ):
         self.input_grapheme_root_key = input_grapheme_root_key
         self.input_consonant_diacritic_key = input_consonant_diacritic_key
@@ -35,9 +33,15 @@ class HMacroAveragedRecall(Callback):
         super().__init__(CallbackOrder.Metric)
 
     def on_batch_end(self, state: State):
-        input_grapheme_root = state.input[self.input_grapheme_root_key].detach().cpu().numpy()
-        input_consonant_diacritic = state.input[self.input_consonant_diacritic_key].detach().cpu().numpy()
-        input_vowel_diacritic = state.input[self.input_vowel_diacritic_key].detach().cpu().numpy()
+        input_grapheme_root = (
+            state.input[self.input_grapheme_root_key].detach().cpu().numpy()
+        )
+        input_consonant_diacritic = (
+            state.input[self.input_consonant_diacritic_key].detach().cpu().numpy()
+        )
+        input_vowel_diacritic = (
+            state.input[self.input_vowel_diacritic_key].detach().cpu().numpy()
+        )
 
         output_grapheme_root = state.output[self.output_grapheme_root_key]
         output_grapheme_root = F.softmax(output_grapheme_root, 1)
@@ -55,9 +59,17 @@ class HMacroAveragedRecall(Callback):
         output_vowel_diacritic = output_vowel_diacritic.detach().cpu().numpy()
 
         scores = []
-        scores.append(recall_score(input_grapheme_root, output_grapheme_root, average='macro'))
-        scores.append(recall_score(input_consonant_diacritic, output_consonant_diacritic, average='macro'))
-        scores.append(recall_score(input_vowel_diacritic, output_vowel_diacritic, average='macro'))
+        scores.append(
+            recall_score(input_grapheme_root, output_grapheme_root, average="macro")
+        )
+        scores.append(
+            recall_score(
+                input_consonant_diacritic, output_consonant_diacritic, average="macro"
+            )
+        )
+        scores.append(
+            recall_score(input_vowel_diacritic, output_vowel_diacritic, average="macro")
+        )
 
         final_score = np.average(scores, weights=[2, 1, 1])
         state.metric_manager.add_batch_value(name=self.prefix, value=final_score)
@@ -68,10 +80,10 @@ class HMacroAveragedRecall(Callback):
 
 class HMacroAveragedRecallSingle(Callback):
     def __init__(
-            self,
-            input_key: str = "grapheme_root",
-            output_key: str = "logit_grapheme_root",
-            prefix: str = "hmar_gr",
+        self,
+        input_key: str = "grapheme_root",
+        output_key: str = "logit_grapheme_root",
+        prefix: str = "hmar_gr",
     ):
         self.input_key = input_key
         self.output_key = output_key
@@ -87,13 +99,12 @@ class HMacroAveragedRecallSingle(Callback):
         _, output = torch.max(output, 1)
         output = output.detach().cpu().numpy()
 
-        score = recall_score(input, output, average='macro')
+        score = recall_score(input, output, average="macro")
 
         state.metric_manager.add_batch_value(name=self.prefix, value=score)
 
 
 class FreezeCallback(Callback):
-
     def __init__(self):
         super().__init__(CallbackOrder.Other)
 
@@ -102,7 +113,6 @@ class FreezeCallback(Callback):
 
 
 class UnFreezeCallback(Callback):
-
     def __init__(self):
         super().__init__(CallbackOrder.Other)
 
@@ -112,15 +122,15 @@ class UnFreezeCallback(Callback):
 
 class MixupCutmixCallback(CriterionCallback):
     def __init__(
-            self,
-            fields: List[str] = ("features",),
-            cutmix_alpha=1.0,
-            mixup_alpha=1.0,
-            on_train_only=True,
-            weight_grapheme_root=2.0,
-            weight_vowel_diacritic=1.0,
-            weight_consonant_diacritic=1.0,
-            **kwargs
+        self,
+        fields: List[str] = ("features",),
+        cutmix_alpha=1.0,
+        mixup_alpha=1.0,
+        on_train_only=True,
+        weight_grapheme_root=2.0,
+        weight_vowel_diacritic=1.0,
+        weight_consonant_diacritic=1.0,
+        **kwargs,
     ):
         """
         Args:
@@ -134,8 +144,7 @@ class MixupCutmixCallback(CriterionCallback):
                 So, if on_train_only is True, use a standard output/metric
                 for validation.
         """
-        assert len(fields) > 0, \
-            "At least one field for MixupCallback is required"
+        assert len(fields) > 0, "At least one field for MixupCallback is required"
 
         super().__init__(**kwargs)
 
@@ -152,16 +161,19 @@ class MixupCutmixCallback(CriterionCallback):
         self.apply_mixup = True
         self.cnt = 0
 
-        print(f"Weights {self.weight_grapheme_root},"
-              f" {self.weight_vowel_diacritic},"
-              f" {self.weight_consonant_diacritic}.")
+        print(
+            f"Weights {self.weight_grapheme_root},"
+            f" {self.weight_vowel_diacritic},"
+            f" {self.weight_consonant_diacritic}."
+        )
 
-        print(f"MixupCutmixCallback \n cutmix_alpha = {self.cutmix_alpha} "
-              f"\n mixup_alpha = {self.mixup_alpha}!")
+        print(
+            f"MixupCutmixCallback \n cutmix_alpha = {self.cutmix_alpha} "
+            f"\n mixup_alpha = {self.mixup_alpha}!"
+        )
 
     def on_loader_start(self, state: State):
-        self.is_needed = not self.on_train_only or \
-                         state.loader_name.startswith("train")
+        self.is_needed = not self.on_train_only or state.loader_name.startswith("train")
 
     def do_mixup(self, state: State):
         if self.mixup_alpha > 0:
@@ -170,8 +182,9 @@ class MixupCutmixCallback(CriterionCallback):
             self.lam = 1
 
         for f in self.fields:
-            state.input[f] = self.lam * state.input[f] + \
-                             (1 - self.lam) * state.input[f][self.index]
+            state.input[f] = (
+                self.lam * state.input[f] + (1 - self.lam) * state.input[f][self.index]
+            )
 
     def do_cutmix(self, state: State):
         if self.cutmix_alpha > 0:
@@ -179,16 +192,21 @@ class MixupCutmixCallback(CriterionCallback):
         else:
             self.lam = 1
 
-        bbx1, bby1, bbx2, bby2 = \
-            rand_bbox(state.input[self.fields[0]].shape, self.lam)
+        bbx1, bby1, bbx2, bby2 = rand_bbox(state.input[self.fields[0]].shape, self.lam)
 
         for f in self.fields:
-            state.input[f][:, :, bbx1:bbx2, bby1:bby2] = \
-                state.input[f][self.index, :, bbx1:bbx2, bby1:bby2]
+            state.input[f][:, :, bbx1:bbx2, bby1:bby2] = state.input[f][
+                self.index, :, bbx1:bbx2, bby1:bby2
+            ]
 
-        self.lam = 1 - ((bbx2 - bbx1) * (bby2 - bby1)
-                        / (state.input[self.fields[0]].shape[-1]
-                           * state.input[self.fields[0]].shape[-2]))
+        self.lam = 1 - (
+            (bbx2 - bbx1)
+            * (bby2 - bby1)
+            / (
+                state.input[self.fields[0]].shape[-1]
+                * state.input[self.fields[0]].shape[-2]
+            )
+        )
 
     def on_batch_start(self, state: State):
 
@@ -208,33 +226,39 @@ class MixupCutmixCallback(CriterionCallback):
     def _compute_loss(self, state: State, criterion):
         loss_arr = [0, 0, 0]
         if not self.is_needed:
-            for i, (input_key, output_key) in enumerate(list(zip(self.input_key, self.output_key))):
+            for i, (input_key, output_key) in enumerate(
+                list(zip(self.input_key, self.output_key))
+            ):
                 pred = state.output[output_key]
                 y = state.input[input_key]
                 loss_arr[i] = criterion(pred, y)
 
         else:
-            for i, (input_key, output_key) in enumerate(list(zip(self.input_key, self.output_key))):
+            for i, (input_key, output_key) in enumerate(
+                list(zip(self.input_key, self.output_key))
+            ):
                 pred = state.output[output_key]
                 y_a = state.input[input_key]
                 y_b = state.input[input_key][self.index]
-                loss_arr[i] = self.lam * criterion(pred, y_a) + \
-                              (1 - self.lam) * criterion(pred, y_b)
+                loss_arr[i] = self.lam * criterion(pred, y_a) + (
+                    1 - self.lam
+                ) * criterion(pred, y_b)
 
-        loss = loss_arr[0] * self.weight_grapheme_root + \
-               loss_arr[1] * self.weight_vowel_diacritic + \
-               loss_arr[2] * self.weight_consonant_diacritic
+        loss = (
+            loss_arr[0] * self.weight_grapheme_root
+            + loss_arr[1] * self.weight_vowel_diacritic
+            + loss_arr[2] * self.weight_consonant_diacritic
+        )
 
         return loss
 
 
 class CheckpointLoader(Callback):
-
     def __init__(self, checkpoint_path):
         super().__init__(CallbackOrder.Other)
         self.checkpoint_path = checkpoint_path
 
     def on_stage_start(self, state: State):
-        print(f'Checkpoint {self.checkpoint_path} is being loaded!')
+        print(f"Checkpoint {self.checkpoint_path} is being loaded!")
         checkpoint = utils.load_checkpoint(self.checkpoint_path)
         utils.unpack_checkpoint(checkpoint, model=state.model)

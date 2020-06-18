@@ -1,13 +1,14 @@
-from catalyst.dl import registry
 from catalyst.dl import SupervisedRunner as Runner
+from catalyst.dl import registry
 from pytorch_toolbelt.losses import FocalLoss
 
 from src.models.efficient_new import EfficientNew
-from .models.multihead import MultiHeadNet
-from .models.efficient import Efficient
+
+from .callbacks import *
 from .experiment import Experiment
 from .losses import *
-from .callbacks import *
+from .models.efficient import Efficient
+from .models.multihead import MultiHeadNet
 
 # Register models
 registry.Model(MultiHeadNet)
@@ -29,6 +30,3 @@ registry.Criterion(OHEMLoss)
 registry.Criterion(ReducedFocalLoss)
 
 registry.Criterion(LabelSmoothingLoss)
-
-
-
