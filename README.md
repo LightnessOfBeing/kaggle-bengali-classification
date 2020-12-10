@@ -68,6 +68,15 @@ The dataset is available at Kaggle via this link: https://www.kaggle.com/c/benga
 Or via Kaggle API: `https://www.kaggle.com/c/bengaliai-cv19/data`
 
 Assume you've figured out the path for data, the only thing is left is you need to add to add your own path in config files located in `configs` folder. Specificaaly you need to put your own values the following fields:
-*  into train_csv_path: "../input/bengaliutils2/"
-*  train_csv_name: "train_with_fold.csv"
-*  data_folder: "../input/137x236-images/137x236_images/"
+*  `into train_csv_path`
+*  `train_csv_name`
+*  `data_folder`
+
+Assuming you are in the project root, then you can run the first stage for the first fold with:
+`catalyst-dl run --expdir src --logdir {YOUR_PATH_TO_LOGDIR} --config configs/triple_head/mixup_cutmix_efnet_f0.yml`
+
+Then run the second stage for the first fold with:
+`catalyst-dl run --expdir src --logdir {YOUR_PATH_TO_LOGDIR} --config configs/triple_head/finetune_efnet_f0.yml`
+
+After you've completed training for all 5 folds you can ensemble predictions using the code form this kernel:
+https://www.kaggle.com/lightnezzofbeing/5-fold-average
