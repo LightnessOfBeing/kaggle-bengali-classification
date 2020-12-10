@@ -28,8 +28,20 @@ You’re given the image of a handwritten Bengali grapheme and are challenged to
 
 # Approach
 
+## Final solution
 [1] First stage: train with Cutmix and Mixup augmentations for more than 100 epochs, as these augmentations require a big number of epochs to converge.
 
 [2] Second stage: fine-tune for ~5 epochs without any aumentations at all.
 
 [3] Ensemble over 5 folds using max voting technique.
+
+## Baseline solution
+
+* Resnet-50
+* One model with 3 heads
+* 30 epochs
+* Basic gemetric augmentations: Scale, Rotate, HorizontalFlip, etc.
+* Cross Entropy Loss
+* Cropped and centered images
+* Random split
+* Result: 0.95 public leaderboards
