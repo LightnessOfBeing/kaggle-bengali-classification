@@ -7,7 +7,24 @@ https://www.kaggle.com/c/bengaliai-cv19/overview
 **private/public score of 0.9400/0.9849**
 
 # Competition description
+
+## Task formulation
+You’re given the image of a handwritten Bengali grapheme and are challenged to separately classify three constituent elements in the image: grapheme root, vowel diacritics, and consonant diacritics.
+
 <img src="https://www.googleapis.com/download/storage/v1/b/kaggle-user-content/o/inbox%2F1095143%2Fa9a48686e3f385d9456b59bf2035594c%2Fdesc.png?generation=1576531903599785&alt=media" width="60%" height="60%" align="center">
+
+## Data and metric 
+
+* ~200000 single channel images
+* Class distribution: 
+    * Grapheme root: 168 classes
+    * Vowel diacritic: 11 classes
+    * Consonant diacritic: 7 classes
+    * 168 * 11 * 77 ~ 13k different grapheme variations
+* Metric: weighted sum of recall for each component with weights:
+  * 2 - Grapheme root
+  * 1 - Vowel diacritic
+  * 1 - Consonant diacritic
 
 # Approach
 
