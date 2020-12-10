@@ -29,11 +29,12 @@ You’re given the image of a handwritten Bengali grapheme and are challenged to
 # Approach
 
 ## Final solution
-[1] First stage: train with Cutmix and Mixup augmentations for more than 100 epochs, as these augmentations require a big number of epochs to converge.
+* Three stage pipeline:
+   1. First stage: train with Cutmix and Mixup augmentations for more than 100 epochs, as these augmentations require a big number of epochs to converge.
 
-[2] Second stage: fine-tune for ~5 epochs without any aumentations at all.
+   2. Second stage: fine-tune for ~5 epochs without any aumentations at all.
 
-[3] Ensemble over 5 folds using max voting technique.
+   3. Ensemble over 5 folds using max voting technique.
 
 ## Baseline solution
 
