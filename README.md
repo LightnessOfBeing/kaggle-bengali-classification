@@ -32,10 +32,12 @@ You’re given the image of a handwritten Bengali grapheme and are challenged to
 * Three stage pipeline:
    1. First stage: 
        * Model: EfficeintNet B0-B3
-       * Train with Cutmix and Mixup augmentations for more than 100 epochs, as these augmentations require a big number of epochs to converge.
+       * Train with Cutmix (alpha=1) and Mixup (alpha=4) augmentations for more than 100 epochs, as these augmentations require a big number of epochs to converge.
        * Head configuration Mish -> Conv2D -> BatchNorm -> Pooling layer -> Linear
-       * Pooling layer: GeM pooling
+       * Pooling layer: 0.5 * (AveragePooling + MaxPooling)
        * Dataset: uncropped images
+       * Weights: 7-grapheme, 1-consonant, 2-vowel
+       * AdamW and OneCycleWithWarmUp
 
    2. Second stage: 
       * fine-tune for ~5 epochs without any aumentations at all.
