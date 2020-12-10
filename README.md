@@ -31,7 +31,8 @@ You’re given the image of a handwritten Bengali grapheme and are challenged to
 ## Final solution
 * Three stage pipeline:
    1. First stage: 
-       * train with Cutmix and Mixup augmentations for more than 100 epochs, as these augmentations require a big number of epochs to converge.
+       * Model: EfficeintNet B0-B3
+       * Train with Cutmix and Mixup augmentations for more than 100 epochs, as these augmentations require a big number of epochs to converge.
        * Head configuration Mish -> Conv2D -> BatchNorm -> Pooling layer -> Linear
        * Pooling layer: GeM pooling
        * Dataset: uncropped images
@@ -52,3 +53,10 @@ You’re given the image of a handwritten Bengali grapheme and are challenged to
 * Cropped and centered images
 * Random split
 * Result: 0.95 public leaderboards
+
+## Things that didn't work
+* se-resnexts and resnets
+* OHEM loss
+* 3 different models insted single model with 3 heads
+* Basic geometric configurations
+
