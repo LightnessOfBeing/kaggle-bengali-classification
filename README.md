@@ -64,10 +64,10 @@ You’re given the image of a handwritten Bengali grapheme and are challenged to
 * Basic geometric configurations
 
 # Run
-The dataset is available at Kaggle via this link: https://www.kaggle.com/c/bengaliai-cv19/data
+The dataset is available at Kaggle via this link: https://www.kaggle.com/c/bengaliai-cv19/data  
 Or via Kaggle API: `https://www.kaggle.com/c/bengaliai-cv19/data`
 
-Assume you've figured out the path for data, the only thing is left is you need to add to add your own path in config files located in `configs` folder. Specificaaly you need to put your own values the following fields:
+You need to add your own path in config files located in `configs` folder. Specificaaly you need to put your own values the following fields:
 *  `into train_csv_path`
 *  `train_csv_name`
 *  `data_folder`
