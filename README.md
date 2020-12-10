@@ -25,19 +25,21 @@ You’re given the image of a handwritten Bengali grapheme and are challenged to
   * 2 - Grapheme root
   * 1 - Vowel diacritic
   * 1 - Consonant diacritic
+* Public test set size is only 12 images!
 
 # Approach
 
 ## Final solution
 * Three stage pipeline:
    1. First stage: 
-       * Model: EfficeintNet B0-B3
-       * Train with Cutmix (alpha=1) and Mixup (alpha=4) augmentations for more than 100 epochs, as these augmentations require a big number of epochs to converge.
+       * Model: EfficeintNet B0-B3 with three heads
        * Head configuration Mish -> Conv2D -> BatchNorm -> Pooling layer -> Linear
+       * Train with Cutmix (alpha=1) and Mixup (alpha=4) augmentations for more than 100 epochs, as these augmentations require a big number of epochs to converge.
        * Pooling layer: 0.5 * (AveragePooling + MaxPooling)
-       * Dataset: uncropped images
+       * Dataset: 5-fold of uncropped images generated via stratified split 
        * Weights: 7-grapheme, 1-consonant, 2-vowel
        * AdamW and OneCycleWithWarmUp
+       
 
    2. Second stage: 
       * fine-tune for ~5 epochs without any aumentations at all.
@@ -47,8 +49,7 @@ You’re given the image of a handwritten Bengali grapheme and are challenged to
 
 ## Baseline solution
 
-* Resnet-50
-* One model with 3 heads
+* Resnet-50 with 3 heads
 * 30 epochs
 * Basic gemetric augmentations: Scale, Rotate, HorizontalFlip, etc.
 * Cross Entropy Loss
